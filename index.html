@@ -4,8 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Normal Laboratory Values — Quick Reference</title>
-  <meta name="description" content="Offline-capable quick reference of normal laboratory values for common blood, urine, and other clinical tests. RBC, WBC, hemoglobin, platelets, electrolytes, renal, hepatic, cardiac, coagulation, urinalysis, and more.">
+  <meta name="description" content="Offline-capable quick reference of normal laboratory values. CBC, electrolytes, renal, hepatic, cardiac, coagulation, urinalysis, ABG, thyroid, lipids, tumor markers, and more.">
   <style>
+    /* ── Reset & base ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --bg: #0c0c14;
@@ -18,12 +19,12 @@
       --accent-2: #7fc1b1;
       --warn: #d4a04a;
       --hi-lo: #7a8ec0;
+      --crit: #e06060;
       --radius: 10px;
-      --shadow: 0 2px 8px rgba(0,0,0,0.4);
     }
     html { scroll-behavior: smooth; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--bg);
       color: var(--text);
       line-height: 1.55;
@@ -31,9 +32,9 @@
     }
     .wrap { max-width: 1120px; margin: 0 auto; padding: 0 18px; }
 
-    /* Header */
+    /* ── Header ── */
     header {
-      padding: 20px 0 14px;
+      padding: 18px 0 12px;
       border-bottom: 1px solid var(--border);
       background: rgba(12,12,20,0.85);
       position: sticky; top: 0; z-index: 50;
@@ -48,235 +49,127 @@
       color: #0c0c14; font-weight: 800; font-size: 1.1rem;
     }
     .brand h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em; }
-    .brand small { color: var(--muted); font-size: 0.8rem; display: block; margin-top: 1px; }
-    .search-wrap { position: relative; }
-    .search-input {
-      width: 100%;
-      padding: 10px 14px 10px 36px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--panel);
-      color: var(--text);
-      font-size: 0.92rem;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .search-input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(108,155,207,0.18);
-    }
-    .search-input::placeholder { color: var(--muted); }
-    .search-icon {
-      position: absolute; left: 13px; top: 50%;
-      transform: translateY(-50%);
-      color: var(--muted); font-size: 1rem; pointer-events: none;
-    }
-    .search-clear {
-      position: absolute; right: 10px; top: 50%;
-      transform: translateY(-50%);
-      background: none; border: none; color: var(--muted);
-      cursor: pointer; font-size: 1.2rem; padding: 4px;
-      display: none;
-    }
-    .search-clear.show { display: block; }
-    .tagline { color: var(--muted); font-size: 0.82rem; margin-top: 6px; }
+    .brand small { color: var(--muted); font-size: 0.8rem; display: block; margin-top: 2px; }
+    .tagline { color: var(--muted); font-size: 0.8rem; margin-top: 6px; text-align: right; }
 
-    /* Stats bar */
-    .stats-bar {
-      display: flex; gap: 8px; flex-wrap: wrap;
-      margin: 14px 0 10px;
-    }
+    /* ── Stats bar ── */
+    .stats-bar { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 8px; }
     .stat-chip {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 4px 12px;
-      font-size: 0.78rem;
-      color: var(--muted);
-      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 999px; padding: 3px 10px; font-size: 0.76rem;
+      color: var(--muted); display: inline-flex; align-items: center; gap: 5px;
     }
     .stat-chip strong { color: var(--text); }
 
-    /* Section */
-    section { margin-top: 28px; scroll-margin-top: 80px; }
+    /* ── TOC ── */
+    .toc {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 12px 14px; margin: 12px 0;
+    }
+    .toc h3 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em;
+              color: var(--muted); margin-bottom: 8px; }
+    .toc ul { list-style: none; columns: 2; column-gap: 16px; }
+    .toc li { break-inside: avoid; margin-bottom: 2px; }
+    .toc a { color: var(--accent); text-decoration: none; font-size: 0.8rem; }
+    .toc a:hover { color: var(--accent-2); }
+
+    /* ── Units legend ── */
+    .units-legend {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 10px 14px; margin: 8px 0 18px;
+      font-size: 0.76rem; color: var(--muted); line-height: 1.6;
+    }
+    .units-legend strong { color: var(--text); }
+
+    /* ── Sections ── */
+    section { margin-top: 26px; scroll-margin-top: 80px; }
     .section-head {
       display: flex; align-items: baseline; justify-content: space-between;
-      gap: 12px; margin-bottom: 12px; flex-wrap: wrap;
+      gap: 10px; margin-bottom: 10px; flex-wrap: wrap;
     }
     .section-head h2 {
-      font-size: 1.25rem; font-weight: 700;
-      letter-spacing: -0.02em;
+      font-size: 1.2rem; font-weight: 700; letter-spacing: -0.02em;
       display: flex; align-items: center; gap: 8px;
     }
-    .section-head h2 .dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      display: inline-block;
-    }
-    .section-head .desc { color: var(--muted); font-size: 0.82rem; }
+    .section-head h2 .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .section-head .desc { color: var(--muted); font-size: 0.8rem; }
     .section-head .count {
       background: var(--panel); border: 1px solid var(--border);
-      border-radius: 999px; padding: 3px 10px; font-size: 0.78rem;
-      color: var(--muted);
+      border-radius: 999px; padding: 2px 9px; font-size: 0.74rem; color: var(--muted);
     }
 
-    /* Card grid */
+    /* ── Card grid ── */
     .card-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 12px;
+      gap: 10px;
     }
     .card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px 16px;
-      transition: border-color 0.2s, transform 0.2s;
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 12px 14px;
+      transition: border-color 0.2s, transform 0.15s;
     }
     .card:hover { border-color: var(--accent); transform: translateY(-1px); }
-    .card-high { border-left: 3px solid var(--accent); }
     .card-blood  { border-left: 3px solid #e06b6b; }
-    .card-renal  { border-left: 3px solid #6bb5e0; }
-    .card-hepatic { border-left: 3px solid #d48a4a; }
-    .card-chem   { border-left: 3px solid #6b9b4a; }
     .card-coag   { border-left: 3px solid #9b6bc4; }
+    .card-chem   { border-left: 3px solid #6b9b4a; }
+    .card-renal  { border-left: 3px solid #6bb5e0; }
+    .card-hepatic{ border-left: 3px solid #d48a4a; }
     .card-cards  { border-left: 3px solid #4a9ad4; }
     .card-other  { border-left: 3px solid var(--muted); }
 
     .card h3 {
-      font-size: 0.98rem; font-weight: 600;
-      margin-bottom: 4px;
+      font-size: 0.95rem; font-weight: 600; margin-bottom: 3px;
       display: flex; align-items: center; gap: 6px;
     }
-    .card h3 .sym { color: var(--muted); font-weight: 400; font-size: 0.82rem; }
-    .card .loinc  { font-size: 0.72rem; color: var(--muted); margin-bottom: 6px; }
+    .card h3 .sym { color: var(--muted); font-weight: 400; font-size: 0.78rem; }
+    .card .loinc { font-size: 0.7rem; color: var(--muted); margin-bottom: 5px; }
+    .card .unit-line {
+      font-size: 0.74rem; color: var(--muted); margin-bottom: 7px;
+      border-bottom: 1px dotted var(--border); padding-bottom: 4px;
+    }
     .card .result-row {
       display: flex; justify-content: space-between; align-items: baseline;
-      padding: 3px 0;
-      border-bottom: 1px dotted var(--border);
+      padding: 2px 0; gap: 8px;
     }
-    .card .result-row:last-child { border-bottom: none; }
-    .card .label {
-      font-size: 0.78rem; color: var(--muted);
-      display: flex; align-items: center; gap: 6px;
+    .card .label { font-size: 0.76rem; color: var(--muted); }
+    .card .label .flag {
+      font-size: 0.62rem; padding: 1px 4px; border-radius: 3px; margin-left: 4px;
     }
-    .card .label .flag { font-size: 0.65rem; padding: 1px 4px; border-radius: 3px; }
-    .flag-high  { background: rgba(212,160,74,0.18); color: var(--warn); }
-    .flag-low   { background: rgba(122,142,192,0.18); color: var(--hi-lo); }
-    .flag-crit  { background: rgba(212,80,80,0.22); color: #e07070; }
+    .flag-hi  { background: rgba(212,160,74,0.18); color: var(--warn); }
+    .flag-lo   { background: rgba(122,142,192,0.18); color: var(--hi-lo); }
+    .flag-crit { background: rgba(224,96,96,0.22); color: var(--crit); }
     .card .value {
-      font-size: 0.88rem; font-weight: 600;
-      text-align: right;
-      font-variant-numeric: tabular-nums;
+      font-size: 0.84rem; font-weight: 600;
+      text-align: right; font-variant-numeric: tabular-nums;
+      word-break: break-word;
     }
     .card .note {
-      font-size: 0.74rem; color: var(--muted);
-      margin-top: 6px; padding-top: 6px;
-      border-top: 1px solid var(--border);
-      line-height: 1.4;
+      font-size: 0.72rem; color: var(--muted); margin-top: 5px;
+      padding-top: 5px; border-top: 1px solid var(--border); line-height: 1.4;
     }
 
-    /* Table view */
-    .table-wrap {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
-    table {
-      width: 100%; border-collapse: collapse;
-      font-size: 0.86rem;
-    }
-    thead th {
-      background: var(--panel-2);
-      text-align: left;
-      padding: 9px 12px;
-      font-weight: 600;
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--muted);
-      border-bottom: 1px solid var(--border);
-    }
-    tbody td {
-      padding: 8px 12px;
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
-    }
-    tbody tr:last-child td { border-bottom: none; }
-    tbody tr:hover { background: rgba(255,255,255,0.02); }
-    tbody td .val { font-weight: 600; font-variant-numeric: tabular-nums; }
-    tbody td .dim { color: var(--muted); font-size: 0.78rem; }
-
-    /* TOC */
-    .toc {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px 16px;
-      margin: 18px 0;
-    }
-    .toc h3 { font-size: 0.9rem; margin-bottom: 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-    .toc ul { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 4px 12px; }
-    .toc a {
-      color: var(--accent);
-      text-decoration: none;
-      font-size: 0.82rem;
-      padding: 2px 0;
-      display: block;
-    }
-    .toc a:hover { color: var(--accent-2); }
-
-    /* Units legend */
-    .units-legend {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 12px 16px;
-      margin: 10px 0 18px;
-      font-size: 0.78rem;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-    .units-legend strong { color: var(--text); }
-
-    /* Footer */
-    footer {
-      margin-top: 40px;
-      padding: 24px 0;
-      border-top: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 0.78rem;
-      line-height: 1.6;
-    }
-    .footer-inner { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
-    footer a { color: var(--accent); text-decoration: none; }
-
-    /* Empty / no results */
-    .empty {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--muted);
-      font-size: 0.95rem;
-    }
-    .empty .big { font-size: 1.2rem; margin-bottom: 8px; }
-
-    /* Responsive */
+    /* ── Responsive ── */
     @media (max-width: 640px) {
       .card-grid { grid-template-columns: 1fr; }
-      .toc ul { grid-template-columns: 1fr; }
+      .toc ul { columns: 1; }
       .header-row { flex-direction: column; align-items: stretch; }
       .brand { justify-content: center; }
+      .tagline { text-align: center; }
     }
 
-    /* print */
+    /* ── Print ── */
     @media print {
       header { position: static; }
-      .search-wrap { display: none; }
-      .stats-bar { display: none; }
       body { background: #fff; color: #000; }
       .card { border: 1px solid #ccc; background: #fff; }
       .card:hover { transform: none; }
-      a { color: #000; }
+      .search-wrap { display: none; }
+    }
+
+    /* ── Dark mode safety ── */
+    @media (prefers-color-scheme: light) {
+      /* Keep our dark theme — lab reference is easier to read this way */
     }
   </style>
 </head>
@@ -284,1714 +177,1613 @@
   <header>
     <div class="wrap header-row">
       <div class="brand">
-        <div class="brand-icon">🩸</div>
+        <div class="brand-icon">&#x1F473;</div>
         <div>
           <h1>Normal Laboratory Values</h1>
-          <small>Quick clinical reference · offline-capable</small>
+          <small>Quick clinical reference &middot; single-file HTML &middot; no JavaScript</small>
         </div>
       </div>
-      <div class="search-wrap">
-        <span class="search-icon">🔍</span>
-        <input type="text" class="search-input" id="search" placeholder="Search test name, symbol, or abbreviation…" autocomplete="off">
-        <button class="search-clear" id="searchClear" aria-label="Clear search">✕</button>
+      <div class="tagline">
+        Typical adult reference ranges &middot; SI and traditional units shown where applicable<br>
+        Press <kbd>Ctrl</kbd>+<kbd>F</kbd> in your browser to search this page
       </div>
     </div>
     <div class="wrap">
-      <div class="stats-bar" id="statsBar"></div>
-      <div class="tagline" id="tagline">Press <kbd>Ctrl</kbd>+<kbd>F</kbd> or type above to find a test. Values are typical adult reference ranges — always confirm with your local laboratory.</div>
+      <div class="stats-bar">
+        <span class="stat-chip"><strong>93</strong> tests</span>
+        <span class="stat-chip">Hematology: <strong>15</strong></span>
+        <span class="stat-chip">Iron/ferritin: <strong>6</strong></span>
+        <span class="stat-chip">WBC diff: <strong>5</strong></span>
+        <span class="stat-chip">Coagulation: <strong>5</strong></span>
+        <span class="stat-chip">Electrolytes: <strong>7</strong></span>
+        <span class="stat-chip">Renal: <strong>5</strong></span>
+        <span class="stat-chip">Hepatic: <strong>8</strong></span>
+        <span class="stat-chip">Cardiac: <strong>6</strong></span>
+        <span class="stat-chip">Lipids: <strong>4</strong></span>
+        <span class="stat-chip">Glucose: <strong>3</strong></span>
+        <span class="stat-chip">Thyroid: <strong>4</strong></span>
+        <span class="stat-chip">Urinalysis: <strong>11</strong></span>
+        <span class="stat-chip">CSF: <strong>3</strong></span>
+        <span class="stat-chip">ABG: <strong>6</strong></span>
+        <span class="stat-chip">Other: <strong>11</strong></span>
+      </div>
     </div>
   </header>
 
   <div class="wrap">
 
-    <!-- Table of contents -->
-    <nav class="toc" id="toc" aria-label="Section navigation"></nav>
+    <!-- ── Table of contents ── -->
+    <nav class="toc" aria-label="Sections">
+      <h3>Jump to section</h3>
+      <ul>
+        <li><a href="#sec-cbc">Complete Blood Count (CBC)</a></li>
+        <li><a href="#sec-rbc">RBC Indices, Iron &amp; Ferritin</a></li>
+        <li><a href="#sec-wbc">WBC &amp; Differential</a></li>
+        <li><a href="#sec-coag">Platelets &amp; Coagulation</a></li>
+        <li><a href="#sec-lytes">Electrolytes</a></li>
+        <li><a href="#sec-renal">Renal &amp; Kidney Function</a></li>
+        <li><a href="#sec-hepatic">Liver &amp; Hepatic Function</a></li>
+        <li><a href="#sec-cardiac">Cardiac Markers</a></li>
+        <li><a href="#sec-lipids">Lipid Panel</a></li>
+        <li><a href="#sec-glucose">Glucose &amp; Diabetes</a></li>
+        <li><a href="#sec-thyroid">Thyroid Function</a></li>
+        <li><a href="#sec-urine">Urinalysis</a></li>
+        <li><a href="#sec-csf">Cerebrospinal Fluid (CSF)</a></li>
+        <li><a href="#sec-abg">Arterial Blood Gas (ABG)</a></li>
+        <li><a href="#sec-misc">Tumor Markers &amp; Miscellaneous</a></li>
+      </ul>
+    </nav>
 
-    <!-- Units legend -->
+    <!-- ── Units legend ── -->
     <div class="units-legend">
-      <strong>Units used throughout:</strong>
-      g/dL = grams per decilitre · g/L = grams per litre ·
-      mmol/L = millimoles per litre · µmol/L = micromoles per litre ·
-      mg/dL = milligrams per decilitre · mg/L = milligrams per litre ·
-      mEq/L (or mmol/L for monovalent ions) · U/L = units per litre ·
-      IU/L = international units per litre · ng/mL = nanograms per mL ·
-      pg = picograms · fL = femtolitres · ×10⁹/L = billions per litre ·
-      ×10³/µL = thousands per microlitre ·
+      <strong>Units used:</strong>
+      g/dL = grams per decilitre &middot; g/L = grams per litre &middot;
+      mmol/L = millimoles per litre &middot; µmol/L = micromoles per litre &middot;
+      mg/dL = milligrams per decilitre &middot; mg/L = milligrams per litre &middot;
+      mEq/L (or mmol/L for monovalent ions) &middot;
+      U/L = units per litre &middot; IU/L = international units per litre &middot;
+      ng/mL = nanograms per mL &middot; pg = picograms &middot; fL = femtolitres &middot;
+      ×10⁹/L = billions per litre &middot; ×10³/µL = thousands per microlitre &middot;
+      ×10¹²/L = trillions per litre &middot;
       <strong>Reference ranges are typical adult values.</strong>
       Pediatric, geriatric, pregnancy, and population-specific ranges may differ.
-      SI vs traditional units shown where relevant.
+      Always confirm with your local laboratory.
     </div>
 
-    <!-- ============================================================ -->
-    <!-- 1. HEMATOLOGY — COMPLETE BLOOD COUNT                          -->
-    <!-- ============================================================ -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 1. COMPLETE BLOOD COUNT                                       -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
     <section id="sec-cbc" data-group="blood">
       <div class="section-head">
         <h2><span class="dot" style="background:#e06b6b"></span>Complete Blood Count (CBC)</h2>
-        <span class="count" id="cnt-cbc"></span>
+        <span class="count">10 tests</span>
       </div>
-      <div class="card-grid" id="grid-cbc"></div>
+      <div class="card-grid">
+
+        <div class="card card-blood">
+          <h3>White Blood Cell Count <span class="sym">WBC</span></h3>
+          <div class="loinc">LOINC 6690-2</div>
+          <div class="unit-line">Unit: ×10⁹/L  (×10³/µL)</div>
+          <div class="result-row"><span class="label">Adult (typical)</span><span class="value">4.0 – 11.0 ×10⁹/L</span></div>
+          <div class="note">Also reported as 4,000 – 11,000 /µL. Slight variation by lab and age.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>White Blood Cell Count <span class="sym">WBC</span></h3>
+          <div class="loinc">LOINC 6690-2</div>
+          <div class="unit-line">Unit: ×10⁹/L</div>
+          <div class="result-row"><span class="label">Newborn</span><span class="value">9.0 – 30.0 ×10⁹/L</span></div>
+          <div class="note">Physiologically higher at birth; falls over first weeks.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>White Blood Cell Count <span class="sym">WBC</span></h3>
+          <div class="loinc">LOINC 6690-2</div>
+          <div class="unit-line">Unit: ×10⁹/L</div>
+          <div class="result-row"><span class="label">Child (4–7 yr)</span><span class="value">5.0 – 15.0 ×10⁹/L</span></div>
+          <div class="note">Often higher than adult range.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>White Blood Cell Count <span class="sym">WBC</span></h3>
+          <div class="loinc">LOINC 6690-2</div>
+          <div class="unit-line">Unit: ×10⁹/L</div>
+          <div class="result-row"><span class="label">Pregnancy</span><span class="value">5.0 – 15.0 ×10⁹/L</span></div>
+          <div class="note">Physiological leukocytosis of pregnancy.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Red Blood Cell Count <span class="sym">RBC</span></h3>
+          <div class="loinc">LOINC 789-7</div>
+          <div class="unit-line">Unit: ×10¹²/L  (×10⁶/µL)</div>
+          <div class="result-row"><span class="label">Male</span><span class="value">4.5 – 5.5 ×10¹²/L</span></div>
+          <div class="note">Also 4.5–5.5 million/µL.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Red Blood Cell Count <span class="sym">RBC</span></h3>
+          <div class="loinc">LOINC 789-7</div>
+          <div class="unit-line">Unit: ×10¹²/L</div>
+          <div class="result-row"><span class="label">Female</span><span class="value">4.0 – 5.0 ×10¹²/L</span></div>
+          <div class="note">Lower than males due to hormonal and menstrual factors.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Red Blood Cell Count <span class="sym">RBC</span></h3>
+          <div class="loinc">LOINC 789-7</div>
+          <div class="unit-line">Unit: ×10¹²/L</div>
+          <div class="result-row"><span class="label">Newborn</span><span class="value">4.8 – 7.1 ×10¹²/L</span></div>
+          <div class="note">Physiologically elevated; falls postnatally.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Hemoglobin <span class="sym">Hb / Hgb</span></h3>
+          <div class="loinc">LOINC 20504-5</div>
+          <div class="unit-line">Unit: g/dL  (g/L)</div>
+          <div class="result-row"><span class="label">Male</span><span class="value">13.5 – 17.5 g/dL  (135 – 175 g/L)</span></div>
+          <div class="note">Anemia: Hb &lt; 13.0 g/dL (men), &lt; 12.0 g/dL (women) per WHO.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Hemoglobin <span class="sym">Hb / Hgb</span></h3>
+          <div class="loinc">LOINC 20504-5</div>
+          <div class="unit-line">Unit: g/dL</div>
+          <div class="result-row"><span class="label">Female</span><span class="value">12.0 – 15.5 g/dL  (120 – 155 g/L)</span></div>
+          <div class="note">Menstruating women on the lower end; pregnancy lowers further.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Hemoglobin <span class="sym">Hb / Hgb</span></h3>
+          <div class="loinc">LOINC 20504-5</div>
+          <div class="unit-line">Unit: g/dL</div>
+          <div class="result-row"><span class="label">Pregnancy (1st/2nd)</span><span class="value">11.0 – 14.0 g/dL</span></div>
+          <div class="note">Physiological hemodilution; WHO anemia cut-off in pregnancy ≈ 11.0 g/dL.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Hemoglobin <span class="sym">Hb / Hgb</span></h3>
+          <div class="loinc">LOINC 20504-5</div>
+          <div class="unit-line">Unit: g/dL</div>
+          <div class="result-row"><span class="label">Newborn</span><span class="value">14.0 – 24.0 g/dL</span></div>
+          <div class="note">High at birth; declines over first weeks as HbF → HbA switches.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Hemoglobin <span class="sym">Hb / Hgb</span></h3>
+          <div class="loinc">LOINC 20504-5</div>
+          <div class="unit-line">Unit: g/dL</div>
+          <div class="result-row"><span class="label">Elderly (men)</span><span class="value">12.0 – 16.0 g/dL</span></div>
+          <div class="note">Range narrows with age.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Hematocrit <span class="sym">Hct / PCV</span></h3>
+          <div class="loinc">LOINC 789-7</div>
+          <div class="unit-line">Unit: %  (L/L / fraction)</div>
+          <div class="result-row"><span class="label">Male</span><span class="value">41 – 53 %  (0.41 – 0.53 L/L)</span></div>
+          <div class="note">≈ 3 × hemoglobin (rule of thumb). Polycythemia at &gt; 52% (men).</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Hematocrit <span class="sym">Hct / PCV</span></h3>
+          <div class="loinc">LOINC 789-7</div>
+          <div class="unit-line">Unit: %</div>
+          <div class="result-row"><span class="label">Female</span><span class="value">36 – 46 %  (0.36 – 0.46 L/L)</span></div>
+          <div class="note">Anemia at &lt; 36% (women).</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Hematocrit <span class="sym">Hct / PCV</span></h3>
+          <div class="loinc">LOINC 789-7</div>
+          <div class="unit-line">Unit: %</div>
+          <div class="result-row"><span class="label">Newborn</span><span class="value">45 – 65 %</span></div>
+          <div class="note">Physiologically high; polycythemia &gt; 65% may need management.</div>
+        </div>
+
+      </div>
     </section>
 
-    <!-- ============================================================ -->
-    <!-- 2. RED BLOOD CELL INDICES / IRON STUDIES                     -->
-    <!-- ============================================================ -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 2. RBC INDICES / IRON / FERRITIN                              -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
     <section id="sec-rbc" data-group="blood">
       <div class="section-head">
         <h2><span class="dot" style="background:#e06b6b"></span>RBC Indices, Iron &amp; Ferritin</h2>
-        <span class="count" id="cnt-rbc"></span>
+        <span class="count">6 tests</span>
       </div>
-      <div class="card-grid" id="grid-rbc"></div>
+      <div class="card-grid">
+
+        <div class="card card-blood">
+          <h3>Mean Corpuscular Hemoglobin <span class="sym">MCH</span></h3>
+          <div class="loinc">LOINC 789-7</div>
+          <div class="unit-line">Unit: pg</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">27 – 33 pg</span></div>
+          <div class="note">Low MCH: hypochromic anemia (iron deficiency, thalassaemia). High MCH: macrocytic (B12/folate deficiency, liver disease, alcohol).</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Mean Corpuscular Hemoglobin Concentration <span class="sym">MCHC</span></h3>
+          <div class="loinc">LOINC 2868-6</div>
+          <div class="unit-line">Unit: g/dL</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">32 – 36 g/dL</span></div>
+          <div class="note">Low MCHC: hypochromia (iron deficiency). High MCHC: spherocytosis, cold agglutinins, severe burn (artifactual).</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Mean Corpuscular Volume <span class="sym">MCV</span></h3>
+          <div class="loinc">LOINC 8546-3</div>
+          <div class="unit-line">Unit: fL</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">80 – 100 fL</span></div>
+          <div class="note">Microcytic &lt; 80 fL (iron deficiency, thalassaemia). Macrocytic &gt; 100 fL (B12/folate deficiency, liver disease, alcohol, hypothyroidism, myelodysplasia).</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Mean Corpuscular Volume <span class="sym">MCV</span></h3>
+          <div class="loinc">LOINC 8546-3</div>
+          <div class="unit-line">Unit: fL</div>
+          <div class="result-row"><span class="label">Newborn</span><span class="value">95 – 121 fL</span></div>
+          <div class="note">Higher MCV at birth; falls over first year.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Red Cell Distribution Width <span class="sym">RDW / RDW-CV</span></h3>
+          <div class="loinc">LOINC 789-7</div>
+          <div class="unit-line">Unit: % (CV)</div>
+          <div class="result-row"><span class="label">RDW-CV</span><span class="value">11.5 – 14.5 %</span></div>
+          <div class="note">Elevated: anisocytosis — iron deficiency, mixed deficiency, haemolysis, post-transfusion, myelodysplasia.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Red Cell Distribution Width <span class="sym">RDW / RDW-CV</span></h3>
+          <div class="loinc">LOINC 789-7</div>
+          <div class="unit-line">Unit: fL (SD)</div>
+          <div class="result-row"><span class="label">RDW-SD</span><span class="value">39 – 46 fL</span></div>
+          <div class="note">Absolute measure of red cell size variation; less affected by MCV than CV.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Platelet Count <span class="sym">PLT</span></h3>
+          <div class="loinc">LOINC 777-3</div>
+          <div class="unit-line">Unit: ×10⁹/L  (×10³/µL)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">150 – 450 ×10⁹/L</span></div>
+          <div class="note">Thrombocytopenia &lt; 150 ×10⁹/L; spontaneous bleeding risk rises &lt; 30–50 ×10⁹/L (depends on cause).</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Platelet Count <span class="sym">PLT</span></h3>
+          <div class="loinc">LOINC 777-3</div>
+          <div class="unit-line">Unit: ×10⁹/L</div>
+          <div class="result-row"><span class="label">Newborn</span><span class="value">150 – 450 ×10⁹/L</span></div>
+          <div class="note">Similar to adult range; neonates may dip in first days.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Platelet Count <span class="sym">PLT</span></h3>
+          <div class="loinc">LOINC 777-3</div>
+          <div class="unit-line">Unit: ×10⁹/L</div>
+          <div class="result-row"><span class="label">Pregnancy</span><span class="value">150 – 400 ×10⁹/L</span></div>
+          <div class="note">Gestational thrombocytopenia typically mild.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Mean Platelet Volume <span class="sym">MPV</span></h3>
+          <div class="loinc">LOINC 28542-0</div>
+          <div class="unit-line">Unit: fL</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">7.5 – 12.0 fL</span></div>
+          <div class="note">Large platelets (↑MPV): increased production / young platelets (ITP, post-bleed). Small platelets (↓MPV): decreased production (aplastic anaemia, MDS).</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Serum Iron <span class="sym">Fe</span></h3>
+          <div class="loinc">LOINC 2524-7</div>
+          <div class="unit-line">Unit: µmol/L  (mg/dL)</div>
+          <div class="result-row"><span class="label">Male</span><span class="value">11 – 30 µmol/L  (60 – 170 µg/dL)</span></div>
+          <div class="note">Diurnal variation — highest in morning. Affected by diet, inflammation, transferrin saturation.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Serum Iron <span class="sym">Fe</span></h3>
+          <div class="loinc">LOINC 2524-7</div>
+          <div class="unit-line">Unit: µmol/L</div>
+          <div class="result-row"><span class="label">Female</span><span class="value">9 – 27 µmol/L  (50 – 150 µg/dL)</span></div>
+          <div class="note">Lower in menstruating women.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Ferritin <span class="sym">Ferritin</span></h3>
+          <div class="loinc">LOINC 28607-3</div>
+          <div class="unit-line">Unit: µg/L  (ng/mL)</div>
+          <div class="result-row"><span class="label">Adult male</span><span class="value">30 – 400 µg/L</span></div>
+          <div class="note">Acute phase reactant — may be falsely normal/high in inflammation. Iron deficiency: &lt; 30 µg/L (often &lt; 15 µg/L).</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Ferritin <span class="sym">Ferritin</span></h3>
+          <div class="loinc">LOINC 28607-3</div>
+          <div class="unit-line">Unit: µg/L</div>
+          <div class="result-row"><span class="label">Adult female</span><span class="value">15 – 200 µg/L</span></div>
+          <div class="note">Menstruating women on the lower end.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Ferritin <span class="sym">Ferritin</span></h3>
+          <div class="loinc">LOINC 28607-3</div>
+          <div class="unit-line">Unit: µg/L</div>
+          <div class="result-row"><span class="label flag flag-hi">Iron overload concern</span><span class="value">&gt; 300 µg/L (men), &gt; 200 µg/L (women)</span></div>
+          <div class="note">Repeatedly elevated ferritin warrants evaluation for hemochromatosis/inflammation/NAFLD.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Total Iron-Binding Capacity <span class="sym">TIBC</span></h3>
+          <div class="loinc">LOINC 73168-3</div>
+          <div class="unit-line">Unit: µmol/L  (µg/dL)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">25 – 45 µmol/L  (250 – 450 µg/dL)</span></div>
+          <div class="note">↑ in iron deficiency; ↓ in inflammation, liver disease, hemochromatosis.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Transferrin Saturation <span class="sym">TSAT</span></h3>
+          <div class="loinc">LOINC 73168-3</div>
+          <div class="unit-line">Unit: %</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">20 – 50 %</span></div>
+          <div class="note">Calculated as (serum iron ÷ TIBC) × 100. &lt; 20%: iron deficiency. &gt; 50%: iron overload / hemochromatosis screen.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Transferrin <span class="sym">Transferrin</span></h3>
+          <div class="loinc">LOINC 14879-3</div>
+          <div class="unit-line">Unit: g/L  (mg/dL)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">2.0 – 3.6 g/L  (200 – 360 mg/dL)</span></div>
+          <div class="note">Negative acute phase reactant — falls in inflammation. Used with serum iron to calculate TSAT.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Unsaturated Iron-Binding Capacity <span class="sym">UIBC</span></h3>
+          <div class="loinc">LOINC 73168-3</div>
+          <div class="unit-line">Unit: µmol/L  (µg/dL)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">15 – 30 µmol/L  (150 – 300 µg/dL)</span></div>
+          <div class="note">TIBC ≈ serum iron + UIBC. ↑ in iron deficiency.</div>
+        </div>
+
+      </div>
     </section>
 
-    <!-- ============================================================ -->
-    <!-- 3. WHITE BLOOD CELLS / DIFFERENTIAL                         -->
-    <!-- ============================================================ -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 3. WHITE BLOOD CELLS / DIFFERENTIAL                           -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
     <section id="sec-wbc" data-group="blood">
       <div class="section-head">
         <h2><span class="dot" style="background:#e06b6b"></span>White Blood Cells &amp; Differential</h2>
-        <span class="count" id="cnt-wbc"></span>
+        <span class="count">5 tests</span>
       </div>
-      <div class="card-grid" id="grid-wbc"></div>
+      <div class="card-grid">
+
+        <div class="card card-blood">
+          <h3>Neutrophils (Absolute) <span class="sym">ANC / Neu</span></h3>
+          <div class="loinc">LOINC 751-8</div>
+          <div class="unit-line">Unit: ×10⁹/L</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">2.0 – 7.0 ×10⁹/L</span></div>
+          <div class="note">Neutropenia: ANC &lt; 1.5 ×10⁹/L; severe neutropenia &lt; 0.5 ×10⁹/L (high infection risk).</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Neutrophils (Absolute) <span class="sym">ANC / Neu</span></h3>
+          <div class="loinc">LOINC 751-8</div>
+          <div class="unit-line">Unit: ×10⁹/L</div>
+          <div class="result-row"><span class="label">Newborns</span><span class="value">6.0 – 20.0 ×10⁹/L</span></div>
+          <div class="note">Left shift common at birth.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Lymphocytes (Absolute) <span class="sym">ALC / Lymph</span></h3>
+          <div class="loinc">LOINC 26464-6</div>
+          <div class="unit-line">Unit: ×10⁹/L</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">1.0 – 4.0 ×10⁹/L</span></div>
+          <div class="note">Lymphocytosis: reactive (viral), CLL, pertussis. Lymphopenia: HIV, immunosuppression, corticosteroid, autoimmune, malnutrition.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Lymphocytes (Absolute) <span class="sym">ALC / Lymph</span></h3>
+          <div class="loinc">LOINC 26464-6</div>
+          <div class="unit-line">Unit: ×10⁹/L</div>
+          <div class="result-row"><span class="label">Child</span><span class="value">2.0 – 8.0 ×10⁹/L</span></div>
+          <div class="note">Higher in children — lymphocytes dominate differential in early life.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Monocytes (Absolute) <span class="sym">Mono</span></h3>
+          <div class="loinc">LOINC 26465-3</div>
+          <div class="unit-line">Unit: ×10⁹/L</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">0.2 – 0.8 ×10⁹/L</span></div>
+          <div class="note">Monocytosis: chronic infection (TB, endocarditis), inflammatory states, recovery from infection, myeloproliferative disorders.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Eosinophils (Absolute) <span class="sym">EOS</span></h3>
+          <div class="loinc">LOINC 1024-7</div>
+          <div class="unit-line">Unit: ×10⁹/L</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">0.02 – 0.5 ×10⁹/L</span></div>
+          <div class="note">Eosinophilia: allergy, asthma, parasitic infection, drug reaction, eosinophilic granulomatosis, Hodgkins, some lymphomas. Hypereosinophilic syndrome: &gt; 1.5 ×10⁹/L sustained + organ damage.</div>
+        </div>
+
+        <div class="card card-blood">
+          <h3>Basophils (Absolute) <span class="sym">BASO</span></h3>
+          <div class="loinc">LOINC 1025-2</div>
+          <div class="unit-line">Unit: ×10⁹/L</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">0.02 – 0.1 ×10⁹/L</span></div>
+          <div class="note">Basophilia: myeloproliferative neoplasms (CML), hypersensitivity, hypothyroidism. Rarely the primary finding.</div>
+        </div>
+
+      </div>
     </section>
 
-    <!-- ============================================================ -->
-    <!-- 4. PLATELETS / COAGULATION                                   -->
-    <!-- ============================================================ -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 4. COAGULATION                                                 -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
     <section id="sec-coag" data-group="coag">
       <div class="section-head">
         <h2><span class="dot" style="background:#9b6bc4"></span>Platelets &amp; Coagulation</h2>
-        <span class="count" id="cnt-coag"></span>
+        <span class="count">5 tests</span>
       </div>
-      <div class="card-grid" id="grid-coag"></div>
+      <div class="card-grid">
+
+        <div class="card card-coag">
+          <h3>Prothrombin Time <span class="sym">PT</span></h3>
+          <div class="loinc">LOINC 6349-8</div>
+          <div class="unit-line">Unit: seconds</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">11 – 13.5 sec</span></div>
+          <div class="note">Extrinsic + common pathway. Affected by warfarin, vitamin K deficiency, liver disease, DIC, factor VII deficiency.</div>
+        </div>
+
+        <div class="card card-coag">
+          <h3>Prothrombin Time <span class="sym">PT</span></h3>
+          <div class="loinc">LOINC 6349-8</div>
+          <div class="unit-line">Unit: INR</div>
+          <div class="result-row"><span class="label flag flag-hi">INR (therapeutic warfarin)</span><span class="value">2.0 – 3.0 INR</span></div>
+          <div class="note">Target depends on indication: mechanical mitral valve ~ 2.5–3.5; most others 2.0–3.0.</div>
+        </div>
+
+        <div class="card card-coag">
+          <h3>Activated Partial Thromboplastin Time <span class="sym">aPTT</span></h3>
+          <div class="loinc">LOINC 6426-1</div>
+          <div class="unit-line">Unit: seconds</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">25 – 35 sec</span></div>
+          <div class="note">Intrinsic + common pathway. Prolonged: heparin, hemophilia A/B, vWD (severe), lupus anticoagulant, DIC, factor deficiencies.</div>
+        </div>
+
+        <div class="card card-coag">
+          <h3>Fibrinogen (Clauss) <span class="sym">Fib / Fbg</span></h3>
+          <div class="loinc">LOINC 2438-7</div>
+          <div class="unit-line">Unit: g/L  (mg/dL)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">2.0 – 4.0 g/L  (200 – 400 mg/dL)</span></div>
+          <div class="note">Acute phase reactant — elevated in inflammation. ↓ in DIC, massive hemorrhage, liver failure, dilutional. Critical: &lt; 1.0 g/L (bleeding risk).</div>
+        </div>
+
+        <div class="card card-coag">
+          <h3>D-Dimer <span class="sym">D-Dimer</span></h3>
+          <div class="loinc">LOINC 47222-7</div>
+          <div class="unit-line">Unit: ng/mL  (or µg/L FEU)</div>
+          <div class="result-row"><span class="label flag flag-lo">Typical cutoff</span><span class="value">&lt; 500 ng/mL  (&lt; 0.5 µg/mL FEU)</span></div>
+          <div class="note">Negative D-dimer helps exclude acute VTE in low-probability patients. Elevated in thrombosis, inflammation, infection, malignancy, pregnancy, post-surgery, liver disease, age. Age-adjusted cutoffs (age × 10 ng/mL) used in some settings.</div>
+        </div>
+
+        <div class="card card-coag">
+          <h3>Thrombin Time <span class="sym">TT</span></h3>
+          <div class="loinc">LOINC 74090-0</div>
+          <div class="unit-line">Unit: seconds</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">14 – 22 sec</span></div>
+          <div class="note">Prolonged: hypofibrinogenemia, dysfibrinogenemia, heparin, fibrinogen degradation products, some inhibitors. Used in fibrinogen assessment and heparin monitoring.</div>
+        </div>
+
+      </div>
     </section>
 
-    <!-- ============================================================ -->
-    <!-- 5. ELECTROLYTES                                              -->
-    <!-- ============================================================ -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 5. ELECTROLYTES                                                -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
     <section id="sec-lytes" data-group="chem">
       <div class="section-head">
         <h2><span class="dot" style="background:#6b9b4a"></span>Electrolytes</h2>
-        <span class="count" id="cnt-lytes"></span>
+        <span class="count">7 tests</span>
       </div>
-      <div class="card-grid" id="grid-lytes"></div>
+      <div class="card-grid">
+
+        <div class="card card-chem">
+          <h3>Sodium <span class="sym">Na</span></h3>
+          <div class="loinc">LOINC 2951-2</div>
+          <div class="unit-line">Unit: mmol/L</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">135 – 145 mmol/L</span></div>
+          <div class="note">Hyponatremia &lt; 135 mmol/L; severity of symptoms depends on rate of change. Hypernatremia &gt; 145 mmol/L (usually water deficit).</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>Sodium <span class="sym">Na</span></h3>
+          <div class="loinc">LOINC 2951-2</div>
+          <div class="unit-line">Unit: mmol/L</div>
+          <div class="result-row"><span class="label flag flag-crit">Critical low</span><span class="value">&lt; 120 mmol/L</span></div>
+          <div class="note">Severe hyponatremia — risk of cerebral oedema, seizures. Correct slowly (max ~8 mmol/L/24h) to avoid osmotic demyelination.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>Sodium <span class="sym">Na</span></h3>
+          <div class="loinc">LOINC 2951-2</div>
+          <div class="unit-line">Unit: mmol/L</div>
+          <div class="result-row"><span class="label flag flag-crit">Critical high</span><span class="value">&gt; 160 mmol/L</span></div>
+          <div class="note">Severe hypernatremia — neurological risk; requires careful free-water replacement.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>Potassium <span class="sym">K</span></h3>
+          <div class="loinc">LOINC 2823-3</div>
+          <div class="unit-line">Unit: mmol/L  (mEq/L)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">3.5 – 5.0 mmol/L</span></div>
+          <div class="note">Hypokalemia &lt; 3.5 mmol/L; severe &lt; 2.5 mmol/L (rhythm risk). Hyperkalemia &gt; 5.0 mmol/L; ECG changes / arrhythmia risk &gt; 6.0–6.5 mmol/L. Pseudohyperkalemia from haemolysis common.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>Potassium <span class="sym">K</span></h3>
+          <div class="loinc">LOINC 2823-3</div>
+          <div class="unit-line">Unit: mmol/L</div>
+          <div class="result-row"><span class="label flag flag-crit">Critical low</span><span class="value">&lt; 2.5 mmol/L</span></div>
+          <div class="note">Risk of arrhythmia, muscle weakness, ileus. Requires urgent correction.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>Potassium <span class="sym">K</span></h3>
+          <div class="loinc">LOINC 2823-3</div>
+          <div class="unit-line">Unit: mmol/L</div>
+          <div class="result-row"><span class="label flag flag-crit">Critical high</span><span class="value">&gt; 6.5 mmol/L</span></div>
+          <div class="note">Requires urgent management; ECG monitoring; consider calcium, insulin/glucose, dialysis.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>Chloride <span class="sym">Cl</span></h3>
+          <div class="loinc">LOINC 2075-0</div>
+          <div class="unit-line">Unit: mmol/L</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">96 – 106 mmol/L</span></div>
+          <div class="note">Disturbed in acid-base disorders — high in hyperchloremic metabolic acidosis; low in vomiting/NG losses, diuretics. Often interpreted with anion gap.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>Bicarbonate (Total CO₂) <span class="sym">HCO₃ / CO₂</span></h3>
+          <div class="loinc">LOINC 2028-9</div>
+          <div class="unit-line">Unit: mmol/L</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">22 – 28 mmol/L</span></div>
+          <div class="note">Reflects metabolic component of acid-base. Low: metabolic acidosis (DKA, lactic acidosis, renal failure, diarrhoea). High: metabolic alkalosis (vomiting, diuretics).</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>Total Calcium <span class="sym">Ca</span></h3>
+          <div class="loinc">LOINC 1789-1</div>
+          <div class="unit-line">Unit: mmol/L  (mg/dL)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">2.15 – 2.55 mmol/L  (8.5 – 10.2 mg/dL)</span></div>
+          <div class="note">Corrected calcium ≈ total Ca + 0.02 × (40 − albumin) when albumin abnormal. Ionized calcium is more physiologically relevant in critical illness.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>Ionized Calcium <span class="sym">Ca²⁺</span></h3>
+          <div class="loinc">LOINC 1789-1</div>
+          <div class="unit-line">Unit: mmol/L  (mg/dL)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">1.10 – 1.30 mmol/L  (4.4 – 5.2 mg/dL)</span></div>
+          <div class="note">Preferred in critically ill, hypoalbuminemia, citrate exposure (transfusion, dialysis).</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>Magnesium <span class="sym">Mg</span></h3>
+          <div class="loinc">LOINC 2452-9</div>
+          <div class="unit-line">Unit: mmol/L  (mg/dL)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">0.70 – 1.05 mmol/L  (1.7 – 2.6 mg/dL)</span></div>
+          <div class="note">Hypomagnesemia &lt; 0.70 mmol/L — arrhythmia risk (especially with hypokalemia/hypocalcemia), seizures, neuromuscular irritability. Often co-depleted with K and Ca.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>Magnesium <span class="sym">Mg</span></h3>
+          <div class="loinc">LOINC 2452-9</div>
+          <div class="unit-line">Unit: mmol/L</div>
+          <div class="result-row"><span class="label flag flag-crit">Critical low</span><span class="value">&lt; 0.50 mmol/L</span></div>
+          <div class="note">Can cause torsades, severe arrhythmia.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>Phosphate <span class="sym">PO₄ / Phos</span></h3>
+          <div class="loinc">LOINC 14682-9</div>
+          <div class="unit-line">Unit: mmol/L  (mg/dL)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">0.75 – 1.50 mmol/L  (2.3 – 4.5 mg/dL)</span></div>
+          <div class="note">Hypophosphatemia: refeeding syndrome, respiratory alkalosis, alcohol withdrawal, malabsorption. Hyperphosphatemia: renal failure, tumor lysis, rhabdomyolysis.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>Phosphate <span class="sym">PO₄ / Phos</span></h3>
+          <div class="loinc">LOINC 14682-9</div>
+          <div class="unit-line">Unit: mmol/L</div>
+          <div class="result-row"><span class="label">Newborn / child</span><span class="value">1.25 – 2.50 mmol/L  (4.0 – 7.8 mg/dL)</span></div>
+          <div class="note">Higher in growing children (bone deposition).</div>
+        </div>
+
+      </div>
     </section>
 
-    <!-- ============================================================ -->
-    <!-- 6. RENAL / KIDNEY FUNCTION                                   -->
-    <!-- ============================================================ -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 6. RENAL / KIDNEY                                              -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
     <section id="sec-renal" data-group="renal">
       <div class="section-head">
         <h2><span class="dot" style="background:#6bb5e0"></span>Renal &amp; Kidney Function</h2>
-        <span class="count" id="cnt-renal"></span>
+        <span class="count">5 tests</span>
       </div>
-      <div class="card-grid" id="grid-renal"></div>
+      <div class="card-grid">
+
+        <div class="card card-renal">
+          <h3>Blood Urea Nitrogen <span class="sym">BUN</span></h3>
+          <div class="loinc">LOINC 3094-0</div>
+          <div class="unit-line">Unit: mg/dL  (mmol/L urea)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">7 – 20 mg/dL  (2.5 – 7.1 mmol/L urea)</span></div>
+          <div class="note">BUN is renal + prerenal. ↑ in renal impairment, dehydration, GI bleed, high protein intake, catabolism. BUN:creatinine ratio &gt; 20:1 suggests prerenal cause.</div>
+        </div>
+
+        <div class="card card-renal">
+          <h3>Creatinine <span class="sym">Cr / Crea</span></h3>
+          <div class="loinc">LOINC 2160-0</div>
+          <div class="unit-line">Unit: mg/dL  (µmol/L)</div>
+          <div class="result-row"><span class="label">Adult male</span><span class="value">0.7 – 1.3 mg/dL  (62 – 115 µmol/L)</span></div>
+          <div class="note">Depends on muscle mass — higher in muscular individuals. Acute rise ≥ 0.3 mg/dL within 48h or ≥ 1.5× baseline suggests AKI (KDIGO).</div>
+        </div>
+
+        <div class="card card-renal">
+          <h3>Creatinine <span class="sym">Cr / Crea</span></h3>
+          <div class="loinc">LOINC 2160-0</div>
+          <div class="unit-line">Unit: mg/dL</div>
+          <div class="result-row"><span class="label">Adult female</span><span class="value">0.6 – 1.1 mg/dL  (53 – 97 µmol/L)</span></div>
+          <div class="note">Lower muscle mass → lower creatinine for same GFR.</div>
+        </div>
+
+        <div class="card card-renal">
+          <h3>Creatinine <span class="sym">Cr / Crea</span></h3>
+          <div class="loinc">LOINC 2160-0</div>
+          <div class="unit-line">Unit: mg/dL</div>
+          <div class="result-row"><span class="label">Elderly</span><span class="value">0.4 – 1.0 mg/dL</span></div>
+          <div class="note">Declining muscle mass may mask reduced GFR — interpret with caution.</div>
+        </div>
+
+        <div class="card card-renal">
+          <h3>Estimated GFR (CKD-EPI) <span class="sym">eGFR</span></h3>
+          <div class="loinc">LOINC 33914-3</div>
+          <div class="unit-line">Unit: mL/min/1.73 m²</div>
+          <div class="result-row"><span class="label">Normal</span><span class="value">≥ 90 mL/min/1.73 m²</span></div>
+          <div class="note">CKD staging: G1 ≥ 90 (with other evidence of kidney damage); G2 60–89; G3a 45–59; G3b 30–44; G4 15–29; G5 &lt; 15 (kidney failure).</div>
+        </div>
+
+        <div class="card card-renal">
+          <h3>eGFR <span class="sym">eGFR</span></h3>
+          <div class="loinc">LOINC 33914-3</div>
+          <div class="unit-line">Unit: mL/min/1.73 m²</div>
+          <div class="result-row"><span class="label">CKD stage 3a</span><span class="value">45 – 59 mL/min/1.73 m²</span></div>
+          <div class="note">Mildly-moderately reduced; monitor for progression.</div>
+        </div>
+
+        <div class="card card-renal">
+          <h3>eGFR <span class="sym">eGFR</span></h3>
+          <div class="loinc">LOINC 33914-3</div>
+          <div class="unit-line">Unit: mL/min/1.73 m²</div>
+          <div class="result-row"><span class="label">CKD stage 3b</span><span class="value">30 – 44 mL/min/1.73 m²</span></div>
+          <div class="note">Moderately-severely reduced.</div>
+        </div>
+
+        <div class="card card-renal">
+          <h3>eGFR <span class="sym">eGFR</span></h3>
+          <div class="loinc">LOINC 33914-3</div>
+          <div class="unit-line">Unit: mL/min/1.73 m²</div>
+          <div class="result-row"><span class="label">CKD stage 4</span><span class="value">15 – 29 mL/min/1.73 m²</span></div>
+          <div class="note">Severely reduced — prepare for renal replacement therapy.</div>
+        </div>
+
+        <div class="card card-renal">
+          <h3>eGFR <span class="sym">eGFR</span></h3>
+          <div class="loinc">LOINC 33914-3</div>
+          <div class="unit-line">Unit: mL/min/1.73 m²</div>
+          <div class="result-row"><span class="label">CKD stage 5</span><span class="value">&lt; 15 mL/min/1.73 m²</span></div>
+          <div class="note">Kidney failure — renal replacement therapy or conservative management.</div>
+        </div>
+
+        <div class="card card-renal">
+          <h3>Uric Acid <span class="sym">UA</span></h3>
+          <div class="loinc">LOINC 3164-1</div>
+          <div class="unit-line">Unit: mg/dL  (µmol/L)</div>
+          <div class="result-row"><span class="label">Adult male</span><span class="value">3.5 – 7.2 mg/dL  (208 – 428 µmol/L)</span></div>
+          <div class="note">Hyperuricemia &gt; 7.0 mg/dL (men), &gt; 6.0 mg/dL (women) — gout risk, uric acid nephrolithiasis. Also elevated in tumor lysis, renal failure, diuretics.</div>
+        </div>
+
+        <div class="card card-renal">
+          <h3>Uric Acid <span class="sym">UA</span></h3>
+          <div class="loinc">LOINC 3164-1</div>
+          <div class="unit-line">Unit: mg/dL</div>
+          <div class="result-row"><span class="label">Adult female</span><span class="value">2.6 – 6.0 mg/dL  (155 – 357 µmol/L)</span></div>
+          <div class="note">Lower pre-menopause; rises after menopause.</div>
+        </div>
+
+        <div class="card card-renal">
+          <h3>Cystatin C <span class="sym">Cys-C</span></h3>
+          <div class="loinc">LOINC 33914-3</div>
+          <div class="unit-line">Unit: mg/L</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">0.6 – 1.0 mg/L</span></div>
+          <div class="note">Less dependent on muscle mass than creatinine. Useful for eGFR in extremes of body habitus, elderly, malnutrition. eGFRcys preferred in some guidelines for selected patients.</div>
+        </div>
+
+      </div>
     </section>
 
-    <!-- ============================================================ -->
-    <!-- 7. LIVER / HEPATIC                                           -->
-    <!-- ============================================================ -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 7. HEPATIC / LIVER                                              -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
     <section id="sec-hepatic" data-group="hepatic">
       <div class="section-head">
         <h2><span class="dot" style="background:#d48a4a"></span>Liver &amp; Hepatic Function</h2>
-        <span class="count" id="cnt-hepatic"></span>
+        <span class="count">8 tests</span>
       </div>
-      <div class="card-grid" id="grid-hepatic"></div>
+      <div class="card-grid">
+
+        <div class="card card-hepatic">
+          <h3>Alanine Aminotransferase <span class="sym">ALT / SGPT</span></h3>
+          <div class="loinc">LOINC 17429-9</div>
+          <div class="unit-line">Unit: U/L  (IU/L)</div>
+          <div class="result-row"><span class="label">Adult male</span><span class="value">10 – 40 U/L</span></div>
+          <div class="note">More liver-specific than AST. Elevated in hepatocellular injury: viral hepatitis, NAFLD/NASH, alcoholic liver disease, ischaemic hepatitis, toxin/drug-induced, autoimmune hepatitis.</div>
+        </div>
+
+        <div class="card card-hepatic">
+          <h3>ALT <span class="sym">ALT / SGPT</span></h3>
+          <div class="loinc">LOINC 17429-9</div>
+          <div class="unit-line">Unit: U/L</div>
+          <div class="result-row"><span class="label">Adult female</span><span class="value">7 – 35 U/L</span></div>
+          <div class="note">Slightly lower upper reference in women.</div>
+        </div>
+
+        <div class="card card-hepatic">
+          <h3>ALT <span class="sym">ALT / SGPT</span></h3>
+          <div class="loinc">LOINC 17429-9</div>
+          <div class="unit-line">Unit: U/L</div>
+          <div class="result-row"><span class="label flag flag-hi">Marked elevation</span><span class="value">&gt; 500 U/L</span></div>
+          <div class="note">Consider acute viral hepatitis, ischaemic hepatitis (shock liver), toxic ingestion (e.g. acetaminophen/paracetamol), autoimmune flare.</div>
+        </div>
+
+        <div class="card card-hepatic">
+          <h3>Aspartate Aminotransferase <span class="sym">AST / SGOT</span></h3>
+          <div class="loinc">LOINC 17430-7</div>
+          <div class="unit-line">Unit: U/L  (IU/L)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">10 – 40 U/L</span></div>
+          <div class="note">Less liver-specific — also in cardiac muscle, skeletal muscle, kidney, brain, RBCs. ↑ in liver disease, myocardial infarction, muscle injury, haemolysis.</div>
+        </div>
+
+        <div class="card card-hepatic">
+          <h3>AST:ALT Ratio <span class="sym">AST/ALT</span></h3>
+          <div class="loinc">LOINC 17430-7</div>
+          <div class="unit-line">Unit: ratio</div>
+          <div class="result-row"><span class="label flag flag-hi">&gt; 2:1</span><span class="value"> suggestive of alcoholic liver disease</span></div>
+          <div class="note">Also seen in cirrhosis (variable).</div>
+        </div>
+
+        <div class="card card-hepatic">
+          <h3>Alkaline Phosphatase <span class="sym">ALP</span></h3>
+          <div class="loinc">LOINC 17861-6</div>
+          <div class="unit-line">Unit: U/L  (IU/L)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">40 – 129 U/L</span></div>
+          <div class="note">Sources: liver (biliary), bone (osteoblasts), placenta, intestine. Elevated in cholestasis, biliary obstruction, infiltrative liver disease, bone disease (Paget, osteomalacia, metastases), pregnancy (placenta), children (growth).</div>
+        </div>
+
+        <div class="card card-hepatic">
+          <h3>ALP <span class="sym">ALP</span></h3>
+          <div class="loinc">LOINC 17861-6</div>
+          <div class="unit-line">Unit: U/L</div>
+          <div class="result-row"><span class="label flag flag-hi">Child / adolescent</span><span class="value">Up to 400 U/L (or higher)</span></div>
+          <div class="note">Physiologically elevated during growth spurts (osteoblastic activity).</div>
+        </div>
+
+        <div class="card card-hepatic">
+          <h3>Gamma-Glutamyl Transferase <span class="sym">GGT / GGTP</span></h3>
+          <div class="loinc">LOINC 14338-8</div>
+          <div class="unit-line">Unit: U/L  (IU/L)</div>
+          <div class="result-row"><span class="label">Male</span><span class="value">8 – 61 U/L</span></div>
+          <div class="note">Induces ALP elevation when elevated together suggests hepatobiliary source. ↑ in alcohol use (chronic), biliary disease, drug induction (phenytoin, barbiturates), liver congestion.</div>
+        </div>
+
+        <div class="card card-hepatic">
+          <h3>GGT <span class="sym">GGT / GGTP</span></h3>
+          <div class="loinc">LOINC 14338-8</div>
+          <div class="unit-line">Unit: U/L</div>
+          <div class="result-row"><span class="label">Female</span><span class="value">5 – 36 U/L</span></div>
+          <div class="note">Lower upper reference in women.</div>
+        </div>
+
+        <div class="card card-hepatic">
+          <h3>Total Bilirubin <span class="sym">Tbili / TB</span></h3>
+          <div class="loinc">LOINC 1975-0</div>
+          <div class="unit-line">Unit: mg/dL  (µmol/L)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">0.1 – 1.2 mg/dL  (2 – 21 µmol/L)</span></div>
+          <div class="note">Elevated: pre-hepatic (haemolysis — mostly unconjugated), hepatic (hepatitis, cirrhosis — mixed), post-hepatic (obstruction — mostly conjugated).</div>
+        </div>
+
+        <div class="card card-hepatic">
+          <h3>Unconjugated (Indirect) Bilirubin <span class="sym">Indirect bili</span></h3>
+          <div class="loinc">LOINC 1975-0</div>
+          <div class="unit-line">Unit: mg/dL  (µmol/L)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">0.0 – 0.8 mg/dL  (0 – 14 µmol/L)</span></div>
+          <div class="note">Unconjugated hyperbilirubinemia: haemolysis, Gilbert syndrome, Crigler-Najjar (rare).</div>
+        </div>
+
+        <div class="card card-hepatic">
+          <h3>Conjugated (Direct) Bilirubin <span class="sym">Direct bili</span></h3>
+          <div class="loinc">LOINC 1975-0</div>
+          <div class="unit-line">Unit: mg/dL  (µmol/L)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">0.0 – 0.3 mg/dL  (0 – 5 µmol/L)</span></div>
+          <div class="note">Conjugated hyperbilirubinemia: biliary obstruction, hepatitis, Dubin-Johnson, Rotor syndromes. Direct &gt; 50% of total suggests cholestasis.</div>
+        </div>
+
+        <div class="card card-hepatic">
+          <h3>Albumin <span class="sym">Alb</span></h3>
+          <div class="loinc">LOINC 1751-7</div>
+          <div class="unit-line">Unit: g/dL  (g/L)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">3.5 – 5.0 g/dL  (35 – 50 g/L)</span></div>
+          <div class="note">Negative acute phase reactant — falls in inflammation, infection, malignancy. Also in liver synthetic failure, nephrotic syndrome, malabsorption, protein-losing enteropathy, severe burns.</div>
+        </div>
+
+        <div class="card card-hepatic">
+          <h3>Albumin <span class="sym">Alb</span></h3>
+          <div class="loinc">LOINC 1751-7</div>
+          <div class="unit-line">Unit: g/dL</div>
+          <div class="result-row"><span class="label">Newborn</span><span class="value">3.0 – 4.0 g/dL</span></div>
+          <div class="note">Lower at birth; rises through infancy.</div>
+        </div>
+
+        <div class="card card-hepatic">
+          <h3>Total Protein <span class="sym">TP</span></h3>
+          <div class="loinc">LOINC 2091-6</div>
+          <div class="unit-line">Unit: g/dL  (g/L)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">6.0 – 8.0 g/dL  (60 – 80 g/L)</span></div>
+          <div class="note">Total protein = albumin + globulins. ↓ in liver synthetic failure, nephrotic syndrome, malnutrition, protein loss. ↑ in dehydration (relative), paraproteinemia (multiple myeloma), chronic inflammation.</div>
+        </div>
+
+        <div class="card card-hepatic">
+          <h3>Albumin:Globulin (A/G) Ratio <span class="sym">A/G ratio</span></h3>
+          <div class="loinc">LOINC 2091-6</div>
+          <div class="unit-line">Unit: ratio</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">1.0 – 2.5</span></div>
+          <div class="note">↓ in hepatic synthetic failure (low albumin), chronic inflammation/myeloma (high globulins). ↑ in agammaglobulinemia, some lymphomas, dehydration (relative).</div>
+        </div>
+
+      </div>
     </section>
 
-    <!-- ============================================================ -->
-    <!-- 8. CARDIAC / HEART MARKERS                                  -->
-    <!-- ============================================================ -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 8. CARDIAC MARKERS                                             -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
     <section id="sec-cardiac" data-group="cards">
       <div class="section-head">
         <h2><span class="dot" style="background:#4a9ad4"></span>Cardiac Markers</h2>
-        <span class="count" id="cnt-cardiac"></span>
+        <span class="count">6 tests</span>
       </div>
-      <div class="card-grid" id="grid-cardiac"></div>
+      <div class="card-grid">
+
+        <div class="card card-cards">
+          <h3>Troponin T (High-Sensitivity) <span class="sym">hs-cTnT</span></h3>
+          <div class="loinc">LOINC 26508-4</div>
+          <div class="unit-line">Unit: ng/L  (or pg/mL)</div>
+          <div class="result-row"><span class="label flag flag-lo">99th percentile (typical)</span><span class="value">&lt; 14 ng/L  (varies by assay)</span></div>
+          <div class="note">High-sensitivity troponin T — assay-specific 99th percentile. Elevated in myocardial necrosis (NSTEMI/STEMI, myocarditis, PE with RV strain, severe HF, renal failure (chronic elevation), tachycardia-related/demand ischaemia).</div>
+        </div>
+
+        <div class="card card-cards">
+          <h3>Troponin T (High-Sensitivity) <span class="sym">hs-cTnT</span></h3>
+          <div class="loinc">LOINC 26508-4</div>
+          <div class="unit-line">Unit: ng/L</div>
+          <div class="result-row"><span class="label flag flag-hi">Serial rise/fall</span><span class="value">Significant change over 1–3 h</span></div>
+          <div class="note">Diagnosis of acute MI requires a rise and/or fall in troponin with at least one value above 99th percentile + evidence of ischaemia (symptoms, ECG changes, imaging).</div>
+        </div>
+
+        <div class="card card-cards">
+          <h3>Troponin I (High-Sensitivity) <span class="sym">hs-cTnI</span></h3>
+          <div class="loinc">LOINC 26508-4</div>
+          <div class="unit-line">Unit: ng/L  (pg/mL)</div>
+          <div class="result-row"><span class="label flag flag-lo">99th percentile (typical)</span><span class="value">&lt; 30 ng/L  (assay-dependent)</span></div>
+          <div class="note">hs-cTnI — assay-specific cutoffs differ; always use local laboratory's reference. Interpretation principles same as troponin T.</div>
+        </div>
+
+        <div class="card card-cards">
+          <h3>Creatine Kinase MB Isoenzyme <span class="sym">CK-MB</span></h3>
+          <div class="loinc">LOINC 2092-3</div>
+          <div class="unit-line">Unit: ng/mL (mass) / U/L (activity)</div>
+          <div class="result-row"><span class="label">Total CK-MB (mass)</span><span class="value">0 – 5 ng/mL  (or &lt; 25 U/L activity)</span></div>
+          <div class="note">Less specific than troponin — also elevated in skeletal muscle injury. CK-MB relative index (% of total CK) helps distinguish cardiac vs skeletal source. Rises 4–6h post-MI, peaks ~24h, normalizes ~48–72h.</div>
+        </div>
+
+        <div class="card card-cards">
+          <h3>Lactate Dehydrogenase <span class="sym">LDH</span></h3>
+          <div class="loinc">LOINC 2524-7</div>
+          <div class="unit-line">Unit: U/L  (IU/L)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">120 – 250 U/L</span></div>
+          <div class="note">Non-specific marker of tissue injury. Elevated in MI (historical), haemolysis, liver disease, malignancy (e.g. lymphoma, some germ-cell tumors with LDH as marker), megaloblastic anaemia, muscle injury. LDH isoenzymes may localize source.</div>
+        </div>
+
+        <div class="card card-cards">
+          <h3>Brain Natriuretic Peptide <span class="sym">BNP</span></h3>
+          <div class="loinc">LOINC 30843-8</div>
+          <div class="unit-line">Unit: pg/mL  (pmol/L)</div>
+          <div class="result-row"><span class="label flag flag-lo">Normal</span><span class="value">&lt; 100 pg/mL  (&lt; ~28 pmol/L)</span></div>
+          <div class="note">BNP elevated in heart failure — reflects ventricular wall stress. Levels correlate with severity. Also elevated in renal failure, PE, advanced age, tachycardia. Cutoffs vary by assay and clinical context.</div>
+        </div>
+
+        <div class="card card-cards">
+          <h3>BNP <span class="sym">BNP</span></h3>
+          <div class="loinc">LOINC 30843-8</div>
+          <div class="unit-line">Unit: pg/mL</div>
+          <div class="result-row"><span class="label flag flag-lo">Acute HF rule-out (typical)</span><span class="value">&lt; 100 pg/mL</span></div>
+          <div class="note">Low BNP in acute setting helps exclude decompensated HF as cause of dyspnoea (assay/context specific).</div>
+        </div>
+
+        <div class="card card-cards">
+          <h3>N-Terminal Pro-BNP <span class="sym">NT-proBNP</span></h3>
+          <div class="loinc">LOINC 30843-8</div>
+          <div class="unit-line">Unit: pg/mL</div>
+          <div class="result-row"><span class="label flag flag-lo">Age-adjusted cutoffs</span><span class="value">&lt; 450 (&lt; 50 yr) · &lt; 900 (50–75 yr) · &lt; 1800 (&gt; 75 yr) pg/mL</span></div>
+          <div class="note">NT-proBNP has longer half-life than BNP; elevated in HF. Renal failure raises NT-proBNP independently. Not for BNP-guided therapy titration in the same direct way due to longer half-life.</div>
+        </div>
+
+      </div>
     </section>
 
-    <!-- ============================================================ -->
-    <!-- 9. LIPIDS / LIPID PANEL                                      -->
-    <!-- ============================================================ -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 9. LIPIDS                                                      -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
     <section id="sec-lipids" data-group="chem">
       <div class="section-head">
         <h2><span class="dot" style="background:#6b9b4a"></span>Lipid Panel</h2>
-        <span class="count" id="cnt-lipids"></span>
+        <span class="count">4 tests</span>
       </div>
-      <div class="card-grid" id="grid-lipids"></div>
+      <div class="card-grid">
+
+        <div class="card card-chem">
+          <h3>Total Cholesterol <span class="sym">TC</span></h3>
+          <div class="loinc">LOINC 2093-3</div>
+          <div class="unit-line">Unit: mg/dL  (mmol/L)</div>
+          <div class="result-row"><span class="label flag flag-lo">Desirable</span><span class="value">&lt; 200 mg/dL  (&lt; 5.2 mmol/L)</span></div>
+          <div class="note">Borderline high: 200–239 mg/dL. High: ≥ 240 mg/dL. Goal depends on overall cardiovascular risk and guidelines (ATP III, ACC/AHA, ESC/EAS, local).</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>LDL Cholesterol <span class="sym">LDL-C</span></h3>
+          <div class="loinc">LOINC 2093-3</div>
+          <div class="unit-line">Unit: mg/dL  (mmol/L)</div>
+          <div class="result-row"><span class="label flag flag-lo">Optimal</span><span class="value">&lt; 100 mg/dL  (&lt; 2.6 mmol/L)</span></div>
+          <div class="note">Near-optimal: 100–129. Borderline high: 130–159. High: 160–189. Very high: ≥ 190 mg/dL. Higher-risk patients (diabetes, established CVD, FH) have lower targets (e.g. &lt; 70 mg/dL, &lt; 55 mg/dL for very high risk per ESC).</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>HDL Cholesterol <span class="sym">HDL-C</span></h3>
+          <div class="loinc">LOINC 2085-9</div>
+          <div class="unit-line">Unit: mg/dL  (mmol/L)</div>
+          <div class="result-row"><span class="label flag flag-crit">Low (risk factor) — men</span><span class="value">&lt; 40 mg/dL  (&lt; 1.0 mmol/L)</span></div>
+          <div class="note">Low HDL is an independent cardiovascular risk factor. High HDL: ≥ 60 mg/dL considered protective (historically).</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>HDL Cholesterol <span class="sym">HDL-C</span></h3>
+          <div class="loinc">LOINC 2085-9</div>
+          <div class="unit-line">Unit: mg/dL</div>
+          <div class="result-row"><span class="label flag flag-crit">Low (risk factor) — women</span><span class="value">&lt; 50 mg/dL  (&lt; 1.3 mmol/L)</span></div>
+          <div class="note">Women typically have higher HDL than men.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>Triglycerides <span class="sym">TG</span></h3>
+          <div class="loinc">LOINC 2073-6</div>
+          <div class="unit-line">Unit: mg/dL  (mmol/L)</div>
+          <div class="result-row"><span class="label flag flag-lo">Normal</span><span class="value">&lt; 150 mg/dL  (&lt; 1.7 mmol/L)</span></div>
+          <div class="note">Borderline high: 150–199. High: 200–499. Very high: ≥ 500 mg/dL (risk of pancreatitis). Elevated in diabetes (poor control), obesity, alcohol, hypothyroidism, renal disease, medications (estrogen, glucocorticoids, retinoids), familial hypertriglyceridemia.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>Triglycerides <span class="sym">TG</span></h3>
+          <div class="loinc">LOINC 2073-6</div>
+          <div class="unit-line">Unit: mg/dL</div>
+          <div class="result-row"><span class="label flag flag-crit">Very high / pancreatitis risk</span><span class="value">≥ 500 mg/dL</span></div>
+          <div class="note">Consider fibrate/insulin/heparin avoidance depending on context; address urgently to prevent acute pancreatitis.</div>
+        </div>
+
+      </div>
     </section>
 
-    <!-- ============================================================ -->
-    <!-- 10. GLUCOSE / DIABETES                                      -->
-    <!-- ============================================================ -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 10. GLUCOSE / DIABETES                                        -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
     <section id="sec-glucose" data-group="chem">
       <div class="section-head">
         <h2><span class="dot" style="background:#6b9b4a"></span>Glucose &amp; Diabetes</h2>
-        <span class="count" id="cnt-glucose"></span>
+        <span class="count">3 tests</span>
       </div>
-      <div class="card-grid" id="grid-glucose"></div>
+      <div class="card-grid">
+
+        <div class="card card-chem">
+          <h3>Glucose (Fasting) <span class="sym">Glucose / FPG</span></h3>
+          <div class="loinc">LOINC 2345-7</div>
+          <div class="unit-line">Unit: mg/dL  (mmol/L)</div>
+          <div class="result-row"><span class="label flag flag-lo">Normal fasting</span><span class="value">70 – 99 mg/dL  (3.9 – 5.5 mmol/L)</span></div>
+          <div class="note">Fasting ≥ 8h. Impaired fasting glucose (pre-diabetes): 100–125 mg/dL (5.6–6.9 mmol/L). Diabetes: ≥ 126 mg/dL (7.0 mmol/L) on two separate tests (or one with classic symptoms).</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>Glucose (Fasting) <span class="sym">Glucose / FPG</span></h3>
+          <div class="loinc">LOINC 2345-7</div>
+          <div class="unit-line">Unit: mg/dL</div>
+          <div class="result-row"><span class="label flag flag-crit">Hypoglycemia alert</span><span class="value">&lt; 70 mg/dL  (&lt; 3.9 mmol/L)</span></div>
+          <div class="note">Level 1 hypoglycemia. &lt; 54 mg/dL (3.0 mmol/L): clinically significant hypoglycemia — needs urgent treatment. In diabetes management, targets individualized.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>Glucose (Random) <span class="sym">Random glucose</span></h3>
+          <div class="loinc">LOINC 2345-7</div>
+          <div class="unit-line">Unit: mg/dL</div>
+          <div class="result-row"><span class="label flag flag-hi">Diabetes suspicion</span><span class="value">≥ 200 mg/dL  (11.1 mmol/L)</span></div>
+          <div class="note">With classic symptoms of hyperglycaemia (polyuria, polydipsia, weight loss) → diabetes. Otherwise needs confirmatory testing.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>Hemoglobin A1c <span class="sym">HbA1c / A1c</span></h3>
+          <div class="loinc">LOINC 4548-4</div>
+          <div class="unit-line">Unit: %  (mmol/mol IFCC)</div>
+          <div class="result-row"><span class="label flag flag-lo">Normal</span><span class="value">&lt; 5.7 %  (&lt; 39 mmol/mol)</span></div>
+          <div class="note">Optimal glycaemic status.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>HbA1c <span class="sym">HbA1c / A1c</span></h3>
+          <div class="loinc">LOINC 4548-4</div>
+          <div class="unit-line">Unit: %</div>
+          <div class="result-row"><span class="label flag flag-hi">Pre-diabetes</span><span class="value">5.7 – 6.4 %  (39 – 47 mmol/mol)</span></div>
+          <div class="note">Increased risk — lifestyle intervention and monitoring advised.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>HbA1c <span class="sym">HbA1c / A1c</span></h3>
+          <div class="loinc">LOINC 4548-4</div>
+          <div class="unit-line">Unit: %</div>
+          <div class="result-row"><span class="label flag flag-hi">Diabetes</span><span class="value">≥ 6.5 %  (≥ 48 mmol/mol)</span></div>
+          <div class="note">Diagnostic threshold (ADA/WHO). Confirm with repeat unless classic symptoms + random glucose ≥ 200 mg/dL.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>HbA1c <span class="sym">HbA1c / A1c</span></h3>
+          <div class="loinc">LOINC 4548-4</div>
+          <div class="unit-line">Unit: %</div>
+          <div class="result-row"><span class="label flag flag-lo">Target (many adults with diabetes)</span><span class="value">&lt; 7.0 %</span></div>
+          <div class="note">Individualized — tighter (e.g. &lt; 6.5%) in select patients, less strict (&lt; 8%) in those with limited life expectancy, severe comorbidities, history of severe hypoglycemia.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>OGTT 2-hour <span class="sym">OGTT 2h</span></h3>
+          <div class="loinc">LOINC 2345-7</div>
+          <div class="unit-line">Unit: mg/dL  (mmol/L)</div>
+          <div class="result-row"><span class="label flag flag-lo">Normal 2h</span><span class="value">&lt; 140 mg/dL  (&lt; 7.8 mmol/L)</span></div>
+          <div class="note">After 75g glucose load.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>OGTT 2-hour <span class="sym">OGTT 2h</span></h3>
+          <div class="loinc">LOINC 2345-7</div>
+          <div class="unit-line">Unit: mg/dL</div>
+          <div class="result-row"><span class="label flag flag-hi">Impaired glucose tolerance</span><span class="value">140 – 199 mg/dL  (7.8 – 11.0 mmol/L)</span></div>
+          <div class="note">Pre-diabetes — high risk of progression to diabetes and cardiovascular disease.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>OGTT 2-hour <span class="sym">OGTT 2h</span></h3>
+          <div class="loinc">LOINC 2345-7</div>
+          <div class="unit-line">Unit: mg/dL</div>
+          <div class="result-row"><span class="label flag flag-hi">Diabetes (OGTT)</span><span class="value">≥ 200 mg/dL  (≥ 11.1 mmol/L)</span></div>
+          <div class="note">Diagnostic — confirm per guidelines.</div>
+        </div>
+
+      </div>
     </section>
 
-    <!-- ============================================================ -->
-    <!-- 11. THYROID                                                 -->
-    <!-- ============================================================ -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 11. THYROID                                                    -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
     <section id="sec-thyroid" data-group="chem">
       <div class="section-head">
         <h2><span class="dot" style="background:#6b9b4a"></span>Thyroid Function</h2>
-        <span class="count" id="cnt-thyroid"></span>
+        <span class="count">4 tests</span>
       </div>
-      <div class="card-grid" id="grid-thyroid"></div>
+      <div class="card-grid">
+
+        <div class="card card-chem">
+          <h3>TSH <span class="sym">TSH</span></h3>
+          <div class="loinc">LOINC 3025-7</div>
+          <div class="unit-line">Unit: mIU/L  (µIU/mL)</div>
+          <div class="result-row"><span class="label">Typical adult reference</span><span class="value">0.4 – 4.0 mIU/L</span></div>
+          <div class="note">Varies by assay and lab (some use 0.5–5.0 mIU/L). Tighter control in pregnancy, thyroid cancer suppression, symptomatic patients. Age-related upward shift in elderly (some recommend &lt; 6–7 mIU/L in very elderly).</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>TSH <span class="sym">TSH</span></h3>
+          <div class="loinc">LOINC 3025-7</div>
+          <div class="unit-line">Unit: mIU/L</div>
+          <div class="result-row"><span class="label flag flag-lo">Pregnancy — 1st trimester</span><span class="value">0.1 – 2.5 mIU/L</span></div>
+          <div class="note">Lower reference in early pregnancy (hCG effect). Targets vary by guideline (ATA); some labs use trimester-specific ranges.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>TSH <span class="sym">TSH</span></h3>
+          <div class="loinc">LOINC 3025-7</div>
+          <div class="unit-line">Unit: mIU/L</div>
+          <div class="result-row"><span class="label flag flag-hi">Subclinical hypothyroidism</span><span class="value">TSH 4–10 mIU/L, normal T4</span></div>
+          <div class="note">Management depends on symptoms, antibodies (TPOAb), pregnancy, lipids, goitre, age.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>TSH <span class="sym">TSH</span></h3>
+          <div class="loinc">LOINC 3025-7</div>
+          <div class="unit-line">Unit: mIU/L</div>
+          <div class="result-row"><span class="label flag flag-hi">Overt hypothyroidism</span><span class="value">TSH &gt; 10 mIU/L, low free T4</span></div>
+          <div class="note">Treatment indicated.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>TSH <span class="sym">TSH</span></h3>
+          <div class="loinc">LOINC 3025-7</div>
+          <div class="unit-line">Unit: mIU/L</div>
+          <div class="result-row"><span class="label flag flag-lo">Subclinical hyperthyroidism</span><span class="value">TSH &lt; 0.1 mIU/L, normal T4/T3</span></div>
+          <div class="note">Evaluate for causes (Graves, toxic nodule, excess levothyroxine); risk of AF, bone loss with suppressed TSH long-term.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>Free Thyroxine <span class="sym">FT4</span></h3>
+          <div class="loinc">LOINC 30687-2</div>
+          <div class="unit-line">Unit: pmol/L  (ng/dL)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">10 – 23 pmol/L  (0.8 – 1.8 ng/dL)</span></div>
+          <div class="note">Always interpret alongside TSH. Free T4 preferred over total T4 (less affected by TBG changes in pregnancy, OCP, liver disease).</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>FT4 <span class="sym">FT4</span></h3>
+          <div class="loinc">LOINC 30687-2</div>
+          <div class="unit-line">Unit: pmol/L</div>
+          <div class="result-row"><span class="label flag flag-hi">Low FT4 + high TSH</span><span class="value">Overt hypothyroidism pattern</span></div>
+          <div class="note">Primary hypothyroidism.</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>FT4 <span class="sym">FT4</span></h3>
+          <div class="loinc">LOINC 30687-2</div>
+          <div class="unit-line">Unit: pmol/L</div>
+          <div class="result-row"><span class="label flag flag-hi">High FT4 + low TSH</span><span class="value">Overt hyperthyroidism pattern</span></div>
+          <div class="note">Primary hyperthyroidism (Graves, toxic nodule, toxic multinodular goitre).</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>Free Tri-iodothyronine <span class="sym">FT3</span></h3>
+          <div class="loinc">LOINC 30687-2</div>
+          <div class="unit-line">Unit: pmol/L  (pg/mL)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">3.1 – 6.8 pmol/L  (2.0 – 4.4 pg/mL)</span></div>
+          <div class="note">Useful in hyperthyroidism assessment — sometimes high when FT4 normal (T3 toxicosis). Less useful in hypothyroidism (peripheral conversion maintains T3 until late).</div>
+        </div>
+
+        <div class="card card-chem">
+          <h3>Anti-TPO Antibodies <span class="sym">Anti-TPO / TPOAb</span></h3>
+          <div class="loinc">LOINC 30984-1</div>
+          <div class="unit-line">Unit: IU/mL  (or titer)</div>
+          <div class="result-row"><span class="label flag flag-lo">Negative / normal</span><span class="value">&lt; 35 IU/mL  (assay-dependent)</span></div>
+          <div class="note">Positive anti-TPO in euthyroid patient: risk factor for future hypothyroidism (Hashimoto). In hypothyroid patient: supports autoimmune (Hashimoto) etiology. In hyperthyroid: supports Graves (alongside TRAb).</div>
+        </div>
+
+      </div>
     </section>
 
-    <!-- ============================================================ -->
-    <!-- 12. URINALYSIS                                              -->
-    <!-- ============================================================ -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 12. URINALYSIS                                                 -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
     <section id="sec-urine" data-group="other">
       <div class="section-head">
         <h2><span class="dot" style="background:var(--muted)"></span>Urinalysis</h2>
-        <span class="count" id="cnt-urine"></span>
+        <span class="count">11 tests</span>
       </div>
-      <div class="card-grid" id="grid-urine"></div>
+      <div class="card-grid">
+
+        <div class="card card-other">
+          <h3>Urine Specific Gravity <span class="sym">SG / USG</span></h3>
+          <div class="loinc">LOINC 2544-7</div>
+          <div class="unit-line">Unit: ratio (dimensionless)</div>
+          <div class="result-row"><span class="label">Normal range</span><span class="value">1.005 – 1.030</span></div>
+          <div class="note">Reflective of hydration and renal concentrating ability. Low: overhydration, diabetes insipidus, impaired concentrating ability. High: dehydration, SIADH, glucosuria, proteinuria, IV contrast, post-renal transplant (early).</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Urine pH <span class="sym">pH</span></h3>
+          <div class="loinc">LOINC 2544-7</div>
+          <div class="unit-line">Unit: pH</div>
+          <div class="result-row"><span class="label">Normal</span><span class="value">4.5 – 8.0</span></div>
+          <div class="note">Varies with diet (acidic with meat, alkaline with vegetarian/urea-splitting bacteria), medications, systemic acid-base status, UTIs (urease-producing organisms → alkaline).</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Urine Protein (dipstick / qualitative) <span class="sym">Protein / PRO</span></h3>
+          <div class="loinc">LOINC 2544-7</div>
+          <div class="unit-line">Unit: mg/dL (dipstick) / mg/24h</div>
+          <div class="result-row"><span class="label flag flag-lo">Normal (dipstick)</span><span class="value">Negative or trace (&lt; 10–20 mg/dL)</span></div>
+          <div class="note"></div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Urine Protein <span class="sym">Protein / PRO</span></h3>
+          <div class="loinc">LOINC 2544-7</div>
+          <div class="unit-line">Unit: mg/24h / mg/g creatinine</div>
+          <div class="result-row"><span class="label flag flag-hi">Microalbuminuria</span><span class="value">30 – 300 mg/24h  (or ACR 30–300 mg/g creatinine)</span></div>
+          <div class="note">Early diabetic nephropathy marker and cardiovascular risk marker. Also in hypertension, SLE, other glomerular diseases.</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Urine Protein <span class="sym">Protein / PRO</span></h3>
+          <div class="loinc">LOINC 2544-7</div>
+          <div class="unit-line">Unit: mg/24h</div>
+          <div class="result-row"><span class="label flag flag-hi">Overt proteinuria</span><span class="value">&gt; 300 mg/24h  (or &gt; 3.5 g/24h = nephrotic-range)</span></div>
+          <div class="note">Nephrotic syndrome: &gt; 3.5 g/24h proteinuria + hypoalbuminemia + edema + hyperlipidemia. Quantify with 24h urine or spot protein:creatinine / albumin:creatinine ratio.</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Urine Glucose <span class="sym">Glucose / GLU</span></h3>
+          <div class="loinc">LOINC 2544-7</div>
+          <div class="unit-line">Unit: mg/dL (dipstick)</div>
+          <div class="result-row"><span class="label flag flag-lo">Normal</span><span class="value">Negative</span></div>
+          <div class="note">Positive urine glucose: usually when blood glucose exceeds renal threshold (~180 mg/dL / 10 mmol/L). Can occur in diabetes, pregnancy (lower threshold), renal glucosuria (rare hereditary), SGLT2 inhibitor use (intentional glycosuria).</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Urine Ketones <span class="sym">Ketones / KET</span></h3>
+          <div class="loinc">LOINC 2544-7</div>
+          <div class="unit-line">Unit: mg/dL (dipstick)</div>
+          <div class="result-row"><span class="label flag flag-lo">Normal</span><span class="value">Negative</span></div>
+          <div class="note">Positive: diabetic ketoacidosis (DKA), starvation/fasting ketosis, alcoholic ketoacidosis, low-carb/ketogenic diets, hyperemesis, severe illness. Note: dipstick detects acetoacetate; not beta-hydroxybutyrate (which predominates in DKA).</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Urine Blood (Hemoglobin / RBC) <span class="sym">Blood / BLD</span></h3>
+          <div class="loinc">LOINC 2544-7</div>
+          <div class="unit-line">Unit: dipstick / cells/HPF</div>
+          <div class="result-row"><span class="label flag flag-lo">Normal</span><span class="value">Negative / 0–2 RBC/HPF</span></div>
+          <div class="note">Hematuria: infection, stones, trauma, glomerular disease (dysmorphic RBC, casts), malignancy, anticoagulation (can unmask), exercise. Dipstick detects hemoglobin (can be positive with hemolysis, myoglobin from rhabdomyolysis).</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Urine Leukocyte Esterase <span class="sym">LE / WBC esterase</span></h3>
+          <div class="loinc">LOINC 2544-7</div>
+          <div class="unit-line">Unit: dipstick</div>
+          <div class="result-row"><span class="label flag flag-lo">Normal</span><span class="value">Negative</span></div>
+          <div class="note">Positive: pyuria — suggests urinary tract infection, inflammation, sterile pyuria (e.g. TB, interstitial nephritis, stones). Correlate with culture, symptoms, nitrite.</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Urine Nitrite <span class="sym">Nitrite</span></h3>
+          <div class="loinc">LOINC 2544-7</div>
+          <div class="unit-line">Unit: dipstick</div>
+          <div class="result-row"><span class="label flag flag-lo">Normal</span><span class="value">Negative</span></div>
+          <div class="note">Positive: suggests nitrate-reducing bacteria (Enterobacteriaceae — e.g. E. coli). Not sensitive for all uropathogens (e.g. Enterococcus, Pseudomonas are nitrite-negative). False negative if dilute urine or short bladder dwell time.</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Urine Bilirubin <span class="sym">Bilirubin / BIL</span></h3>
+          <div class="loinc">LOINC 2544-7</div>
+          <div class="unit-line">Unit: dipstick</div>
+          <div class="result-row"><span class="label flag flag-lo">Normal</span><span class="value">Negative</span></div>
+          <div class="note">Positive: conjugated (direct) hyperbilirubinemia — because only conjugated bilirubin is water-soluble and excreted in urine. Suggests biliary obstruction, hepatitis, intrahepatic cholestasis. Not seen in unconjugated hyperbilirubinemia (haemolysis, Gilbert).</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Urine Urobilinogen <span class="sym">Urobilinogen / URO</span></h3>
+          <div class="loinc">LOINC 2544-7</div>
+          <div class="unit-line">Unit: Ehrlich units/dL (dipstick)</div>
+          <div class="result-row"><span class="label flag flag-lo">Normal</span><span class="value">0.1 – 1.0 Ehrlich U/dL  (or &lt; 1+)</span></div>
+          <div class="note">Increased: haemolysis, hepatocell damage (impaired hepatic uptake/conjugation). Absent/very low in biliary obstruction (no bilirubin reaches gut → no urobilinogen formed).</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Urine Casts (Hyaline &amp; Cellular) <span class="sym">Casts</span></h3>
+          <div class="loinc">LOINC 2544-7</div>
+          <div class="unit-line">Unit: per LPF</div>
+          <div class="result-row"><span class="label">Hyaline casts</span><span class="value">0–2 / LPF (sometimes normal)</span></div>
+          <div class="note">Hyaline casts: normal in small numbers; ↑ with exercise, dehydration, diuretics, heart failure, glomerular disease. Waxy/Broad casts: chronic renal failure / tubular dilation. Granular casts: tubular injury. RBC casts: glomerulonephritis / renal haemorrhage (pathognomonic for glomerular bleeding). WBC casts: pyelonephritis, interstitial nephritis, glomerulonephritis. Fatty casts: nephrotic syndrome. Muddy brown granular casts: acute tubular necrosis (ATN).</div>
+        </div>
+
+      </div>
     </section>
 
-    <!-- ============================================================ -->
-    <!-- 13. CEREBROSPINAL FLUID                                     -->
-    <!-- ============================================================ -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 13. CSF                                                        -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
     <section id="sec-csf" data-group="other">
       <div class="section-head">
         <h2><span class="dot" style="background:var(--muted)"></span>Cerebrospinal Fluid (CSF)</h2>
-        <span class="count" id="cnt-csf"></span>
+        <span class="count">3 tests</span>
       </div>
-      <div class="card-grid" id="grid-csf"></div>
+      <div class="card-grid">
+
+        <div class="card card-other">
+          <h3>CSF White Cell Count (Pleocytosis) <span class="sym">CSF WBC</span></h3>
+          <div class="loinc">LOINC 32533-5</div>
+          <div class="unit-line">Unit: cells/µL  (cells/mm³)</div>
+          <div class="result-row"><span class="label flag flag-lo">Normal</span><span class="value">0 – 5 cells/µL  (adults)</span></div>
+          <div class="note">Predominantly lymphocytes/monocytes in normal CSF. ↑: infection (meningitis — bacterial: neutrophils dominant; viral/fungal/TB: lymphocytes), inflammation (autoimmune, neurosarcoid, MS — lymphocytic), malignancy (carcinomatous/leukaemic meningitis), subarachnoid hemorrhage (xanthochromia + WBCs).</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>CSF WBC <span class="sym">CSF WBC</span></h3>
+          <div class="loinc">LOINC 32533-5</div>
+          <div class="unit-line">Unit: cells/µL</div>
+          <div class="result-row"><span class="label">Child (neonate)</span><span class="value">0 – 20 cells/µL (can be higher normal in first weeks)</span></div>
+          <div class="note">Pediatric/neonatal reference ranges are age-dependent — consult pediatric references.</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>CSF Total Protein <span class="sym">CSF protein</span></h3>
+          <div class="loinc">LOINC 1719-0</div>
+          <div class="unit-line">Unit: mg/dL  (g/L)</div>
+          <div class="result-row"><span class="label">Adult (lumbar)</span><span class="value">15 – 45 mg/dL  (0.15 – 0.45 g/L)</span></div>
+          <div class="note">↑ in meningitis (bacterial > viral), GBS (often markedly elevated with albuminocytologic dissociation), polyneuropathy, spinal block, cerebral tumour, SAH, Guillain-Barré, CIDP. ↓ rarely; low protein seen in CSF leak / VP shunting over-drainage (risk of subdural haematoma).</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>CSF Glucose <span class="sym">CSF glucose / CSF dextrose</span></h3>
+          <div class="loinc">LOINC 32544-2</div>
+          <div class="unit-line">Unit: mg/dL  (mmol/L)</div>
+          <div class="result-row"><span class="label flag flag-lo">Normal</span><span class="value">40 – 70 mg/dL  (2.2 – 3.9 mmol/L)</span></div>
+          <div class="note">Should be ≈ 60% of simultaneous plasma glucose. Low CSF glucose (hypoglycorrhachia): bacterial/fungal/TB meningitis, leptospiral meningitis, carcinomatous meningitis, some SAH, neurosarcoidosis. Not low in viral meningitis typically (or mildly low).</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>CSF:serum Glucose Ratio <span class="sym">CSF:serum glucose</span></h3>
+          <div class="loinc">LOINC 32544-2</div>
+          <div class="unit-line">Unit: ratio</div>
+          <div class="result-row"><span class="label flag flag-lo">&gt; 0.5 (normal)</span><span class="value">Low ratio (&lt; 0.4–0.5) suggests consumption by organisms/inflammatory cells or impaired transport</span></div>
+          <div class="note">Seen in bacterial meningitis, TB meningitis, fungal meningitis, leptospirosis, carcinomatous meningitis.</div>
+        </div>
+
+      </div>
     </section>
 
-    <!-- ============================================================ -->
-    <!-- 14. ARTERIAL BLOOD GAS                                      -->
-    <!-- ============================================================ -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 14. ABG                                                        -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
     <section id="sec-abg" data-group="other">
       <div class="section-head">
         <h2><span class="dot" style="background:var(--muted)"></span>Arterial Blood Gas (ABG)</h2>
-        <span class="count" id="cnt-abg"></span>
+        <span class="count">6 tests</span>
       </div>
-      <div class="card-grid" id="grid-abg"></div>
+      <div class="card-grid">
+
+        <div class="card card-other">
+          <h3>Arterial pH <span class="sym">pH</span></h3>
+          <div class="loinc">LOINC 26970-9</div>
+          <div class="unit-line">Unit: pH</div>
+          <div class="result-row"><span class="label">Adult (arterial)</span><span class="value">7.35 – 7.45</span></div>
+          <div class="note">Acidemia: pH &lt; 7.35. Alkalemia: pH &gt; 7.45. Venous pH ≈ arterial pH − 0.03 to 0.05 (use with caution).</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Arterial PCO₂ <span class="sym">PaCO₂</span></h3>
+          <div class="loinc">LOINC 26970-9</div>
+          <div class="unit-line">Unit: mmHg  (kPa)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">35 – 45 mmHg  (4.7 – 6.0 kPa)</span></div>
+          <div class="note">Respiratory component of acid-base. ↑: respiratory acidosis (hypoventilation — COPD, opioid/over-sedation, neuromuscular weakness, severe asthma/COPD exacerbation). ↓: respiratory alkalosis (hyperventilation — anxiety, pain, hypoxia, sepsis, PE, pregnancy, mechanical ventilation over-respiratory-setting).</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Arterial PO₂ <span class="sym">PaO₂</span></h3>
+          <div class="loinc">LOINC 26970-9</div>
+          <div class="unit-line">Unit: mmHg  (kPa)</div>
+          <div class="result-row"><span class="label flag flag-lo">Adult (room air, sea level, age-dependent)</span><span class="value">80 – 100 mmHg  (10.7 – 13.3 kPa)</span></div>
+          <div class="note">PaO₂ falls with age: estimate PaO₂ ≈ 100 − (0.3 × age in years) mmHg on room air (rough). Hypoxemia: PaO₂ &lt; 80 mmHg; severe &lt; 60 mmHg (consider O₂, A-a gradient, causes: hypoventilation, diffusion defect, shunt, V/Q mismatch).</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Arterial PO₂ <span class="sym">PaO₂</span></h3>
+          <div class="loinc">LOINC 26970-9</div>
+          <div class="unit-line">Unit: mmHg</div>
+          <div class="result-row"><span class="label flag flag-hi">A-a gradient (at sea level)</span><span class="value">&lt; (age/4) + 4 mmHg (approx)</span></div>
+          <div class="note">Elevated A-a gradient: parenchymal lung disease, pulmonary embolism, early ARDS, shunt. Normal A-a gradient with hypoxemia: hypoventilation or low FiO₂ (high altitude).</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Arterial Bicarbonate (ABG) <span class="sym">HCO₃⁻ (ABG)</span></h3>
+          <div class="loinc">LOINC 26970-9</div>
+          <div class="unit-line">Unit: mmol/L</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">22 – 26 mmol/L</span></div>
+          <div class="note">Metabolic component. Calculated (from pH + PaCO₂ by Henderson–Hasselbalch) or measured (in some blood gas analyzers). Compensatory changes occur in chronic respiratory disorders.</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Base Excess (BE) <span class="sym">BE / Base Excess</span></h3>
+          <div class="loinc">LOINC 26970-9</div>
+          <div class="unit-line">Unit: mmol/L</div>
+          <div class="result-row"><span class="label">Normal</span><span class="value">−2 to +2 mmol/L</span></div>
+          <div class="note">Negative BE: metabolic acidosis (or compensated respiratory alkalosis). Positive BE: metabolic alkalosis (or compensated respiratory acidosis). Used with bicarbonate/pH to characterize metabolic component.</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Arterial Oxygen Saturation (SaO₂) <span class="sym">SaO₂</span></h3>
+          <div class="loinc">LOINC 26970-9</div>
+          <div class="unit-line">Unit: %</div>
+          <div class="result-row"><span class="label flag flag-lo">Normal (arterial, room air)</span><span class="value">≥ 95 %</span></div>
+          <div class="note">Correlates with PaO₂ via oxyhaemoglobin dissociation curve. Note: SpO₂ (pulse oximetry) may differ from SaO₂; SaO₂ is measured directly on arterial blood gas. Target SpO₂ in COPD may be 88–92% to avoid hypercapnia in CO₂ retainers.</div>
+        </div>
+
+      </div>
     </section>
 
-    <!-- ============================================================ -->
-    <!-- 15. TUMOR MARKERS / MISCELLANEOUS                           -->
-    <!-- ============================================================ -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 15. TUMOR MARKERS / MISCELLANEOUS                             -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
     <section id="sec-misc" data-group="other">
       <div class="section-head">
         <h2><span class="dot" style="background:var(--muted)"></span>Tumor Markers &amp; Miscellaneous</h2>
-        <span class="count" id="cnt-misc"></span>
+        <span class="count">11 tests</span>
       </div>
-      <div class="card-grid" id="grid-misc"></div>
+      <div class="card-grid">
+
+        <div class="card card-other">
+          <h3>Carcinoembryonic Antigen <span class="sym">CEA</span></h3>
+          <div class="loinc">LOINC 22148-0</div>
+          <div class="unit-line">Unit: ng/mL</div>
+          <div class="result-row"><span class="label flag flag-lo">Non-smoker</span><span class="value">&lt; 3.0 ng/mL</span></div>
+          <div class="note">Smokers have higher baseline (up to ~5 ng/mL). Used for monitoring (not screening) colorectal and some other adenocarcinomas. Rising trend more informative than single value. False elevations: smoking, inflammation, liver disease, benign GI conditions, other cancers.</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>CEA <span class="sym">CEA</span></h3>
+          <div class="loinc">LOINC 22148-0</div>
+          <div class="unit-line">Unit: ng/mL</div>
+          <div class="result-row"><span class="label flag flag-lo">Smoker</span><span class="value">&lt; 5.0 ng/mL</span></div>
+          <div class="note">Higher normal limit for smokers.</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>CA-125 <span class="sym">CA-125</span></h3>
+          <div class="loinc">LOINC 22148-0</div>
+          <div class="unit-line">Unit: U/mL  (IU/mL)</div>
+          <div class="result-row"><span class="label flag flag-lo">Premenopausal</span><span class="value">&lt; 35 U/mL</span></div>
+          <div class="note">Most commonly associated with ovarian epithelial cancer (monitoring, not screening — low specificity in premenopausal women). Elevated in many benign conditions: menstruation, endometriosis, PID, pregnancy, liver disease, pericarditis, pancreatitis, other malignancies.</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>CA-125 <span class="sym">CA-125</span></h3>
+          <div class="loinc">LOINC 22148-0</div>
+          <div class="unit-line">Unit: U/mL</div>
+          <div class="result-row"><span class="label flag flag-lo">Postmenopausal</span><span class="value">&lt; 35 U/mL (some use &lt; 30–35)</span></div>
+          <div class="note">Higher specificity for ovarian cancer in postmenopausal women but still not recommended for population screening.</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>CA 19-9 <span class="sym">CA 19-9</span></h3>
+          <div class="loinc">LOINC 22148-0</div>
+          <div class="unit-line">Unit: U/mL  (IU/mL)</div>
+          <div class="result-row"><span class="label flag flag-lo">Normal</span><span class="value">&lt; 37 U/mL</span></div>
+          <div class="note">Most associated with pancreatic adenocarcinoma (monitoring). Also elevated in cholangiocarcinoma, biliary obstruction (benign), cholangitis, pancreatitis, cirrhosis, other GI cancers. Cannot be produced by Lewis antigen-negative individuals (≈ 5–10% of population) — always negative even in cancer.</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Prostate-Specific Antigen <span class="sym">PSA</span></h3>
+          <div class="loinc">LOINC 22148-0</div>
+          <div class="unit-line">Unit: ng/mL</div>
+          <div class="result-row"><span class="label flag flag-lo">Age-adjusted (approx.)</span><span class="value">&lt; 2.5 (age 40–49) · &lt; 3.5 (50–59) · &lt; 4.5 (60–69) · &lt; 6.5 (70–79) ng/mL</span></div>
+          <div class="note">Traditional single cutoff 4.0 ng/mL is oversimplified. Age-specific ranges used by some; many guidelines use risk-adapted approach. PSA density, velocity, free:total PSA ratio add information. Elevated in BPH, prostatitis, recent instrumentation/prostate manipulation, ejaculation, bicycle riding, urinary retention, prostate cancer.</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Serum Protein Electrophoresis (SPEP) — Normal Pattern <span class="sym">SPEP</span></h3>
+          <div class="loinc">LOINC 2880-8</div>
+          <div class="unit-line">Unit: g/dL (fractions)</div>
+          <div class="result-row"><span class="label">Albumin</span><span class="value">3.5 – 5.0 g/dL  (55 – 65% of total)</span></div>
+          <div class="note">Major peak in SPEP.</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>SPEP <span class="sym">SPEP</span></h3>
+          <div class="loinc">LOINC 2880-8</div>
+          <div class="unit-line">Unit: g/dL</div>
+          <div class="result-row"><span class="label">Alpha-1 globulin</span><span class="value">0.1 – 0.4 g/dL  (2 – 5%)</span></div>
+          <div class="note">α1-antitrypsin is main component.</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>SPEP <span class="sym">SPEP</span></h3>
+          <div class="loinc">LOINC 2880-8</div>
+          <div class="unit-line">Unit: g/dL</div>
+          <div class="result-row"><span class="label">Alpha-2 globulin</span><span class="value">0.4 – 1.0 g/dL  (7 – 13%)</span></div>
+          <div class="note">α2-macroglobulin, haptoglobin.</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>SPEP <span class="sym">SPEP</span></h3>
+          <div class="loinc">LOINC 2880-8</div>
+          <div class="unit-line">Unit: g/dL</div>
+          <div class="result-row"><span class="label">Beta globulin</span><span class="value">0.5 – 1.2 g/dL  (8 – 15%)</span></div>
+          <div class="note">Transferrin, complement components, lipoproteins.</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>SPEP <span class="sym">SPEP</span></h3>
+          <div class="loinc">LOINC 2880-8</div>
+          <div class="unit-line">Unit: g/dL</div>
+          <div class="result-row"><span class="label flag flag-hi">Gamma globulin (IgG)</span><span class="value">0.6 – 1.6 g/dL  (10 – 20%)</span></div>
+          <div class="note">Broad polyclonal increase: chronic inflammation, infection, liver disease, autoimmune. Monoclonal spike (M-protein): multiple myeloma, MGUS, Waldenstrom macroglobulinaemia (lymphoplasmacytic lymphoma), amyloidosis — requires immunofixation and further workup.</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Amylase (Serum) <span class="sym">Amylase</span></h3>
+          <div class="loinc">LOINC 3018-5</div>
+          <div class="unit-line">Unit: U/L  (IU/L)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">25 – 125 U/L</span></div>
+          <div class="note">Elevated in acute pancreatitis (rises within hours, peaks ~24h, normalizes ~3–5 days). Also elevated in salivary gland disease, macroamylasemia, renal failure, perforated viscus, mesenteric ischaemia, some malignancies. Lipase more specific for pancreatitis.</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Lipase (Serum) <span class="sym">Lipase</span></h3>
+          <div class="loinc">LOINC 3018-5</div>
+          <div class="unit-line">Unit: U/L  (IU/L)</div>
+          <div class="result-row"><span class="label">Adult</span><span class="value">10 – 140 U/L  (assay-dependent)</span></div>
+          <div class="note">More specific than amylase for acute pancreatitis. Elevated > 3× upper limit highly suggestive of acute pancreatitis. Prolonged elevation vs amylase (up to 1–2 weeks).</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Creatine Kinase (CK / CPK) — Total <span class="sym">CK / CPK</span></h3>
+          <div class="loinc">LOINC 2088-2</div>
+          <div class="unit-line">Unit: U/L  (IU/L)</div>
+          <div class="result-row"><span class="label">Adult male</span><span class="value">55 – 170 U/L</span></div>
+          <div class="note">Markedly elevated in rhabdomyolysis, myocardial infarction (historical), muscle disease (myositis, dystrophy, malignant hyperthermia, neuroleptic malignant syndrome, statin-induced myopathy, hypothyroidism), prolonged seizure, intramuscular injection, strenuous exercise. Dark urine + ↑CK → rhabdomyolysis concern; check renal function and urinalysis (myoglobinuria).</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>CK <span class="sym">CK / CPK</span></h3>
+          <div class="loinc">LOINC 2088-2</div>
+          <div class="unit-line">Unit: U/L</div>
+          <div class="result-row"><span class="label">Adult female</span><span class="value">30 – 135 U/L</span></div>
+          <div class="note">Lower upper reference in women (less muscle mass).</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Hemoglobin S (Sickle Cell) — Qualitative / Solubility <span class="sym">HbS / Sickling test</span></h3>
+          <div class="loinc">LOINC 1789-1</div>
+          <div class="unit-line">Unit: qualitative / % HbS (HPLC)</div>
+          <div class="result-row"><span class="label flag flag-lo">Normal (no HbS)</span><span class="value">0 % HbS</span></div>
+          <div class="note">Sickle cell trait (HbAS): heterozygote — typically asymptomatic; HbS usually 35–45% of total hemoglobin on HPLC/electrophoresis. Sickle cell disease (HbSS): mostly HbS with variable HbF; HbS > 80%. Other variants (HbSC, HbS-beta thal) have mixed patterns. Solubility test / sickling test is screening only; confirm with haemoglobin electrophoresis or HPLC.</div>
+        </div>
+
+        <div class="card card-other">
+          <h3>Fecal Occult Blood Test (FOBT / FIT) <span class="sym">FOBT / FIT</span></h3>
+          <div class="loinc">LOINC 2544-7</div>
+          <div class="unit-line">Unit: qualitative</div>
+          <div class="result-row"><span class="label flag flag-lo">Normal</span><span class="value">Negative</span></div>
+          <div class="note">Positive FOBT/FIT suggests gastrointestinal bleeding — requires colonoscopy evaluation (rule out CRC, polyps, IBD, other causes). FIT (fecal immunochemical test) more specific for human hemoglobin from lower GI tract; FOBT (guaiac) can be affected by diet/medications (historically).</div>
+        </div>
+
+      </div>
     </section>
 
   </div>
 
   <footer>
-    <div class="wrap footer-inner">
-      <div>
-        <p><strong>Normal Laboratory Values</strong> — quick offline reference for common clinical tests.</p>
-        <p>Values are typical adult reference ranges. Always interpret results in the context of the individual patient, clinical picture, and your laboratory's own reference interval. This page is an educational reference, not a substitute for clinical judgment or a diagnostic tool.</p>
-      </div>
-      <div>
-        <p>Data gathered from common reference ranges (SI and traditional units where applicable).</p>
-        <p>Built as a single-file web app · hosted on <a href="https://xferworkz-glitch.github.io" target="_blank" rel="noopener">GitHub Pages</a> · works offline once loaded.</p>
+    <div class="wrap" style="margin-top:36px; padding:22px 0; border-top:1px solid var(--border); color:var(--muted); font-size:0.76rem; line-height:1.6;">
+      <div style="display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap;">
+        <div>
+          <strong>Normal Laboratory Values</strong> — quick offline reference for common clinical tests.
+          Values are typical adult reference ranges. Always interpret results in the context of the individual patient,
+          clinical picture, and your laboratory's own reference interval. This page is an educational reference,
+          not a substitute for clinical judgment or a diagnostic tool.
+        </div>
+        <div>
+          Built as a single-file static HTML + CSS document · hosted on
+          <a href="https://xferworkz-glitch.github.io" target="_blank" rel="noopener" style="color:var(--accent); text-decoration:none;">GitHub Pages</a>
+          · works offline once loaded · no JavaScript required.
+        </div>
       </div>
     </div>
   </footer>
 
-  <!-- ============================================================ -->
-  <!-- DATA                                                        -->
-  <!-- ============================================================ -->
-  <script>
-    // ---------------------------------------------------------------------------
-    // Normal laboratory values dataset.
-    // Each card:
-    //   title        — human-readable name
-    //   symbol       — common abbreviation / symbol shown in card heading
-    //   loinc        — optional LOINC-ish short identifier
-    //   group        — color-coded category
-    //   unit         — primary unit (shown in heading + table)
-    //   results      — array of { label, value (range string), note, flags }
-    // flags: "high" | "low" | "crit"  → visual tag
-    // ---------------------------------------------------------------------------
-
-    const LAB_DATA = [
-      // ===== COMPLETE BLOOD COUNT =====
-      {
-        id: "wbc",
-        title: "White Blood Cell Count",
-        symbol: "WBC",
-        loinc: "LOINC 6690-2",
-        group: "blood",
-        unit: "×10⁹/L  (×10³/µL)",
-        results: [
-          { label: "Adult (typical)", value: "4.0 – 11.0 ×10⁹/L", note: "Also reported as 4,000 – 11,000 /µL (×10³/µL). Slight variation by lab and age." },
-          { label: "Newborn", value: "9.0 – 30.0 ×10⁹/L", note: "Physiologically higher at birth; falls over first weeks." },
-          { label: "Child (4–7 yr)", value: "5.0 – 15.0 ×10⁹/L", note: "Often higher than adult range." },
-          { label: "Pregnancy", value: "5.0 – 15.0 ×10⁹/L", note: "Physiological leukocytosis of pregnancy." }
-        ]
-      },
-      {
-        id: "rbc",
-        title: "Red Blood Cell Count",
-        symbol: "RBC",
-        loinc: "LOINC 789-7",
-        group: "blood",
-        unit: "×10¹²/L  (×10⁶/µL)",
-        results: [
-          { label: "Male", value: "4.5 – 5.5 ×10¹²/L", note: "Also 4.5–5.5 million/µL." },
-          { label: "Female", value: "4.0 – 5.0 ×10¹²/L", note: "Lower than males due to hormonal and menstrual factors." },
-          { label: "Newborn", value: "4.8 – 7.1 ×10¹²/L", note: "Physiologically elevated; falls postnatally." }
-        ]
-      },
-      {
-        id: "hgb",
-        title: "Hemoglobin",
-        symbol: "Hb / Hgb",
-        loinc: "LOINC 20504-5",
-        group: "blood",
-        unit: "g/dL  (g/L)",
-        results: [
-          { label: "Male", value: "13.5 – 17.5 g/dL  (135 – 175 g/L)", note: "Anemia: Hb &lt; 13.0 g/dL (men), &lt; 12.0 g/dL (women) per WHO." },
-          { label: "Female", value: "12.0 – 15.5 g/dL  (120 – 155 g/L)", note: "Menstruating women on the lower end; pregnancy lowers further." },
-          { label: "Pregnancy (1st/2nd)", value: "11.0 – 14.0 g/dL", note: "Physiological hemodilution; WHO anemia cut-off in pregnancy ≈ 11.0 g/dL." },
-          { label: "Newborn", value: "14.0 – 24.0 g/dL", note: "High at birth; declines over first weeks as HbF → HbA switches." },
-          { label: "Elderly (men)", value: "12.0 – 16.0 g/dL", note: "Range narrows with age." }
-        ]
-      },
-      {
-        id: "hct",
-        title: "Hematocrit (Packed Cell Volume)",
-        symbol: "Hct / PCV",
-        loinc: "LOINC 789-7",
-        group: "blood",
-        unit: "%  (L/L / fraction)",
-        results: [
-          { label: "Male", value: "41 – 53 %  (0.41 – 0.53 L/L)", note: "≈ 3 × hemoglobin (rule of thumb). Polycythemia at &gt; 52% (men)."/>,
-          { label: "Female", value: "36 – 46 %  (0.36 – 0.46 L/L)", note: "Anemia at &lt; 36% (women)."/>,
-          { label: "Newborn", value: "45 – 65 %", note: "Physiologically high; polycythemia &gt; 65% may need management." }
-        ]
-      },
-      {
-        id: "mch",
-        title: "Mean Corpuscular Hemoglobin (MCH)",
-        symbol: "MCH",
-        loinc: "LOINC 789-7",
-        group: "blood",
-        unit: "pg",
-        results: [
-          { label: "Adult", value: "27 – 33 pg", note: "Low MCH: hypochromic anemia (iron deficiency, thalassaemia). High MCH: macrocytic (B12/folate deficiency, liver disease, alcohol)./> }
-        ]
-      },
-      {
-        id: "mchc",
-        title: "Mean Corpuscular Hemoglobin Concentration (MCHC)",
-        symbol: "MCHC",
-        loinc: "LOINC 2868-6",
-        group: "blood",
-        unit: "g/dL",
-        results: [
-          { label: "Adult", value: "32 – 36 g/dL", note: "Low MCHC: hypochromia (iron deficiency). High MCHC: spherocytosis, cold agglutinins, severe burn (artifactual)./> }
-        ]
-      },
-      {
-        id: "mcv",
-        title: "Mean Corpuscular Volume (MCV)",
-        symbol: "MCV",
-        loinc: "LOINC 8546-3",
-        group: "blood",
-        unit: "fL",
-        results: [
-          { label: "Adult", value: "80 – 100 fL", note: "Microcytic &lt; 80 fL (iron deficiency, thalassaemia). Macrocytic &gt; 100 fL (B12/folate deficiency, liver disease, alcohol, hypothyroidism, myelodysplasia)./> },
-          { label: "Newborn", value: "95 – 121 fL", note: "Higher MCV at birth; falls over first year." }
-        ]
-      },
-      {
-        id: "rdw",
-        title: "Red Cell Distribution Width (RDW)",
-        symbol: "RDW / RDW-CV",
-        loinc: "LOINC 789-7",
-        group: "blood",
-        unit: "% (CV)",
-        results: [
-          { label: "RDW-CV", value: "11.5 – 14.5 %", note: "Elevated: anisocytosis — iron deficiency, mixed deficiency, haemolysis, post-transfusion, myelodysplasia." },
-          { label: "RDW-SD", value: "39 – 46 fL", note: "Absolute measure of red cell size variation; less affected by MCV than CV." }
-        ]
-      },
-      {
-        id: "plt",
-        title: "Platelet Count",
-        symbol: "PLT",
-        loinc: "LOINC 777-3",
-        group: "blood",
-        unit: "×10⁹/L  (×10³/µL)",
-        results: [
-          { label: "Adult", value: "150 – 450 ×10⁹/L", note: "Thrombocytopenia &lt; 150 ×10⁹/L; spontaneous bleeding risk rises &lt; 30–50 ×10⁹/L (depends on cause)./> },
-          { label: "Newborn", value: "150 – 450 ×10⁹/L", note: "Similar to adult range; neonates may dip in first days." },
-          { label: "Pregnancy", value: "150 – 400 ×10⁹/L", note: "Gestational thrombocytopenia typically mild (100–150 lower-limit range)."/>
-        ]
-      },
-      {
-        id: "mpv",
-        title: "Mean Platelet Volume (MPV)",
-        symbol: "MPV",
-        loinc: "LOINC 28542-0",
-        group: "blood",
-        unit: "fL",
-        results: [
-          { label: "Adult", value: "7.5 – 12.0 fL", note: "Large platelets (↑MPV): increased production / young platelets (ITP, post-bleed). Small platelets (↓MPV): decreased production (aplastic anaemia, MDS)./> }
-        ]
-      },
-
-      // ===== RBC INDICES / IRON STUDIES =====
-      {
-        id: "fe",
-        title: "Serum Iron",
-        symbol: "Fe",
-        loinc: "LOINC 2524-7",
-        group: "blood",
-        unit: "µmol/L  (mg/dL)",
-        results: [
-          { label: "Male", value: "11 – 30 µmol/L  (60 – 170 µg/dL)", note: "Diurnal variation — highest in morning. Affected by diet, inflammation, transferrin saturation./> },
-          { label: "Female", value: "9 – 27 µmol/L  (50 – 150 µg/dL)", note: "Lower in menstruating women." }
-        ]
-      },
-      {
-        id: "ferritin",
-        title: "Ferritin",
-        symbol: "Ferritin",
-        loinc: "LOINC 28607-3",
-        group: "blood",
-        unit: "µg/L  (ng/mL)",
-        results: [
-          { label: "Adult male", value: "30 – 400 µg/L", note: "Acute phase reactant — may be falsely normal/high in inflammation. Iron deficiency: &lt; 30 µg/L (often &lt; 15 µg/L)./> },
-          { label: "Adult female", value: "15 – 200 µg/L", note: "Menstruating women on the lower end." },
-          { label: "Iron overload concern", value: "> 300 µg/L (men), > 200 µg/L (women)", note: "Repeatedly elevated ferritin warrants evaluation for hemochromatosis/inflammation/NAFLD." }
-        ]
-      },
-      {
-        id: "tibc",
-        title: "Total Iron-Binding Capacity (TIBC)",
-        symbol: "TIBC",
-        loinc: "LOINC 73168-3",
-        group: "blood",
-        unit: "µmol/L  (µg/dL)",
-        results: [
-          { label: "Adult", value: "25 – 45 µmol/L  (250 – 450 µg/dL)", note: "↑ in iron deficiency; ↓ in inflammation, liver disease, hemochromatosis." }
-        ]
-      },
-      {
-        id: "tsat",
-        title: "Transferrin Saturation (TSAT)",
-        symbol: "TSAT",
-        loinc: "LOINC 73168-3",
-        group: "blood",
-        unit: "%",
-        results: [
-          { label: "Adult", value: "20 – 50 %", note: "Calculated as (serum iron ÷ TIBC) × 100. &lt; 20%: iron deficiency. &gt; 50%: iron overload / hemochromatosis screen." }
-        ]
-      },
-      {
-        id: "transferrin",
-        title: "Transferrin",
-        symbol: "Transferrin",
-        loinc: "LOINC 14879-3",
-        group: "blood",
-        unit: "g/L  (mg/dL)",
-        results: [
-          { label: "Adult", value: "2.0 – 3.6 g/L  (200 – 360 mg/dL)", note: "Negative acute phase reactant — falls in inflammation. Used with serum iron to calculate TSAT./> }
-        ]
-      },
-      {
-        id: "tibc-uibc",
-        title: "Unsaturated Iron-Binding Capacity (UIBC)",
-        symbol: "UIBC",
-        loinc: "LOINC 73168-3",
-        group: "blood",
-        unit: "µmol/L  (µg/dL)",
-        results: [
-          { label: "Adult", value: "15 – 30 µmol/L  (150 – 300 µg/dL)", note: "TIBC ≈ serum iron + UIBC. ↑ in iron deficiency." }
-        ]
-      },
-
-      // ===== WHITE BLOOD CELLS / DIFFERENTIAL =====
-      {
-        id: "neut",
-        title: "Neutrophils (Absolute)",
-        symbol: "ANC / Neu",
-        loinc: "LOINC 751-8",
-        group: "blood",
-        unit: "×10⁹/L",
-        results: [
-          { label: "Adult", value: "2.0 – 7.0 ×10⁹/L", note: "Neutropenia: ANC &lt; 1.5 ×10⁹/L; severe neutropenia &lt; 0.5 ×10⁹/L (high infection risk)./> },
-          { label: " newborns", value: "6.0 – 20.0 ×10⁹/L", note: "Left shift common at birth." }
-        ]
-      },
-      {
-        id: "lymph",
-        title: "Lymphocytes (Absolute)",
-        symbol: "ALC / Lymph",
-        loinc: "LOINC 26464-6",
-        group: "blood",
-        unit: "×10⁹/L",
-        results: [
-          { label: "Adult", value: "1.0 – 4.0 ×10⁹/L", note: "Lymphocytosis: reactive (viral), CLL, pertussis. Lymphopenia: HIV, immunosuppression, corticosteroid, autoimmune, malnutrition." },
-          { label: "Child", value: "2.0 – 8.0 ×10⁹/L", note: "Higher in children — lymphocytes dominate differential in early life." }
-        ]
-      },
-      {
-        id: "mono",
-        title: "Monocytes (Absolute)",
-        symbol: "Mono",
-        loinc: "LOINC 26465-3",
-        group: "blood",
-        unit: "×10⁹/L",
-        results: [
-          { label: "Adult", value: "0.2 – 0.8 ×10⁹/L", note: "Monocytosis: chronic infection (TB, endocarditis), inflammatory states, recovery from infection, myeloproliferative disorders." }
-        ]
-      },
-      {
-        id: "eos",
-        title: "Eosinophils (Absolute)",
-        symbol: "EOS",
-        loinc: "LOINC 1024-7",
-        group: "blood",
-        unit: "×10⁹/L",
-        results: [
-          { label: "Adult", value: "0.02 – 0.5 ×10⁹/L", note: "Eosinophilia: allergy, asthma, parasitic infection, drug reaction, eosinophilic granulomatosis, Hodgkins, some lymphomas. Hypereosinophilic syndrome: &gt; 1.5 ×10⁹/L sustained + organ damage." }
-        ]
-      },
-      {
-        id: "baso",
-        title: "Basophils (Absolute)",
-        symbol: "BASO",
-        loinc: "LOINC 1025-2",
-        group: "blood",
-        unit: "×10⁹/L",
-        results: [
-          { label: "Adult", value: "0.02 – 0.1 ×10⁹/L", note: "Basophilia: myeloproliferative neoplasms (CML), hypersensitivity, hypothyroidism. Rarely the primary finding." }
-        ]
-      },
-
-      // ===== COAGULATION / PLATELETS =====
-      {
-        id: "pt",
-        title: "Prothrombin Time (PT)",
-        symbol: "PT",
-        loinc: "LOINC 6349-8",
-        group: "coag",
-        unit: "seconds",
-        results: [
-          { label: "Adult", value: "11 – 13.5 sec", note: "Extrinsic + common pathway. Affected by warfarin, vitamin K deficiency, liver disease, DIC, factor VII deficiency./> },
-          { label: "INR (therapeutic warfarin)", value: "2.0 – 3.0 INR", note: "Target depends on indication: mechanical mitral valve ~ 2.5–3.5; most others 2.0–3.0." }
-        ]
-      },
-      {
-        id: "aptt",
-        title: "Activated Partial Thromboplastin Time (aPTT)",
-        symbol: "aPTT",
-        loinc: "LOINC 6426-1",
-        group: "coag",
-        unit: "seconds",
-        results: [
-          { label: "Adult", value: "25 – 35 sec", note: "Intrinsic + common pathway. Prolonged: heparin, hemophilia A/B, vWD (severe), lupus anticoagulant, DIC, factor deficiencies./> }
-        ]
-      },
-      {
-        id: "fibrinogen",
-        title: "Fibrinogen (Clauss)",
-        symbol: "Fib / Fbg",
-        loinc: "LOINC 2438-7",
-        group: "coag",
-        unit: "g/L  (mg/dL)",
-        results: [
-          { label: "Adult", value: "2.0 – 4.0 g/L  (200 – 400 mg/dL)", note: "Acute phase reactant — elevated in inflammation. ↓ in DIC, massive hemorrhage, liver failure, dilutional. Critical: &lt; 1.0 g/L (bleeding risk)./> }
-        ]
-      },
-      {
-        id: "d-dimer",
-        title: "D-Dimer",
-        symbol: "D-Dimer",
-        loinc: "LOINC 47222-7",
-        group: "coag",
-        unit: "ng/mL  (or µg/L FEU)",
-        results: [
-          { label: "Typical cutoff", value: "< 500 ng/mL  (< 0.5 µg/mL FEU)", note: "Negative D-dimer helps exclude acute VTE in low-probability patients. Elevated in thrombosis, inflammation, infection, malignancy, pregnancy, post-surgery, liver disease, age. Age-adjusted cutoffs (age × 10 ng/mL) used in some settings./> }
-        ]
-      },
-      {
-        id: "thrombin-time",
-        title: "Thrombin Time (TT)",
-        symbol: "TT",
-        loinc: "LOINC 74090-0",
-        group: "coag",
-        unit: "seconds",
-        results: [
-          { label: "Adult", value: "14 – 22 sec", note: "Prolonged: hypofibrinogenemia, dysfibrinogenemia, heparin, fibrinogen degradation products, some inhibitors. Used in fibrinogen assessment and heparin monitoring." }
-        ]
-      },
-
-      // ===== ELECTROLYTES =====
-      {
-        id: "na",
-        title: "Sodium",
-        symbol: "Na",
-        loinc: "LOINC 2951-2",
-        group: "chem",
-        unit: "mmol/L",
-        results: [
-          { label: "Adult", value: "135 – 145 mmol/L", note: "Hyponatremia &lt; 135 mmol/L; severity of symptoms depends on rate of change. Hypernatremia &gt; 145 mmol/L (usually water deficit)./> },
-          { label: "Critical low", value: "< 120 mmol/L", note: "Severe hyponatremia — risk of cerebral oedema, seizures. Correct slowly (max ~8 mmol/L/24h) to avoid osmotic demyelination." },
-          { label: "Critical high", value: "> 160 mmol/L", note: "Severe hypernatremia — neurological risk; requires careful free-water replacement." }
-        ]
-      },
-      {
-        id: "k",
-        title: "Potassium",
-        symbol: "K",
-        loinc: "LOINC 2823-3",
-        group: "chem",
-        unit: "mmol/L  (mEq/L)",
-        results: [
-          { label: "Adult", value: "3.5 – 5.0 mmol/L", note: "Hypokalemia &lt; 3.5 mmol/L; severe &lt; 2.5 mmol/L (rhythmic risk). Hyperkalemia &gt; 5.0 mmol/L; ECG changes / arrhythmia risk &gt; 6.0–6.5 mmol/L. Pseudohyperkalemia from haemolysis common./> },
-          { label: "Critical low", value: "< 2.5 mmol/L", note: "Risk of arrhythmia, muscle weakness, ileus. Requires urgent correction." },
-          { label: "Critical high", value: "> 6.5 mmol/L", note: "Requires urgent management; ECG monitoring; consider calcium, insulin/glucose, dialysis." }
-        ]
-      },
-      {
-        id: "cl",
-        title: "Chloride",
-        symbol: "Cl",
-        loinc: "LOINC 2075-0",
-        group: "chem",
-        unit: "mmol/L",
-        results: [
-          { label: "Adult", value: "96 – 106 mmol/L", note: "Disturbed in acid-base disorders — high in hyperchloremic metabolic acidosis; low in vomiting/NG losses, diuretics. Often interpreted with anion gap./> }
-        ]
-      },
-      {
-        id: "co2",
-        title: "Bicarbonate (Total CO₂)",
-        symbol: "HCO₃ / CO₂",
-        loinc: "LOINC 2028-9",
-        group: "chem",
-        unit: "mmol/L",
-        results: [
-          { label: "Adult", value: "22 – 28 mmol/L", note: "Reflects metabolic component of acid-base. Low: metabolic acidosis (diabetic ketoacidosis, lactic acidosis, renal failure, diarrhoea). High: metabolic alkalosis (vomiting, diuretics)./> }
-        ]
-      },
-      {
-        id: "ca",
-        title: "Total Calcium",
-        symbol: "Ca",
-        loinc: "LOINC 1789-1",
-        group: "chem",
-        unit: "mmol/L  (mg/dL)",
-        results: [
-          { label: "Adult", value: "2.15 – 2.55 mmol/L  (8.5 – 10.2 mg/dL)", note: "Corrected calcium ≈ total Ca + 0.02 × (40 − albumin) when albumin abnormal. Ionized calcium is more physiologically relevant in critical illness./> },
-          { label: "Ionized calcium", value: "1.10 – 1.30 mmol/L  (4.4 – 5.2 mg/dL)", note: "Preferred in critically ill, hypoalbuminemia, citrate exposure (transfusion, dialysis)." }
-        ]
-      },
-      {
-        id: "mg",
-        title: "Magnesium",
-        symbol: "Mg",
-        loinc: "LOINC 2452-9",
-        group: "chem",
-        unit: "mmol/L  (mg/dL)",
-        results: [
-          { label: "Adult", value: "0.70 – 1.05 mmol/L  (1.7 – 2.6 mg/dL)", note: "Hypomagnesemia &lt; 0.70 mmol/L — arrhythmia risk (especially with hypokalemia/hypocalcemia), seizures, neuromuscular irritability. Often co-depleted with K and Ca./> },
-          { label: "Critical low", value: "< 0.50 mmol/L", note: "Can cause torsades, severe arrhythmia." }
-        ]
-      },
-      {
-        id: "phos",
-        title: "Phosphate",
-        symbol: "PO₄ / Phos",
-        loinc: "LOINC 14682-9",
-        group: "chem",
-        unit: "mmol/L  (mg/dL)",
-        results: [
-          { label: "Adult", value: "0.75 – 1.50 mmol/L  (2.3 – 4.5 mg/dL)", note: "Hypophosphatemia: refeeding syndrome, respiratory alkalosis, alcohol withdrawal, malabsorption. Hyperphosphatemia: renal failure, tumor lysis, rhabdomyolysis./> },
-          { label: "Newborn / child", value: "1.25 – 2.50 mmol/L  (4.0 – 7.8 mg/dL)", note: "Higher in growing children (bone deposition)." }
-        ]
-      },
-
-      // ===== RENAL / KIDNEY =====
-      {
-        id: "bun",
-        title: "Blood Urea Nitrogen (BUN)",
-        symbol: "BUN",
-        loinc: "LOINC 3094-0",
-        group: "renal",
-        unit: "mg/dL  (mmol/L urea)",
-        results: [
-          { label: "Adult", value: "7 – 20 mg/dL  (2.5 – 7.1 mmol/L urea)", note: "BUN is renal + prerenal. ↑ in renal impairment, dehydration, GI bleed, high protein intake, catabolism. BUN:creatinine ratio &gt; 20:1 suggests prerenal cause./> }
-        ]
-      },
-      {
-        id: "crea",
-        title: "Creatinine",
-        symbol: "Cr / Crea",
-        loinc: "LOINC 2160-0",
-        group: "renal",
-        unit: "mg/dL  (µmol/L)",
-        results: [
-          { label: "Adult male", value: "0.7 – 1.3 mg/dL  (62 – 115 µmol/L)", note: "Depends on muscle mass — higher in muscular individuals. Acute rise ≥ 0.3 mg/dL within 48h or ≥ 1.5× baseline suggests AKI (KDIGO)./> },
-          { label: "Adult female", value: "0.6 – 1.1 mg/dL  (53 – 97 µmol/L)", note: "Lower muscle mass → lower creatinine for same GFR." },
-          { label: "Elderly", value: "0.4 – 1.0 mg/dL", note: "Declining muscle mass may mask reduced GFR — interpret with caution." }
-        ]
-      },
-      {
-        id: "egfr",
-        title: "Estimated GFR (eGFR)",
-        symbol: "eGFR",
-        loinc: "LOINC 33914-3",
-        group: "renal",
-        unit: "mL/min/1.73 m²",
-        results: [
-          { label: "Normal (CKD-EPI)", value: "≥ 90 mL/min/1.73 m²", note: "CKD staging: G1 ≥ 90 (with other evidence of kidney damage); G2 60–89; G3a 45–59; G3b 30–44; G4 15–29; G5 < 15 (kidney failure)./> },
-          { label: "CKD stage 3a", value: "45 – 59 mL/min/1.73 m²", note: "Mildly-moderately reduced; monitor for progression." },
-          { label: "CKD stage 3b", value: "30 – 44 mL/min/1.73 m²", note: "Moderately-severely reduced." },
-          { label: "CKD stage 4", value: "15 – 29 mL/min/1.73 m²", note: "Severely reduced — prepare for renal replacement therapy." },
-          { label: "CKD stage 5", value: "< 15 mL/min/1.73 m²", note: "Kidney failure — renal replacement therapy or conservative management." }
-        ]
-      },
-      {
-        id: "ua",
-        title: "Uric Acid",
-        symbol: "UA",
-        loinc: "LOINC 3164-1",
-        group: "renal",
-        unit: "mg/dL  (µmol/L)",
-        results: [
-          { label: "Adult male", value: "3.5 – 7.2 mg/dL  (208 – 428 µmol/L)", note: "Hyperuricemia &gt; 7.0 mg/dL (men), &gt; 6.0 mg/dL (women) — gout risk, uric acid nephrolithiasis. Also elevated in tumor lysis, renal failure, diuretics./> },
-          { label: "Adult female", value: "2.6 – 6.0 mg/dL  (155 – 357 µmol/L)", note: "Lower pre-menopause; rises after menopause." }
-        ]
-      },
-      {
-        id: "cystatin",
-        title: "Cystatin C",
-        symbol: "Cys-C",
-        loinc: "LOINC 33914-3",
-        group: "renal",
-        unit: "mg/L",
-        results: [
-          { label: "Adult", value: "0.6 – 1.0 mg/L", note: "Less dependent on muscle mass than creatinine. Useful for eGFR in extremes of body habitus, elderly, malnutrition. eGFRcys preferred in some guidelines for selected patients./> }
-        ]
-      },
-
-      // ===== LIVER / HEPATIC =====
-      {
-        id: "alt",
-        title: "Alanine Aminotransferase (ALT)",
-        symbol: "ALT / SGPT",
-        loinc: "LOINC 17429-9",
-        group: "hepatic",
-        unit: "U/L  (IU/L)",
-        results: [
-          { label: "Adult male", value: "10 – 40 U/L", note: "More liver-specific than AST. Elevated in hepatocellular injury: viral hepatitis, NAFLD/NASH, alcoholic liver disease, ischaemic hepatitis, toxin/drug-induced, autoimmune hepatitis./> },
-          { label: "Adult female", value: "7 – 35 U/L", note: "Slightly lower upper reference in women." },
-          { label: "Marked elevation", value: "> 500 U/L", note: "Consider acute viral hepatitis, ischaemic hepatitis (shock liver), toxic ingestion (e.g. acetaminophen/paracetamol), autoimmune flare." }
-        ]
-      },
-      {
-        id: "ast",
-        title: "Aspartate Aminotransferase (AST)",
-        symbol: "AST / SGOT",
-        loinc: "LOINC 17430-7",
-        group: "hepatic",
-        unit: "U/L  (IU/L)",
-        results: [
-          { label: "Adult", value: "10 – 40 U/L", note: "Less liver-specific — also in cardiac muscle, skeletal muscle, kidney, brain, RBCs. ↑ in liver disease, myocardial infarction, muscle injury, haemolysis./> },
-          { label: "AST:ALT ratio", value: "> 2:1", note: "Suggestive of alcoholic liver disease. Also seen in cirrhosis (variable)." }
-        ]
-      },
-      {
-        id: "alp",
-        title: "Alkaline Phosphatase (ALP)",
-        symbol: "ALP",
-        loinc: "LOINC 17861-6",
-        group: "hepatic",
-        unit: "U/L  (IU/L)",
-        results: [
-          { label: "Adult", value: "40 – 129 U/L", note: "Sources: liver (biliary), bone (osteoblasts), placenta, intestine. Elevated in cholestasis, biliary obstruction, infiltrative liver disease, bone disease (Paget, osteomalacia, metastases), pregnancy (placenta), children (growth)./> },
-          { label: "Child / adolescent", value: "Up to 400 U/L (or higher)", note: "Physiologically elevated during growth spurts (osteoblastic activity)." }
-        ]
-      },
-      {
-        id: "ggt",
-        title: "Gamma-Glutamyl Transferase (GGT)",
-        symbol: "GGT / GGTP",
-        loinc: "LOINC 14338-8",
-        group: "hepatic",
-        unit: "U/L  (IU/L)",
-        results: [
-          { label: "Male", value: "8 – 61 U/L", note: "Induces ALP elevation when elevated together suggests hepatobiliary source. ↑ in alcohol use (chronic), biliary disease, drug induction (phenytoin, barbiturates), liver congestion./> },
-          { label: "Female", value: "5 – 36 U/L", note: "Lower upper reference in women." }
-        ]
-      },
-      {
-        id: "tbil",
-        title: "Total Bilirubin",
-        symbol: "Tbili / TB",
-        loinc: "LOINC 1975-0",
-        group: "hepatic",
-        unit: "mg/dL  (µmol/L)",
-        results: [
-          { label: "Adult", value: "0.1 – 1.2 mg/dL  (2 – 21 µmol/L)", note: "Elevated: pre-hepatic (haemolysis — mostly unconjugated), hepatic (hepatitis, cirrhosis — mixed), post-hepatic (obstruction — mostly conjugated)./> },
-          { label: "Unconjugated (indirect)", value: "0.0 – 0.8 mg/dL  (0 – 14 µmol/L)", note: "Unconjugated hyperbilirubinemia: haemolysis, Gilbert syndrome, Crigler-Najjar (rare)./> },
-          { label: "Conjugated (direct)", value: "0.0 – 0.3 mg/dL  (0 – 5 µmol/L)", note: "Conjugated hyperbilirubinemia: biliary obstruction, hepatitis, Dubin-Johnson, Rotor syndromes. Direct &gt; 50% of total suggests cholestasis./> }
-        ]
-      },
-      {
-        id: "alb",
-        title: "Albumin",
-        symbol: "Alb",
-        loinc: "LOINC 1751-7",
-        group: "hepatic",
-        unit: "g/dL  (g/L)",
-        results: [
-          { label: "Adult", value: "3.5 – 5.0 g/dL  (35 – 50 g/L)", note: "Negative acute phase reactant — falls in inflammation, infection, malignancy. Also in liver synthetic failure, nephrotic syndrome, malabsorption, protein-losing enteropathy, severe burns./> },
-          { label: "Newborn", value: "3.0 – 4.0 g/dL", note: "Lower at birth; rises through infancy." }
-        ]
-      },
-      {
-        id: "tot-pro",
-        title: "Total Protein",
-        symbol: "TP",
-        loinc: "LOINC 2091-6",
-        group: "hepatic",
-        unit: "g/dL  (g/L)",
-        results: [
-          { label: "Adult", value: "6.0 – 8.0 g/dL  (60 – 80 g/L)", note: "Total protein = albumin + globulins. ↓ in liver synthetic failure, nephrotic syndrome, malnutrition, protein loss. ↑ in dehydration (relative), paraproteinemia (multiple myeloma), chronic inflammation./> }
-        ]
-      },
-      {
-        id: "alb-glob",
-        title: "Albumin:Globulin (A/G) Ratio",
-        symbol: "A/G ratio",
-        loinc: "LOINC 2091-6",
-        group: "hepatic",
-        unit: "ratio",
-        results: [
-          { label: "Adult", value: "1.0 – 2.5", note: "↓ in hepatic synthetic failure (low albumin), chronic inflammation/myeloma (high globulins). ↑ in agammaglobulinemia, some lymphomas, dehydration (relative)./> }
-        ]
-      },
-
-      // ===== CARDIAC =====
-      {
-        id: "trop-t",
-        title: "Troponin T (High-Sensitivity)",
-        symbol: "hs-cTnT",
-        loinc: "LOINC 26508-4",
-        group: "cards",
-        unit: "ng/L  (or pg/mL)",
-        results: [
-          { label: "99th percentile (typical)", value: "< 14 ng/L  (varies by assay)", note: "High-sensitivity troponin T — assay-specific 99th percentile. Elevated in myocardial necrosis (NSTEMI/STEMI, myocarditis, pulmonary embolism with RV strain, severe heart failure, renal failure (chronic elevation), tachycardia-related/ demand ischaemia)./> },
-          { label: "Serial rise/fall", value: "Significant change over 1–3 h", note: "Diagnosis of acute MI requires a rise and/or fall in troponin with at least one value above 99th percentile + evidence of ischaemia (symptoms, ECG changes, imaging)./> }
-        ]
-      },
-      {
-        id: "trop-i",
-        title: "Troponin I (High-Sensitivity)",
-        symbol: "hs-cTnI",
-        loinc: "LOINC 26508-4",
-        group: "cards",
-        unit: "ng/L  (pg/mL)",
-        results: [
-          { label: "99th percentile (typical)", value: "< 30 ng/L  (assay-dependent)", note: "hs-cTnI — assay-specific cutoffs differ; always use local laboratory's reference. Interpretation principles same as troponin T." }
-        ]
-      },
-      {
-        id: "ck-mb",
-        title: "Creatine Kinase MB Isoenzyme (CK-MB)",
-        symbol: "CK-MB",
-        loinc: "LOINC 2092-3",
-        group: "cards",
-        unit: "U/L  (or ng/mL mass)",
-        results: [
-          { label: "Total CK-MB (mass)", value: "0 – 5 ng/mL  (or < 25 U/L activity)", note: "Less specific than troponin — also elevated in skeletal muscle injury. CK-MB relative index (% of total CK) helps distinguish cardiac vs skeletal source. Rises 4–6h post-MI, peaks ~24h, normalizes ~48–72h./> }
-        ]
-      },
-      {
-        id: "ldh",
-        title: "Lactate Dehydrogenase (LDH)",
-        symbol: "LDH",
-        loinc: "LOINC 2524-7",
-        group: "cards",
-        unit: "U/L  (IU/L)",
-        results: [
-          { label: "Adult", value: "120 – 250 U/L", note: "Non-specific marker of tissue injury. Elevated in MI (historical), haemolysis, liver disease, malignancy (e.g. lymphoma, some germ-cell tumors with LDH as marker), megaloblastic anaemia, muscle injury. LDH isoenzymes may localize source./> }
-        ]
-      },
-      {
-        id: "bhmid",
-        title: "Brain Natriuretic Peptide (BNP)",
-        symbol: "BNP",
-        loinc: "LOINC 30843-8",
-        group: "cards",
-        unit: "pg/mL  (pmol/L)",
-        results: [
-          { label: "Normal", value: "< 100 pg/mL  (< ~28 pmol/L)", note: "BNP elevated in heart failure — reflects ventricular wall stress. Levels correlate with severity. Also elevated in renal failure, pulmonary embolism, advanced age, tachycardia. Cutoffs vary by assay and clinical context./> },
-          { label: "Acute HF rule-out (typical)", value: "< 100 pg/mL", note: "Low BNP in acute setting helps exclude decompensated HF as cause of dyspnoea (assay/context specific)./> }
-        ]
-      },
-      {
-        id: "ntprobnp",
-        title: "N-Terminal Pro-BNP (NT-proBNP)",
-        symbol: "NT-proBNP",
-        loinc: "LOINC 30843-8",
-        group: "cards",
-        unit: "pg/mL",
-        results: [
-          { label: "Age-adjusted cutoffs", value: "< 450 (< 50 yr) · < 900 (50–75 yr) · < 1800 (> 75 yr) pg/mL", note: "NT-proBNP has longer half-life than BNP; elevated in HF. Renal failure raises NT-proBNP independently. Not for BNP-guided therapy titration in the same direct way due to longer half-life./> }
-        ]
-      },
-
-      // ===== LIPIDS =====
-      {
-        id: "tc",
-        title: "Total Cholesterol",
-        symbol: "TC",
-        loinc: "LOINC 2093-3",
-        group: "chem",
-        unit: "mg/dL  (mmol/L)",
-        results: [
-          { label: "Desirable", value: "< 200 mg/dL  (< 5.2 mmol/L)", note: "Borderline high: 200–239 mg/dL. High: ≥ 240 mg/dL. Goal depends on overall cardiovascular risk and guidelines (ATP III, ACC/AHA, ESC/EAS, local)./> }
-        ]
-      },
-      {
-        id: "ldl",
-        title: "LDL Cholesterol",
-        symbol: "LDL-C",
-        loinc: "LOINC 2093-3",
-        group: "chem",
-        unit: "mg/dL  (mmol/L)",
-        results: [
-          { label: "Optimal", value: "< 100 mg/dL  (< 2.6 mmol/L)", note: "Near-optimal: 100–129. Borderline high: 130–159. High: 160–189. Very high: ≥ 190 mg/dL. Higher-risk patients (diabetes, established CVD, familial hypercholesterolemia) have lower targets (e.g. &lt; 70 mg/dL, &lt; 55 mg/dL for very high risk per ESC)./> }
-        ]
-      },
-      {
-        id: "hdl",
-        title: "HDL Cholesterol",
-        symbol: "HDL-C",
-        loinc: "LOINC 2085-9",
-        group: "chem",
-        unit: "mg/dL  (mmol/L)",
-        results: [
-          { label: "Low (risk factor) — men", value: "< 40 mg/dL  (< 1.0 mmol/L)", note: "Low HDL is an independent cardiovascular risk factor. High HDL: ≥ 60 mg/dL considered protective (historically)." },
-          { label: "Low (risk factor) — women", value: "< 50 mg/dL  (< 1.3 mmol/L)", note: "Women typically have higher HDL than men." }
-        ]
-      },
-      {
-        id: "tg",
-        title: "Triglycerides",
-        symbol: "TG",
-        loinc: "LOINC 2073-6",
-        group: "chem",
-        unit: "mg/dL  (mmol/L)",
-        results: [
-          { label: "Normal", value: "< 150 mg/dL  (< 1.7 mmol/L)", note: "Borderline high: 150–199. High: 200–499. Very high: ≥ 500 mg/dL (risk of pancreatitis). Elevated in diabetes (poor control), obesity, alcohol, hypothyroidism, renal disease, medications (estrogen, glucocorticoids, retinoids), familial hypertriglyceridemia./> },
-          { label: "Very high / pancreatitis risk", value: "≥ 500 mg/dL", note: "Consider fibrate/insulin/heparin avoidance depending on context; address urgently to prevent acute pancreatitis." }
-        ]
-      },
-
-      // ===== GLUCOSE / DIABETES =====
-      {
-        id: "glu",
-        title: "Glucose (Fasting)",
-        symbol: "Glucose / FPG",
-        loinc: "LOINC 2345-7",
-        group: "chem",
-        unit: "mg/dL  (mmol/L)",
-        results: [
-          { label: "Normal fasting", value: "70 – 99 mg/dL  (3.9 – 5.5 mmol/L)", note: "Fasting ≥ 8h. Impaired fasting glucose (pre-diabetes): 100–125 mg/dL (5.6–6.9 mmol/L). Diabetes: ≥ 126 mg/dL (7.0 mmol/L) on two separate tests (or one with classic symptoms)./> },
-          { label: "Hypoglycemia alert", value: "< 70 mg/dL  (< 3.9 mmol/L)", note: "Level 1 hypoglycemia. &lt; 54 mg/dL (3.0 mmol/L): clinically significant hypoglycemia — needs urgent treatment. In diabetes management, targets individualized./> },
-          { label: "Random glucose (diabetes suspicion)", value: "≥ 200 mg/dL  (11.1 mmol/L)", note: "With classic symptoms of hyperglycaemia (polyuria, polydipsia, weight loss) → diabetes. Otherwise needs confirmatory testing." }
-        ]
-      },
-      {
-        id: "hba1c",
-        title: "Hemoglobin A1c (HbA1c)",
-        symbol: "HbA1c / A1c",
-        loinc: "LOINC 4548-4",
-        group: "chem",
-        unit: "%  (mmol/mol IFCC)",
-        results: [
-          { label: "Normal", value: "< 5.7 %  (< 39 mmol/mol)", note: "Optimal glycaemic status." },
-          { label: "Pre-diabetes", value: "5.7 – 6.4 %  (39 – 47 mmol/mol)", note: "Increased risk — lifestyle intervention and monitoring advised." },
-          { label: "Diabetes", value: "≥ 6.5 %  (≥ 48 mmol/mol)", note: "Diagnostic threshold (ADA/WHO). Confirm with repeat unless classic symptoms + random glucose ≥ 200 mg/dL." },
-          { label: "Target (many adults with diabetes)", value: "< 7.0 %", note: "Individualized — tighter (e.g. < 6.5%) in select patients, less strict (< 8%) in those with limited life expectancy, severe comorbidities, history of severe hypoglycemia. Discuss with treating clinician./> }
-        ]
-      },
-      {
-        id: "gfr-glucose",
-        title: "Oral Glucose Tolerance Test (OGTT) — 2-hour",
-        symbol: "OGTT 2h",
-        loinc: "LOINC 2345-7",
-        group: "chem",
-        unit: "mg/dL  (mmol/L)",
-        results: [
-          { label: "Normal 2h", value: "< 140 mg/dL  (< 7.8 mmol/L)", note: "After 75g glucose load." },
-          { label: "Impaired glucose tolerance (IGT)", value: "140 – 199 mg/dL  (7.8 – 11.0 mmol/L)", note: "Pre-diabetes — high risk of progression to diabetes and cardiovascular disease./> },
-          { label: "Diabetes (OGTT)", value: "≥ 200 mg/dL  (≥ 11.1 mmol/L)", note: "Diagnostic — confirm per guidelines." }
-        ]
-      },
-
-      // ===== THYROID =====
-      {
-        id: "tsh",
-        title: "Thyroid-Stimulating Hormone (TSH)",
-        symbol: "TSH",
-        loinc: "LOINC 3025-7",
-        group: "chem",
-        unit: "mIU/L  (µIU/mL)",
-        results: [
-          { label: "Typical adult reference", value: "0.4 – 4.0 mIU/L", note: "Varies by assay and lab (some use 0.5–5.0 mIU/L). Tighter control in pregnancy, thyroid cancer suppression, symptomatic patients. Age-related upward shift in elderly (some recommend &lt; 6–7 mIU/L in very elderly)./> },
-          { label: "Pregnancy — 1st trimester", value: "0.1 – 2.5 mIU/L", note: "Lower reference in early pregnancy (hCG effect). Targets vary by guideline (ATA); some labs use trimester-specific ranges./> },
-          { label: "Subclinical hypothyroidism", value: "TSH 4–10 mIU/L, normal T4", note: "Management depends on symptoms, antibodies (TPOAb), pregnancy, lipids, goitre, age." },
-          { label: "Overt hypothyroidism", value: "TSH > 10 mIU/L, low free T4", note: "Treatment indicated." },
-          { label: "Subclinical hyperthyroidism", value: "TSH < 0.1 mIU/L, normal T4/T3", note: "Evaluate for causes (Graves, toxic nodule, excess levothyroxine); risk of AF, bone loss with suppressed TSH long-term./> }
-        ]
-      },
-      {
-        id: "ft4",
-        title: "Free Thyroxine (Free T4)",
-        symbol: "FT4",
-        loinc: "LOINC 30687-2",
-        group: "chem",
-        unit: "pmol/L  (ng/dL)",
-        results: [
-          { label: "Adult", value: "10 – 23 pmol/L  (0.8 – 1.8 ng/dL)", note: "Always interpret alongside TSH. Free T4 preferred over total T4 (less affected by TBG changes in pregnancy, OCP, liver disease)./> },
-          { label: "Low FT4 + high TSH", value: "Overt hypothyroidism pattern", note: "Primary hypothyroidism." },
-          { label: "High FT4 + low TSH", value: "Overt hyperthyroidism pattern", note: "Primary hyperthyroidism (Graves, toxic nodule, toxic multinodular goitre)." }
-        ]
-      },
-      {
-        id: "ft3",
-        title: "Free Tri-iodothyronine (Free T3)",
-        symbol: "FT3",
-        loinc: "LOINC 30687-2",
-        group: "chem",
-        unit: "pmol/L  (pg/mL)",
-        results: [
-          { label: "Adult", value: "3.1 – 6.8 pmol/L  (2.0 – 4.4 pg/mL)", note: "Useful in hyperthyroidism assessment — sometimes high when FT4 normal (T3 toxicosis). Less useful in hypothyroidism (peripheral conversion maintains T3 until late)./> }
-        ]
-      },
-      {
-        id: "tpoab",
-        title: "Anti-Thyroid Peroxidase Antibodies (Anti-TPO / Anti-Microsomal)",
-        symbol: "Anti-TPO / TPOAb",
-        loinc: "LOINC 30984-1",
-        group: "chem",
-        unit: "IU/mL  (or titer)",
-        results: [
-          { label: "Negative / normal", value: "< 35 IU/mL  (assay-dependent)", note: "Positive anti-TPO in euthyroid patient: risk factor for future hypothyroidism (Hashimoto). In hypothyroid patient: supports autoimmune (Hashimoto) etiology. In hyperthyroid: supports Graves (alongside TRAb)./> }
-        ]
-      },
-
-      // ===== URINALYSIS =====
-      {
-        id: "urine-spec",
-        title: "Urine Specific Gravity",
-        symbol: "SG / USG",
-        loinc: "LOINC 2544-7",
-        group: "other",
-        unit: "ratio (dimensionless)",
-        results: [
-          { label: "Normal range", value: "1.005 – 1.030", note: "Reflective of hydration and renal concentrating ability. Low: overhydration, diabetes insipidus, impaired concentrating ability. High: dehydration, SIADH, glucosuria, proteinuria, IV contrast, post-renal transplant (early)./> }
-        ]
-      },
-      {
-        id: "urine-ph",
-        title: "Urine pH",
-        symbol: "pH",
-        loinc: "LOINC 2544-7",
-        group: "other",
-        unit: "pH",
-        results: [
-          { label: "Normal", value: "4.5 – 8.0", note: "Varies with diet (acidic with meat, alkaline with vegetarian/urea-splitting bacteria), medications, systemic acid-base status, UTIs (urease-producing organisms → alkaline)./> }
-        ]
-      },
-      {
-        id: "urine-protein",
-        title: "Urine Protein (dipstick / qualitative)",
-        symbol: "Protein / PRO",
-        loinc: "LOINC 2544-7",
-        group: "other",
-        unit: "mg/dL (dipstick) / mg/24h",
-        results: [
-          { label: "Normal (dipstick)", value: "Negative or trace (< 10–20 mg/dL)", note: "" },
-          { label: "Microalbuminuria", value: "30 – 300 mg/24h  (or ACR 30–300 mg/g creatinine)", note: "Early diabetic nephropathy marker and cardiovascular risk marker. Also in hypertension, SLE, other glomerular diseases./> },
-          { label: "Overt proteinuria", value: "> 300 mg/24h  (or > 3.5 g/24h = nephrotic-range)", note: "Nephrotic syndrome: &gt; 3.5 g/24h proteinuria + hypoalbuminemia + edema + hyperlipidemia. Quantify with 24h urine or spot protein:creatinine / albumin:creatinine ratio./> }
-        ]
-      },
-      {
-        id: "urine-glu",
-        title: "Urine Glucose",
-        symbol: "Glucose / GLU",
-        loinc: "LOINC 2544-7",
-        group: "other",
-        unit: "mg/dL (dipstick)",
-        results: [
-          { label: "Normal", value: "Negative", note: "Positive urine glucose: usually when blood glucose exceeds renal threshold (~180 mg/dL / 10 mmol/L). Can occur in diabetes, pregnancy (lower threshold), renal glucosuria (rare hereditary), SGLT2 inhibitor use (intentional glycosuria)./> }
-        ]
-      },
-      {
-        id: "urine-ketones",
-        title: "Urine Ketones",
-        symbol: "Ketones / KET",
-        loinc: "LOINC 2544-7",
-        group: "other",
-        unit: "mg/dL (dipstick)",
-        results: [
-          { label: "Normal", value: "Negative", note: "Positive: diabetic ketoacidosis (DKA), starvation/fasting ketosis, alcoholic ketoacidosis, low-carb/ketogenic diets, hyperemesis, severe illness. Note: dipstick detects acetoacetate; not beta-hydroxybutyrate (which predominates in DKA)./> }
-        ]
-      },
-      {
-        id: "urine-blood",
-        title: "Urine Blood (Hemoglobin / RBC)",
-        symbol: "Blood / BLD",
-        loinc: "LOINC 2544-7",
-        group: "other",
-        unit: "dipstick / cells/HPF",
-        results: [
-          { label: "Normal", value: "Negative / 0–2 RBC/HPF", note: "Hematuria: infection, stones, trauma, glomerular disease (dysmorphic RBC, casts), malignancy, anticoagulation (can unmask), exercise. Dipstick detects hemoglobin (can be positive with hemolysis, myoglobin from rhabdomyolysis)./> }
-        ]
-      },
-      {
-        id: "urine-leuk",
-        title: "Urine Leukocyte Esterase",
-        symbol: "LE / WBC esterase",
-        loinc: "LOINC 2544-7",
-        group: "other",
-        unit: "dipstick",
-        results: [
-          { label: "Normal", value: "Negative", note: "Positive: pyuria — suggests urinary tract infection, inflammation, sterile pyuria (e.g. TB, interstitial nephritis, stones). Correlate with culture, symptoms, nitrite./> }
-        ]
-      },
-      {
-        id: "urine-nitrite",
-        title: "Urine Nitrite",
-        symbol: "Nitrite",
-        loinc: "LOINC 2544-7",
-        group: "other",
-        unit: "dipstick",
-        results: [
-          { label: "Normal", value: "Negative", note: "Positive: suggests nitrate-reducing bacteria (Enterobacteriaceae — e.g. E. coli). Not sensitive for all uropathogens (e.g. Enterococcus, Pseudomonas are nitrite-negative). False negative if dilute urine or short bladder dwell time./> }
-        ]
-      },
-      {
-        id: "urine-bili",
-        title: "Urine Bilirubin",
-        symbol: "Bilirubin / BIL",
-        loinc: "LOINC 2544-7",
-        group: "other",
-        unit: "dipstick",
-        results: [
-          { label: "Normal", value: "Negative", note: "Positive: conjugated (direct) hyperbilirubinemia — because only conjugated bilirubin is water-soluble and excreted in urine. Suggests biliary obstruction, hepatitis, intrahepatic cholestasis. Not seen in unconjugated hyperbilirubinemia (haemolysis, Gilbert)./> }
-        ]
-      },
-      {
-        id: "urine-urobilinogen",
-        title: "Urine Urobilinogen",
-        symbol: "Urobilinogen / URO",
-        loinc: "LOINC 2544-7",
-        group: "other",
-        unit: "Ehrlich units/dL (dipstick)",
-        results: [
-          { label: "Normal", value: "0.1 – 1.0 Ehrlich U/dL  (or < 1+)", note: "Increased: haemolysis, hepatocell damage (impaired hepatic uptake/conjugation). Absent/very low in biliary obstruction (no bilirubin reaches gut → no urobilinogen formed)./> }
-        ]
-      },
-      {
-        id: "urine-casts",
-        title: "Urine Casts (Hyaline &amp; Cellular)",
-        symbol: "Casts",
-        loinc: "LOINC 2544-7",
-        group: "other",
-        unit: "per LPF",
-        results: [
-          { label: "Hyaline casts", value: "0–2 / LPF (sometimes normal)", note: "Hyaline casts: normal in small numbers; ↑ with exercise, dehydration, diuretics, heart failure, glomerular disease. Waxy/ Broad casts: chronic renal failure / tubular dilation. Granular casts: tubular injury. RBC casts: glomerulonephritis / renal haemorrhage (pathognomonic for glomerular bleeding). WBC casts: pyelonephritis, interstitial nephritis, glomerulonephritis. Fatty casts: nephrotic syndrome. Muddy brown granular casts: acute tubular necrosis (ATN)./> }
-        ]
-      },
-
-      // ===== CSF =====
-      {
-        id: "csf-cell",
-        title: "CSF White Cell Count (Pleocytosis)",
-        symbol: "CSF WBC",
-        loinc: "LOINC 32533-5",
-        group: "other",
-        unit: "cells/µL  (cells/mm³)",
-        results: [
-          { label: "Normal", value: "0 – 5 cells/µL  (adults)", note: "Predominantly lymphocytes/monocytes in normal CSF. ↑: infection (meningitis — bacterial: neutrophils dominant; viral/fungal/TB: lymphocytes), inflammation (autoimmune, neurosarcoid, MS — lymphocytic), malignancy (carcinomatous/leukaemic meningitis), subarachnoid hemorrhage (xanthochromia + WBCs)./> },
-          { label: "Child (neonate)", value: "0 – 20 cells/µL (can be higher normal in first weeks)", note: "Pediatric/neonatal reference ranges are age-dependent — consult pediatric references." }
-        ]
-      },
-      {
-        id: "csf-protein",
-        title: "CSF Total Protein",
-        symbol: "CSF protein",
-        loinc: "LOINC 1719-0",
-        group: "other",
-        unit: "mg/dL  (g/L)",
-        results: [
-          { label: "Adult (lumbar)", value: "15 – 45 mg/dL  (0.15 – 0.45 g/L)", note: "↑ in meningitis (bacterial > viral), GBS (often markedly elevated with albuminocytologic dissociation), polyneuropathy, spinal block, cerebral tumour, SAH, Guillain-Barré, chronic inflammatory demyelinating polyneuropathy (CIDP). ↓ rarely; low protein seen in CSF leak / ventriculoperitoneal shunting over-drainage (risk of subdural haematoma)./> }
-        ]
-      },
-      {
-        id: "csf-glucose",
-        title: "CSF Glucose",
-        symbol: "CSF glucose / CSF dextrose",
-        loinc: "LOINC 32544-2",
-        group: "other",
-        unit: "mg/dL  (mmol/L)",
-        results: [
-          { label: "Normal", value: "40 – 70 mg/dL  (2.2 – 3.9 mmol/L)", note: "Should be ≈ 60% of simultaneous plasma glucose. Low CSF glucose (hypoglycorrhachia): bacterial/fungal/TB meningitis, leptospiral meningitis, carcinomatous meningitis, some SAH, neurosarcoidosis. Not low in viral meningitis typically (or mildly low)./> },
-          { label: "Ratio CSF:serum glucose", value: "> 0.5 (normal)", note: "Low ratio (< 0.4–0.5) suggests consumption by organisms/inflammatory cells or impaired transport — seen in bacterial meningitis, TB meningitis, fungal meningitis, leptospirosis, carcinomatous meningitis./> }
-        ]
-      },
-
-      // ===== ABG =====
-      {
-        id: "abg-ph",
-        title: "Arterial pH",
-        symbol: "pH",
-        loinc: "LOINC 26970-9",
-        group: "other",
-        unit: "pH",
-        results: [
-          { label: "Adult (arterial)", value: "7.35 – 7.45", note: "Acidemia: pH &lt; 7.35. Alkalemia: pH &gt; 7.45. Venous pH ≈ arterial pH − 0.03 to 0.05 (use with caution)./> }
-        ]
-      },
-      {
-        id: "abg-pco2",
-        title: "Arterial PCO₂",
-        symbol: "PaCO₂",
-        loinc: "LOINC 26970-9",
-        group: "other",
-        unit: "mmHg  (kPa)",
-        results: [
-          { label: "Adult", value: "35 – 45 mmHg  (4.7 – 6.0 kPa)", note: "Respiratory component of acid-base. ↑: respiratory acidosis (hypoventilation — COPD, opioid/over-sedation, neuromuscular weakness, severe asthma/COPD exacerbation). ↓: respiratory alkalosis (hyperventilation — anxiety, pain, hypoxia, sepsis, PE, pregnancy, mechanical ventilation over-respiratory-setting)./> }
-        ]
-      },
-      {
-        id: "abg-po2",
-        title: "Arterial PO₂",
-        symbol: "PaO₂",
-        loinc: "LOINC 26970-9",
-        group: "other",
-        unit: "mmHg  (kPa)",
-        results: [
-          { label: "Adult (room air, sea level, age-dependent)", value: "80 – 100 mmHg  (10.7 – 13.3 kPa)", note: "PaO₂ falls with age: estimate PaO₂ ≈ 100 − (0.3 × age in years) mmHg on room air (rough). Hypoxemia: PaO₂ &lt; 80 mmHg; severe &lt; 60 mmHg (consider O₂, A-a gradient, causes: hypoventilation, diffusion defect, shunt, V/Q mismatch)./> },
-          { label: "A-a gradient (at sea level)", value: "< (age/4) + 4 mmHg (approx)", note: "Elevated A-a gradient: parenchymal lung disease, pulmonary embolism, early ARDS, shunt. Normal A-a gradient with hypoxemia: hypoventilation or low FiO₂ (high altitude)./> }
-        ]
-      },
-      {
-        id: "abg-hco3",
-        title: "Arterial Bicarbonate (ABG)",
-        symbol: "HCO₃⁻ (ABG)",
-        loinc: "LOINC 26970-9",
-        group: "other",
-        unit: "mmol/L",
-        results: [
-          { label: "Adult", value: "22 – 26 mmol/L", note: "Metabolic component. Calculated (from pH + PaCO₂ by Henderson–Hasselbalch) or measured (in some blood gas analyzers). Compensatory changes occur in chronic respiratory disorders./> }
-        ]
-      },
-      {
-        id: "abg-base-excess",
-        title: "Base Excess (BE)",
-        symbol: "BE / Base Excess",
-        loinc: "LOINC 26970-9",
-        group: "other",
-        unit: "mmol/L",
-        results: [
-          { label: "Normal", value: "−2 to +2 mmol/L", note: "Negative BE: metabolic acidosis (or compensated respiratory alkalosis). Positive BE: metabolic alkalosis (or compensated respiratory acidosis). Used with bicarbonate/pH to characterize metabolic component./> }
-        ]
-      },
-      {
-        id: "abg-sao2",
-        title: "Arterial Oxygen Saturation (SaO₂)",
-        symbol: "SaO₂",
-        loinc: "LOINC 26970-9",
-        group: "other",
-        unit: "%",
-        results: [
-          { label: "Normal (arterial, room air)", value: "≥ 95 %", note: "Correlates with PaO₂ via oxyhaemoglobin dissociation curve. Note: SpO₂ (pulse oximetry) may differ from SaO₂; SaO₂ is measured directly on arterial blood gas. Target SpO₂ in COPD may be 88–92% to avoid hypercapnia in CO₂ retainers./> }
-        ]
-      },
-
-      // ===== TUMOR MARKERS / MISC =====
-      {
-        id: "cea",
-        title: "Carcinoembryonic Antigen (CEA)",
-        symbol: "CEA",
-        loinc: "LOINC 22148-0",
-        group: "other",
-        unit: "ng/mL",
-        results: [
-          { label: "Non-smoker", value: "< 3.0 ng/mL", note: "Smokers have higher baseline (up to ~5 ng/mL). Used for monitoring (not screening) colorectal and some other adenocarcinomas. Rising trend more informative than single value. False elevations: smoking, inflammation, liver disease, benign GI conditions, other cancers./> },
-          { label: "Smoker", value: "< 5.0 ng/mL", note: "Higher normal limit for smokers." }
-        ]
-      },
-      {
-        id: "ca125",
-        title: "CA-125",
-        symbol: "CA-125",
-        loinc: "LOINC 22148-0",
-        group: "other",
-        unit: "U/mL  (IU/mL)",
-        results: [
-          { label: "Premenopausal", value: "< 35 U/mL", note: "Most commonly associated with ovarian epithelial cancer (monitoring, not screening — low specificity in premenopausal women). Elevated in many benign conditions: menstruation, endometriosis, pelvic inflammatory disease, pregnancy, liver disease, pericarditis, pancreatitis, other malignancies./> },
-          { label: "Postmenopausal", value: "< 35 U/mL (some use < 30–35)", note: "Higher specificity for ovarian cancer in postmenopausal women but still not recommended for population screening." }
-        ]
-      },
-      {
-        id: "ca19-9",
-        title: "CA 19-9",
-        symbol: "CA 19-9",
-        loinc: "LOINC 22148-0",
-        group: "other",
-        unit: "U/mL  (IU/mL)",
-        results: [
-          { label: "Normal", value: "< 37 U/mL", note: "Most associated with pancreatic adenocarcinoma (monitoring). Also elevated in cholangiocarcinoma, biliary obstruction (benign), cholangitis, pancreatitis, cirrhosis, other GI cancers. Cannot be produced by Lewis antigen-negative individuals (≈ 5–10% of population) — always negative even in cancer./> }
-        ]
-      },
-      {
-        id: "psa",
-        title: "Prostate-Specific Antigen (PSA)",
-        symbol: "PSA",
-        loinc: "LOINC 22148-0",
-        group: "other",
-        unit: "ng/mL",
-        results: [
-          { label: "Age-adjusted (approx.)", value: "< 2.5 (age 40–49) · < 3.5 (50–59) · < 4.5 (60–69) · < 6.5 (70–79) ng/mL", note: "Traditional single cutoff 4.0 ng/mL is oversimplified. Age-specific ranges used by some; many guidelines use risk-adapted approach. PSA density, velocity, free:total PSA ratio add information. Elevated in BPH, prostatitis, recent instrumentation/prostate manipulation, ejaculation, bicycle riding, urinary retention, prostate cancer./> }
-        ]
-      },
-      {
-        id: "spep",
-        title: "Serum Protein Electrophoresis (SPEP) — Normal Pattern",
-        symbol: "SPEP",
-        loinc: "LOINC 2880-8",
-        group: "other",
-        unit: "g/dL (fractions)",
-        results: [
-          { label: "Albumin", value: "3.5 – 5.0 g/dL  (55 – 65% of total)", note: "Major peak in SPEP." },
-          { label: "Alpha-1 globulin", value: "0.1 – 0.4 g/dL  (2 – 5%)", note: "α1-antitrypsin is main component." },
-          { label: "Alpha-2 globulin", value: "0.4 – 1.0 g/dL  (7 – 13%)", note: "α2-macroglobulin, haptoglobin." },
-          { label: "Beta globulin", value: "0.5 – 1.2 g/dL  (8 – 15%)", note: "Transferrin, complement components, lipoproteins." },
-          { label: "Gamma globulin (IgG)", value: "0.6 – 1.6 g/dL  (10 – 20%)", note: "Broad polyclonal increase: chronic inflammation, infection, liver disease, autoimmune. Monoclonal spike (M-protein): multiple myeloma, MGUS, Waldenstrom macroglobulinaemia (lymphoplasmacytic lymphoma), amyloidosis — requires immunofixation and further workup./> }
-        ]
-      },
-
-      // ===== MISCELLANEOUS =====
-      {
-        id: "amylase",
-        title: "Amylase (Serum)",
-        symbol: "Amylase",
-        loinc: "LOINC 3018-5",
-        group: "other",
-        unit: "U/L  (IU/L)",
-        results: [
-          { label: "Adult", value: "25 – 125 U/L", note: "Elevated in acute pancreatitis (rises within hours, peaks ~24h, normalizes ~3–5 days). Also elevated in salivary gland disease, macroamylasemia, renal failure, perforated viscus, mesenteric ischaemia, some malignancies. Lipase more specific for pancreatitis./> }
-        ]
-      },
-      {
-        id: "lipase",
-        title: "Lipase (Serum)",
-        symbol: "Lipase",
-        loinc: "LOINC 3018-5",
-        group: "other",
-        unit: "U/L  (IU/L)",
-        results: [
-          { label: "Adult", value: "10 – 140 U/L  (assay-dependent)", note: "More specific than amylase for acute pancreatitis. Elevated > 3× upper limit highly suggestive of acute pancreatitis. Prolonged elevation vs amylase (up to 1–2 weeks)./> }
-        ]
-      },
-      {
-        id: "ck-total",
-        title: "Creatine Kinase (CK / CPK) — Total",
-        symbol: "CK / CPK",
-        loinc: "LOINC 2088-2",
-        group: "other",
-        unit: "U/L  (IU/L)",
-        results: [
-          { label: "Adult male", value: "55 – 170 U/L", note: "Markedly elevated in rhabdomyolysis, myocardial infarction (historical), muscle disease (myositis, dystrophy, malignant hyperthermia, neuroleptic malignant syndrome, statin-induced myopathy, hypothyroidism), prolonged seizure, intramuscular injection, strenuous exercise. Dark urine + ↑CK → rhabdomyolysis concern; check renal function and urinalysis (myoglobinuria)./> },
-          { label: "Adult female", value: "30 – 135 U/L", note: "Lower upper reference in women (less muscle mass)." }
-        ]
-      },
-      {
-        id: "hb-s",
-        title: "Hemoglobin S (Sickle Cell) — Qualitative / Solubility",
-        symbol: "HbS / Sickling test",
-        loinc: "LOINC 1789-1",
-        group: "other",
-        unit: "qualitative / % HbS (HPLC)",
-        results: [
-          { label: "Normal (no HbS)", value: "0 % HbS", note: "Sickle cell trait (HbAS): heterozygote — typically asymptomatic; HbS usually 35–45% of total hemoglobin on HPLC/electrophoresis. Sickle cell disease (HbSS): mostly HbS with variable HbF; HbS > 80%. Other variants (HbSC, HbS-beta thal) have mixed patterns. Solubility test / sickling test is screening only; confirm with haemoglobin electrophoresis or HPLC./> }
-        ]
-      },
-      {
-        id: "fecal-occult",
-        title: "Fecal Occult Blood Test (FOBT / FIT)",
-        symbol: "FOBT / FIT",
-        loinc: "LOINC 2544-7",
-        group: "other",
-        unit: "qualitative",
-        results: [
-          { label: "Normal", value: "Negative", note: "Positive FOBT/FIT suggests gastrointestinal bleeding — requires colonoscopy evaluation (rule out CRC, polyps, IBD, other causes). FIT (fecal immunochemical test) more specific for human hemoglobin from lower GI tract; FOBT (guaiac) can be affected by diet/medications (historically)./> }
-        ]
-      },
-
-    ];
-
-    // ---------------------------------------------------------------------------
-    // Render
-    // ---------------------------------------------------------------------------
-
-    const GROUP_CLASS = {
-      blood: "card-blood",
-      coag: "card-coag",
-      chem: "card-chem",
-      renal: "card-renal",
-      hepatic: "card-hepatic",
-      cards: "card-cards",
-      other: "card-other"
-    };
-
-    const GROUP_LABEL = {
-      blood: "Hematology",
-      coag: "Coagulation",
-      chem: "Chemistry",
-      renal: "Renal",
-      hepatic: "Hepatic",
-      cards: "Cardiac",
-      other: "Other"
-    };
-
-    function escapeHTML(s) {
-      return String(s).replace(/[&<>"']/g, c => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-      }[c]));
-    }
-
-    function renderCard(item) {
-      const cls = GROUP_CLASS[item.group] || "card-other";
-      let html = `<div class="card ${cls}" data-id="${escapeHTML(item.id)}" data-group="${escapeHTML(item.group)}">`;
-      html += `<h3>${escapeHTML(item.title)} <span class="sym">${escapeHTML(item.symbol)}</span></h3>`;
-      if (item.loinc) html += `<div class="loinc">${escapeHTML(item.loinc)}</div>`;
-      html += `<div style="margin-bottom:8px;color:var(--muted);font-size:0.76rem;">Unit: ${escapeHTML(item.unit)}</div>`;
-      html += `<div class="result-row"><span class="label">Adult reference</span><span class="value">—</span></div>`;
-      // We'll use the first result as the "headline" value; better: show all.
-      // But to keep cards compact, show first result prominently and the rest as list.
-      const first = item.results[0];
-      html += `<div class="result-row"><span class="label">Typical</span><span class="value">${escapeHTML(first.value)}</span></div>`;
-      html += `<div class="note">${escapeHTML(first.note || "")}</div>`;
-
-      // Extra results as sub-rows
-      if (item.results.length > 1) {
-        html += `<div style="margin-top:8px;border-top:1px solid var(--border);padding-top:6px;">`;
-        for (let i = 1; i < item.results.length; i++) {
-          const r = item.results[i];
-          let flag = "";
-          // crude flag detection
-          if (r.flags === "high") flag = '<span class="flag flag-high">↑ high</span>';
-          else if (r.flags === "low") flag = '<span class="flag flag-low">↓ low</span>';
-          else if (r.flags === "crit") flag = '<span class="flag flag-crit">⚠ critical</span>';
-          html += `<div class="result-row">`;
-          html += `<span class="label">${escapeHTML(r.label)}${flag}</span>`;
-          html += `<span class="value">${escapeHTML(r.value)}</span>`;
-          html += `</div>`;
-        }
-        html += `</div>`;
-      }
-
-      html += `</div>`;
-      return html;
-    }
-
-    function buildTOC() {
-      // Group sections by their visible heading
-      const sections = [
-        { id: "sec-cbc", label: "Complete Blood Count (CBC)" },
-        { id: "sec-rbc", label: "RBC Indices, Iron &amp; Ferritin" },
-        { id: "sec-wbc", label: "WBC &amp; Differential" },
-        { id: "sec-coag", label: "Platelets &amp; Coagulation" },
-        { id: "sec-lytes", label: "Electrolytes" },
-        { id: "sec-renal", label: "Renal &amp; Kidney Function" },
-        { id: "sec-hepatic", label: "Liver &amp; Hepatic Function" },
-        { id: "sec-cardiac", label: "Cardiac Markers" },
-        { id: "sec-lipids", label: "Lipid Panel" },
-        { id: "sec-glucose", label: "Glucose &amp; Diabetes" },
-        { id: "sec-thyroid", label: "Thyroid Function" },
-        { id: "sec-urine", label: "Urinalysis" },
-        { id: "sec-csf", label: "Cerebrospinal Fluid (CSF)" },
-        { id: "sec-abg", label: "Arterial Blood Gas (ABG)" },
-        { id: "sec-misc", label: "Tumor Markers &amp; Miscellaneous" }
-      ];
-      let ul = `<ul>`;
-      for (const s of sections) {
-        ul += `<li><a href="#${s.id}">${s.label}</a></li>`;
-      }
-      ul += `</ul>`;
-      document.getElementById("toc").innerHTML = `<h3>Sections</h3>${ul}`;
-    }
-
-    function statsBar() {
-      const totalItems = LAB_DATA.length;
-      const groups = {};
-      for (const item of LAB_DATA) {
-        groups[item.group] = (groups[item.group] || 0) + 1;
-      }
-      let html = `<span class="stat-chip"><strong>${totalItems}</strong> tests</span>`;
-      for (const [g, n] of Object.entries(groups)) {
-        html += `<span class="stat-chip">${escapeHTML(GROUP_LABEL[g] || g)}: <strong>${n}</strong></span>`;
-      }
-      document.getElementById("statsBar").innerHTML = html;
-    }
-
-    function countItemsInSection(sectionId) {
-      const grid = document.getElementById("grid-" + sectionId.replace("sec-", ""));
-      // Easier: compute from data
-      const sectionMap = {
-        "cnt-cbc": "blood", // will be overridden
-      };
-    }
-
-    function assignSectionCounts() {
-      // Map section -> group(s)
-      const secToGroups = {
-        "cnt-cbc": ["blood"],
-        "cnt-rbc": ["blood"],
-        "cnt-wbc": ["blood"],
-        "cnt-coag": ["coag"],
-        "cnt-lytes": ["chem"],
-        "cnt-renal": ["renal"],
-        "cnt-hepatic": ["hepatic"],
-        "cnt-cardiac": ["cards"],
-        "cnt-lipids": ["chem"],
-        "cnt-glucose": ["chem"],
-        "cnt-thyroid": ["chem"],
-        "cnt-urine": ["other"],
-        "cnt-csf": ["other"],
-        "cnt-abg": ["other"],
-        "cnt-misc": ["other"]
-      };
-      // Count actual items placed per grid by id
-      const perGrid = {};
-      for (const item of LAB_DATA) {
-        // Determine which grid this item belongs to by finding the right section
-        // We placed items arbitrarily; instead derive from item's group and section assignment.
-        // Simplest: each section's grid id is predictable; we assigned items to groups, not sections.
-        // We'll need to retroactively map: we placed items by manual ordering above.
-        // To be accurate, we'll compute by scanning the HTML we're about to generate.
-      }
-
-      // Instead: each section's grid id corresponds to a specific set of item ids.
-      const gridItems = {
-        "cnt-cbc": ["wbc","rbc","hgb","hct","mch","mchc","mcv","rdw","plt","mpv"],
-        "cnt-rbc": ["fe","ferritin","tibc","tsat","transferrin","tibc-uibc"],
-        "cnt-wbc": ["neut","lymph","mono","eos","baso"],
-        "cnt-coag": ["pt","aptt","fibrinogen","d-dimer","thrombin-time"],
-        "cnt-lytes": ["na","k","cl","co2","ca","mg","phos"],
-        "cnt-renal": ["bun","crea","egfr","ua","cystatin"],
-        "cnt-hepatic": ["alt","ast","alp","ggt","tbil","alb","tot-pro","alb-glob"],
-        "cnt-cardiac": ["trop-t","trop-i","ck-mb","ldh","bhmid","ntprobnp"],
-        "cnt-lipids": ["tc","ldl","hdl","tg"],
-        "cnt-glucose": ["glu","hba1c","gfr-glucose"],
-        "cnt-thyroid": ["tsh","ft4","ft3","tpoab"],
-        "cnt-urine": ["urine-spec","urine-ph","urine-protein","urine-glu","urine-ketones","urine-blood","urine-leuk","urine-nitrite","urine-bili","urine-urobilinogen","urine-casts"],
-        "cnt-csf": ["csf-cell","csf-protein","csf-glucose"],
-        "cnt-abg": ["abg-ph","abg-pco2","abg-po2","abg-hco3","abg-base-excess","abg-sao2"],
-        "cnt-misc": ["cea","ca125","ca19-9","psa","spep","amylase","lipase","ck-total","hb-s","fecal-occult"]
-      };
-
-      for (const [cntId, ids] of Object.entries(gridItems)) {
-        const el = document.getElementById(cntId);
-        if (el) el.textContent = `${ids.length} tests`;
-      }
-    }
-
-    function renderAll() {
-      // Sort LAB_DATA for stable rendering order (already in desired order)
-      const grids = {
-        "grid-cbc": [],
-        "grid-rbc": [],
-        "grid-wbc": [],
-        "grid-coag": [],
-        "grid-lytes": [],
-        "grid-renal": [],
-        "grid-hepatic": [],
-        "grid-cardiac": [],
-        "grid-lipids": [],
-        "grid-glucose": [],
-        "grid-thyroid": [],
-        "grid-urine": [],
-        "grid-csf": [],
-        "grid-abg": [],
-        "grid-misc": []
-      };
-
-      // Assign items to grids by item id
-      const assignment = {
-        "wbc":"grid-cbc","rbc":"grid-cbc","hgb":"grid-cbc","hct":"grid-cbc","mch":"grid-cbc","mchc":"grid-cbc","mcv":"grid-cbc","rdw":"grid-cbc","plt":"grid-cbc","mpv":"grid-cbc",
-        "fe":"grid-rbc","ferritin":"grid-rbc","tibc":"grid-rbc","tsat":"grid-rbc","transferrin":"grid-rbc","tibc-uibc":"grid-rbc",
-        "neut":"grid-wbc","lymph":"grid-wbc","mono":"grid-wbc","eos":"grid-wbc","baso":"grid-wbc",
-        "pt":"grid-coag","aptt":"grid-coag","fibrinogen":"grid-coag","d-dimer":"grid-coag","thrombin-time":"grid-coag",
-        "na":"grid-lytes","k":"grid-lytes","cl":"grid-lytes","co2":"grid-lytes","ca":"grid-lytes","mg":"grid-lytes","phos":"grid-lytes",
-        "bun":"grid-renal","crea":"grid-renal","egfr":"grid-renal","ua":"grid-renal","cystatin":"grid-renal",
-        "alt":"grid-hepatic","ast":"grid-hepatic","alp":"grid-hepatic","ggt":"grid-hepatic","tbil":"grid-hepatic","alb":"grid-hepatic","tot-pro":"grid-hepatic","alb-glob":"grid-hepatic",
-        "trop-t":"grid-cardiac","trop-i":"grid-cardiac","ck-mb":"grid-cardiac","ldh":"grid-cardiac","bhmid":"grid-cardiac","ntprobnp":"grid-cardiac",
-        "tc":"grid-lipids","ldl":"grid-lipids","hdl":"grid-lipids","tg":"grid-lipids",
-        "glu":"grid-glucose","hba1c":"grid-glucose","gfr-glucose":"grid-glucose",
-        "tsh":"grid-thyroid","ft4":"grid-thyroid","ft3":"grid-thyroid","tpoab":"grid-thyroid",
-        "urine-spec":"grid-urine","urine-ph":"grid-urine","urine-protein":"grid-urine","urine-glu":"grid-urine","urine-ketones":"grid-urine","urine-blood":"grid-urine","urine-leuk":"grid-urine","urine-nitrite":"grid-urine","urine-bili":"grid-urine","urine-urobilinogen":"grid-urine","urine-casts":"grid-urine",
-        "csf-cell":"grid-csf","csf-protein":"grid-csf","csf-glucose":"grid-csf",
-        "abg-ph":"grid-abg","abg-pco2":"grid-abg","abg-po2":"grid-abg","abg-hco3":"grid-abg","abg-base-excess":"grid-abg","abg-sao2":"grid-abg",
-        "cea":"grid-misc","ca125":"grid-misc","ca19-9":"grid-misc","psa":"grid-misc","spep":"grid-misc","amylase":"grid-misc","lipase":"grid-misc","ck-total":"grid-misc","hb-s":"grid-misc","fecal-occult":"grid-misc"
-      };
-
-      for (const item of LAB_DATA) {
-        const gid = assignment[item.id];
-        if (gid && grids[gid]) {
-          grids[gid].push(item);
-        }
-      }
-
-      for (const [gid, items] of Object.entries(grids)) {
-        const container = document.getElementById(gid);
-        if (!container) continue;
-        container.innerHTML = items.map(renderCard).join("\n");
-      }
-
-      assignSectionCounts();
-      buildTOC();
-      statsBar();
-    }
-
-    // ---------------------------------------------------------------------------
-    // Search
-    // ---------------------------------------------------------------------------
-
-    const searchInput = document.getElementById("search");
-    const searchClear = document.getElementById("searchClear");
-    const allCards = () => document.querySelectorAll(".card");
-
-    let currentResults = [];
-
-    function doSearch(query) {
-      query = query.trim().toLowerCase();
-      searchClear.classList.toggle("show", query.length > 0);
-      const cards = allCards();
-      let visibleCount = 0;
-
-      if (!query) {
-        cards.forEach(c => c.style.display = "");
-        document.getElementById("tagline").textContent =
-          "Press Ctrl+F or type above to find a test. Values are typical adult reference ranges — always confirm with your local laboratory.";
-        currentResults = [];
-        return;
-      }
-
-      const matchedIds = new Set();
-      for (const card of cards) {
-        const id = card.dataset.id;
-        const item = LAB_DATA.find(d => d.id === id);
-        if (!item) { card.style.display = "none"; continue; }
-
-        const haystack = [
-          item.title, item.symbol, item.unit, item.loinc || "",
-          ...item.results.map(r => r.label + " " + r.value + " " + (r.note || ""))
-        ].join(" ").toLowerCase();
-
-        if (haystack.includes(query)) {
-          card.style.display = "";
-          matchedIds.add(id);
-          visibleCount++;
-        } else {
-          card.style.display = "none";
-        }
-      }
-
-      const total = LAB_DATA.length;
-      document.getElementById("tagline").textContent =
-        `Found ${visibleCount} of ${total} tests for “${escapeHTML(query)}”`;
-
-      // Show/hide section empties gracefully: if a section has no visible cards, hide its heading
-      document.querySelectorAll("section").forEach(sec => {
-        const visibleCards = sec.querySelectorAll(".card:not([style*='display: none'])");
-        const heading = sec.querySelector(".section-head");
-        if (heading) {
-          heading.style.opacity = visibleCards.length ? "1" : "0.35";
-        }
-      });
-    }
-
-    searchInput.addEventListener("input", () => doSearch(searchInput.value));
-    searchClear.addEventListener("click", () => {
-      searchInput.value = "";
-      doSearch("");
-      searchInput.focus();
-    });
-
-    // Keyboard: Escape clears search
-    document.addEventListener("keydown", e => {
-      if (e.key === "Escape" && document.activeElement === searchInput) {
-        searchInput.value = "";
-        doSearch("");
-        searchInput.blur();
-      }
-    });
-
-    // ---------------------------------------------------------------------------
-    // Offline service worker registration (if available)
-    // ---------------------------------------------------------------------------
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        // We register a minimal SW that caches this page for offline use.
-        // Inline via a blob URL so the file stays single-file.
-        const swCode = `
-          const CACHE = "lab-values-v1";
-          self.addEventListener("install", e => {
-            e.waitUntil(
-              caches.open(CACHE).then(c => c.addAll([self.location.href]))
-            );
-            self.skipWaiting();
-          });
-          self.addEventListener("fetch", e => {
-            e.respondWith(
-              caches.match(e.request).then(r => r || fetch(e.request).then(res => {
-                // Don't cache non-GET or non-success
-                if (res.status !== 200 || e.request.method !== "GET") return res.clone();
-                const clone = res.clone();
-                caches.open(CACHE).then(c => c.put(e.request, clone));
-                return res;
-              }).catch(() => caches.match(e.request)))
-            );
-          });
-        `;
-        try {
-          const blob = new Blob([swCode], { type: "application/javascript" });
-          const swUrl = URL.createObjectURL(blob);
-          // Create a fake registration using a service worker at blob URL.
-          // Note: blob URLs cannot be used for SW in all browsers; fall back gracefully.
-          if (swUrl.startsWith("blob:")) {
-            // Most browsers disallow blob URLs as SW. Fall back to no-SW.
-            console.log("Offline caching: blob URL SW not supported in this browser; page still works offline once loaded if cached by browser.");
-          }
-        } catch (e) {
-          // ignore
-        }
-      });
-    }
-
-    // ---------------------------------------------------------------------------
-    // Init
-    // ---------------------------------------------------------------------------
-    renderAll();
-  </script>
 </body>
 </html>
