@@ -452,8 +452,9 @@
               <div class="value warn" id="peds-result-max-day">—</div>
             </div>
             <div class="result-item" id="peds-result-mL-box" style="display:none;">
-              <div class="label">Per dose (mL)</div>
+              <div class="label">Per dose (liquid)</div>
               <div class="value" id="peds-result-mL">—</div>
+              <div class="value muted" id="peds-result-tsp" style="font-size:0.82rem;margin-top:2px;"></div>
             </div>
             <div class="result-item" id="peds-result-total-box" style="display:none;">
               <div class="label">Total quantity (day)</div>
@@ -1789,10 +1790,16 @@
     // mL per dose
     const mLBox = $("peds-result-mL-box");
     const mLVal = $("peds-result-mL");
+    const tspVal = $("peds-result-tsp");
     if (mLBox && mLVal) {
       if (result.mLPerDose !== null && result.mLPerDose !== undefined) {
         mLBox.style.display = "block";
         mLVal.textContent = result.mLPerDose + " mL";
+        // Add tsp conversion
+        const tsp = result.mLPerDose / 4.92892;
+        if (tspVal) {
+          tspVal.textContent = roundTo(tsp, 2) + " tsp" + (tsp < 1 && tsp > 0 ? " (use oral syringe — tsp not accurate for small volumes)" : "");
+        }
         // Add a note about measuring
         if (result.mLPerDose < 1 && result.mLPerDose > 0) {
           mLVal.textContent = result.mLPerDose + " mL (use oral syringe for accuracy)";
@@ -1836,7 +1843,8 @@
         }
         if (result.mLPerDose !== null) {
           const conc = $("peds-concentration").selectedOptions[0]?.textContent || "";
-          html += "<strong>Liquid conversion:</strong> " + result.mLPerDose + " mL per dose using " + esc(conc) + " (use an oral syringe for accurate measurement).<br>";
+          const tsp = result.mLPerDose / 4.92892;
+          html += "<strong>Liquid conversion:</strong> " + result.mLPerDose + " mL (" + roundTo(tsp, 2) + " tsp) per dose using " + esc(conc) + (tsp < 1 && tsp > 0 ? "; use oral syringe — tsp not accurate under 1 tsp" : "") + ".<br>";
         }
         if (result.totalMgDay > 0) {
           html += "<strong>Total per day:</strong> " + result.totalMgDay + " mg (" + (result.dosesPerDayUsed || inferDosesPerDay(result.freqStr)) + " doses/day" + (result.dosesPerDayInferred ? " — inferred from frequency" : "") + ").";
@@ -1967,7 +1975,7 @@
         }
         if (result.mLPerDose !== null) {
           const conc = $("adult-formulation").selectedOptions[0]?.textContent || "";
-          html += "<strong>Liquid conversion:</strong> " + result.mLPerDose + " mL per dose using " + esc(conc) + " (use an oral syringe for accurate measurement).<br>";
+          html += "<strong>Liquid conversion:</strong> " + result.mLPerDose + " mL (" + roundTo(result.mLPerDose / 4.92892, 2) + " tsp) per dose using " + esc(conc) + (result.mLPerDose < 1 && result.mLPerDose > 0 ? "; use oral syringe for accuracy" : "") + ".<br>";
         }
         if (result.totalMgDay > 0) {
           html += "<strong>Total per day:</strong> " + result.totalMgDay + " mg (" + (result.dosesPerDayUsed || inferDosesPerDay(result.freqStr)) + " doses/day" + (result.dosesPerDayInferred ? " — inferred from frequency" : "") + ").";
