@@ -1803,15 +1803,6 @@
     }
 
     // Total quantity
-    // Doses per day display
-    const dpdBox = $("peds-result-dpd-box");
-    const dpdVal = $("peds-result-dpd");
-    if (dpdBox && dpdVal) {
-      const dpdUsed = dosesPerDay !== undefined && dosesPerDay !== null ? dosesPerDay : inferDosesPerDay(freqStr);
-      dpdBox.style.display = "block";
-      dpdVal.textContent = dpdUsed + " × / day" + (dosesPerDay === undefined || dosesPerDay === null ? " (inferred)" : "");
-    }
-
     const totalBox = $("peds-result-total-box");
     const totalVal = $("peds-result-total");
     if (totalBox && totalVal) {
@@ -1941,15 +1932,6 @@
       } else {
         mLBox.style.display = "none";
       }
-    }
-
-    // Doses per day display
-    const dpdBox = $("adult-result-dpd-box");
-    const dpdVal = $("adult-result-dpd");
-    if (dpdBox && dpdVal) {
-      const dpdUsed = dosesPerDay !== undefined && dosesPerDay !== null ? dosesPerDay : inferDosesPerDay(freqStr);
-      dpdBox.style.display = "block";
-      dpdVal.textContent = dpdUsed + " × / day" + (dosesPerDay === undefined || dosesPerDay === null ? " (inferred)" : "");
     }
 
     const totalBox = $("adult-result-total-box");
