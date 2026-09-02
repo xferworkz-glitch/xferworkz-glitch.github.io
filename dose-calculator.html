@@ -2049,9 +2049,7 @@
       markField($("peds-concentration"), true);
     }
 
-    if (result.errors.length === 0 && med) {
-      renderPedsResults(result, med, duration);
-    }
+    renderPedsResults(result, med, duration);
   });
 
   $("peds-reset").addEventListener("click", function () {
@@ -2094,9 +2092,7 @@
       markField($("adult-weight"), true);
     }
 
-    if (result.errors.length === 0 && med) {
-      renderAdultResults(result, med, duration);
-    }
+    renderAdultResults(result, med, duration);
   });
 
   $("adult-reset").addEventListener("click", function () {
