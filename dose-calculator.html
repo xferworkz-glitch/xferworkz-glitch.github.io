@@ -361,6 +361,14 @@
               <span class="error-msg" id="peds-weight-error">Please enter a valid weight between 0.5 and 150 kg.</span>
             </div>
 
+            <div class="form-group" style="flex-direction:row; align-items:center; gap:10px; padding-top:4px;">
+              <input type="checkbox" id="peds-use-ideal-weight" style="width:auto; accent-color:var(--accent);">
+              <label for="peds-use-ideal-weight" style="font-size:0.85rem; font-weight:500; color:var(--muted); cursor:pointer; margin:0;">
+                Weight not available — use <strong>ideal weight for age</strong> (estimate)
+              </label>
+              <span class="hint" style="margin-left:auto; font-size:0.74rem; color:var(--muted);">Only if weight cannot be measured. Age is required.</span>
+            </div>
+
             <div class="form-group">
               <label for="peds-age">Patient age (optional)</label>
               <div class="input-with-unit">
@@ -1250,6 +1258,79 @@
   }
 
   // ═══════════════════════════════════════════════════════
+  // IDEAL BODY WEIGHT FOR AGE (WHO-based reference)
+  // ═══════════════════════════════════════════════════════
+  // Median weight-for-age (kg) from WHO Child Growth Standards (0–5 yr)
+  // and WHO/CDC growth references (5–20 yr), boys' median rounded.
+  // Ages > 20 return null (not applicable to pediatric panel).
+  // Interpolation is linear between the tabulated half-year points below.
+  const _IBW_TABLE = [
+    { age: 0.0,  kg: 3.3 },   // birth
+    { age: 0.5,  kg: 6.4 },   // 6 months
+    { age: 1.0,  kg: 9.6 },   // 1 year
+    { age: 1.5,  kg: 11.0 },  // 18 months
+    { age: 2.0,  kg: 12.2 },  // 2 years
+    { age: 2.5,  kg: 13.5 },
+    { age: 3.0,  kg: 14.0 },
+    { age: 3.5,  kg: 15.0 },
+    { age: 4.0,  kg: 15.5 },
+    { age: 4.5,  kg: 16.5 },
+    { age: 5.0,  kg: 18.0 },
+    { age: 5.5,  kg: 19.0 },
+    { age: 6.0,  kg: 20.0 },
+    { age: 6.5,  kg: 21.0 },
+    { age: 7.0,  kg: 22.5 },
+    { age: 7.5,  kg: 23.5 },
+    { age: 8.0,  kg: 25.0 },
+    { age: 8.5,  kg: 26.5 },
+    { age: 9.0,  kg: 28.0 },
+    { age: 9.5,  kg: 29.5 },
+    { age: 10.0, kg: 31.0 },
+    { age: 10.5, kg: 32.5 },
+    { age: 11.0, kg: 34.0 },
+    { age: 11.5, kg: 36.0 },
+    { age: 12.0, kg: 38.0 },
+    { age: 12.5, kg: 40.0 },
+    { age: 13.0, kg: 42.0 },
+    { age: 13.5, kg: 44.5 },
+    { age: 14.0, kg: 47.0 },
+    { age: 14.5, kg: 49.5 },
+    { age: 15.0, kg: 51.0 },
+    { age: 15.5, kg: 53.0 },
+    { age: 16.0, kg: 54.5 },
+    { age: 16.5, kg: 56.0 },
+    { age: 17.0, kg: 57.0 },
+    { age: 17.5, kg: 58.0 },
+    { age: 18.0, kg: 59.0 },
+    { age: 18.5, kg: 60.0 },
+    { age: 19.0, kg: 61.0 },
+    { age: 19.5, kg: 62.0 },
+    { age: 20.0, kg: 63.0 }
+  ];
+
+  function idealBodyWeightKg(ageYears) {
+    if (ageYears === undefined || ageYears === null || isNaN(ageYears)) return null;
+    const a = parseFloat(ageYears);
+    if (a < 0) return null;
+    if (a > 20) return null;     // pediatric panel only; adults use adult dosing
+    if (a >= 20) return _IBW_TABLE[_IBW_TABLE.length - 1].kg;
+    // Find surrounding brackets
+    let lo = _IBW_TABLE[0];
+    let hi = _IBW_TABLE[_IBW_TABLE.length - 1];
+    for (let i = 0; i < _IBW_TABLE.length - 1; i++) {
+      if (a >= _IBW_TABLE[i].age && a <= _IBW_TABLE[i + 1].age) {
+        lo = _IBW_TABLE[i];
+        hi = _IBW_TABLE[i + 1];
+        break;
+      }
+    }
+    if (a <= lo.age) return lo.kg;
+    if (a >= hi.age) return hi.kg;
+    const t = (a - lo.age) / (hi.age - lo.age);
+    return roundTo(lo.kg + (hi.kg - lo.kg) * t, 1);
+  }
+
+  // ═══════════════════════════════════════════════════════
   // PEDIATRIC CALCULATION ENGINE
   // ═══════════════════════════════════════════════════════
 
@@ -1268,8 +1349,11 @@
     if (!med) {
       errors.push("Please select a medicine.");
     }
-    if (!weightKg || weightKg < 0.5 || weightKg > 150) {
-      errors.push("Weight must be between 0.5 and 150 kg.");
+    // Weight is optional IF the user opts into ideal-weight-for-age fallback.
+    // Otherwise it is required.
+    const useIdealWeight = window._pedsUseIdealWeight || false;
+    if (!useIdealWeight && (!weightKg || weightKg < 0.5 || weightKg > 150)) {
+      errors.push("Weight must be between 0.5 and 150 kg. If the patient's weight is unknown, check “Use ideal weight for age” below.");
     }
     if (ageYears !== undefined && ageYears < 0) {
       errors.push("Age must be 0 or greater.");
@@ -1278,7 +1362,34 @@
       errors.push("Please select a formulation/concentration.");
     }
 
-    if (errors.length) return { errors, warnings, dosePerAdminMg: null, freqStr: "", maxDailyMg: 0, mLPerDose: null, totalMgDay: 0, notes: "" };
+    // --- determine the effective weight used for dosing ---
+    let effectiveWeightKg = weightKg;       // actual weight, if provided and valid
+    let weightSource = "actual";            // "actual" | "ideal" | "none"
+
+    if (!useIdealWeight) {
+      // actual weight path: must be valid
+      if (!effectiveWeightKg || effectiveWeightKg < 0.5 || effectiveWeightKg > 150) {
+        // error already pushed above
+      }
+    } else {
+      // Ideal weight for age path — weight field is ignored (may be blank/invalid)
+      if (ageYears !== undefined && ageYears >= 0 && ageYears <= 20) {
+        effectiveWeightKg = idealBodyWeightKg(ageYears);
+        weightSource = "ideal";
+        if (weightKg && weightKg >= 0.5 && weightKg <= 150) {
+          // Both actual and age are available — warn that we're using ideal
+          warnings.push("Weight is available (" + roundTo(weightKg,1) + " kg) but you requested ideal weight-for-age. The calculator used the age-based ideal weight (" + roundTo(effectiveWeightKg,1) + " kg). For accuracy, enter the measured weight and leave the ideal-weight box unchecked.");
+        } else {
+          warnings.push("Using ideal body weight for age (" + roundTo(effectiveWeightKg,1) + " kg) because measured weight is unavailable. Ideal weight is an estimate — always confirm with a measured weight when possible. Dosing based on estimated weight may be inaccurate.");
+        }
+      } else {
+        errors.push("Age is required when using ideal weight for age. Please enter the patient's age (years).");
+        // fall back: no effective weight
+        effectiveWeightKg = null;
+      }
+    }
+
+    if (errors.length) return { errors, warnings, dosePerAdminMg: null, freqStr: "", maxDailyMg: 0, mLPerDose: null, totalMgDay: 0, notes: "", weightSource: weightSource || "none" };
 
     // --- age checks ---
     if (ageYears !== undefined && ageYears < 0) {
@@ -1318,7 +1429,7 @@
 
     // Compute per-dose mg: use mid-range as the recommended dose, show range
     const recMgPerKg = (doseMinMgPerKg + doseMaxMgPerKg) / 2;
-    let perDoseMg = recMgPerKg * weightKg;
+    let perDoseMg = recMgPerKg * effectiveWeightKg;
 
     // Cap by absolute max per dose
     if (med.maxPerDoseMg && perDoseMg > med.maxPerDoseMg) {
@@ -1345,7 +1456,7 @@
     }
 
     freqStr = med.freqShort || med.freq || "";
-    maxDailyMg = med.maxDailyMg ? med.maxDailyMg * weightKg : 0;
+    maxDailyMg = med.maxDailyMg ? med.maxDailyMg * effectiveWeightKg : 0;
     if (med.maxDailyMg && maxDailyMg > med.maxPerDoseMg * 4) {
       // sanity: max daily shouldn't exceed 4× max per dose for q6h (4 doses/day)
       // but leave as computed if explicit
@@ -1382,10 +1493,16 @@
     }
 
     // Specific medicine warnings
-    if (med.id === "ibuprofen-peds" && weightKg < 5) {
+    if (med.id === "ibuprofen-peds" && effectiveWeightKg < 5 && weightSource === "ideal") {
+      warnings.push("Ibuprofen is generally not recommended in children under 6 months or under 5 kg without medical advice. Note: this is based on the ideal weight estimate (" + roundTo(effectiveWeightKg,1) + " kg) — confirm with actual weight if available.");
+    }
+    if (med.id === "ibuprofen-peds" && effectiveWeightKg < 5 && weightSource === "actual") {
       warnings.push("Ibuprofen is generally not recommended in children under 6 months or under 5 kg without medical advice.");
     }
-    if (med.id === "paracetamol-peds" && weightKg < 3) {
+    if (med.id === "paracetamol-peds" && effectiveWeightKg < 3 && weightSource === "ideal") {
+      warnings.push("In infants under 3 months or under 3 kg, consult a physician before giving paracetamol. Dose may need adjustment. Note: this is based on the ideal weight estimate (" + roundTo(effectiveWeightKg,1) + " kg).");
+    }
+    if (med.id === "paracetamol-peds" && effectiveWeightKg < 3 && weightSource === "actual") {
       warnings.push("In infants under 3 months or under 3 kg, consult a physician before giving paracetamol. Dose may need adjustment.");
     }
     if (med.id === "co-trimoxazole-peds") {
@@ -1407,6 +1524,11 @@
     // --- notes ---
     notes = med.notes || "";
 
+    // If ideal weight was used, prepend a note
+    if (weightSource === "ideal") {
+      notes = "Dose calculated using ideal body weight for age (" + roundTo(effectiveWeightKg,1) + " kg, estimated from age " + roundTo(ageYears||0,1) + " years). " + notes;
+    }
+
     return {
       errors,
       warnings,
@@ -1417,7 +1539,8 @@
       totalMgDay: roundTo(totalMgDay, 0),
       notes,
       doseMinMgPerKg,
-      doseMaxMgPerKg
+      doseMaxMgPerKg,
+      weightSource: weightSource || "actual"
     };
   }
 
@@ -1598,7 +1721,9 @@
     if (doseUnit) doseUnit.textContent = "mg";
     if (sub) {
       if (result.doseMinMgPerKg !== null && result.doseMaxMgPerKg !== null) {
-        sub.textContent = roundTo(result.doseMinMgPerKg,0) + "–" + roundTo(result.doseMaxMgPerKg,0) + " mg/kg/dose × " + roundTo(parseFloat($("peds-weight").value)||0,1) + " kg";
+        const displayedWt = result.weightSource === "ideal" ? roundTo(idealBodyWeightKg(ageYears || 0), 1) : roundTo(parseFloat($("peds-weight").value)||0, 1);
+        const wtLabel = result.weightSource === "ideal" ? "ideal wt (est.)" : "actual wt";
+        sub.textContent = roundTo(result.doseMinMgPerKg,0) + "–" + roundTo(result.doseMaxMgPerKg,0) + " mg/kg/dose × " + wtLabel + " " + displayedWt + " kg";
       } else {
         sub.textContent = "";
       }
@@ -1673,7 +1798,7 @@
       if (med) {
         html += "<strong>Regimen:</strong> " + esc(result.freqStr) + "<br>";
         if (result.doseMinMgPerKg !== null) {
-          html += "<strong>Dose range:</strong> " + roundTo(result.doseMinMgPerKg,0) + "–" + roundTo(result.doseMaxMgPerKg,0) + " mg/kg/dose; this patient: " + roundTo(parseFloat($("peds-weight").value)||0,1) + " kg → " + result.dosePerAdminMg + " mg/dose (rounded to practical dose).<br>";
+          html += "<strong>Dose range:</strong> " + roundTo(result.doseMinMgPerKg,0) + "–" + roundTo(result.doseMaxMgPerKg,0) + " mg/kg/dose; " + (result.weightSource === "ideal" ? "ideal wt est. " : "actual wt ") + roundTo(parseFloat($("peds-weight").value)||0,1) + " kg → " + result.dosePerAdminMg + " mg/dose (rounded to practical dose).<br>";
         }
         if (result.mLPerDose !== null) {
           const conc = $("peds-concentration").selectedOptions[0]?.textContent || "";
@@ -1835,10 +1960,16 @@
 
   $("peds-calculate").addEventListener("click", function () {
     const medId = $("peds-medicine").value;
-    const weight = parseFloat($("peds-weight").value);
-    const age = parseFloat($("peds-age").value);
+    const weightRaw = $("peds-weight").value.trim();
+    const weight = weightRaw === "" ? undefined : parseFloat(weightRaw);
+    const ageRaw = $("peds-age").value.trim();
+    const age = ageRaw === "" ? undefined : parseFloat(ageRaw);
     const conc = $("peds-concentration").value;
     const duration = parseInt($("peds-duration").value, 10) || 1;
+    const useIdeal = $("peds-use-ideal-weight").checked;
+
+    // Expose ideal-weight flag to computePeds via window
+    window._pedsUseIdealWeight = useIdeal;
 
     // Clear all errors
     ["peds-weight-error","peds-age-error","peds-concentration-error"].forEach(id => {
@@ -1848,10 +1979,12 @@
     $("peds-results").classList.remove("show");
 
     const med = PEDS_MEDICINES.find(m => m.id === medId);
-    const result = computePeds(med, weight || 0, age, conc, duration);
+    const result = computePeds(med, weight, age, conc, duration);
 
     // Map errors to fields
-    if (result.errors.some(e => e.includes("weight"))) {
+    // Don't flag the weight field as bad when user opted into ideal-weight
+    // and left weight blank — that's the expected path.
+    if (result.errors.some(e => e.includes("weight")) && !useIdeal) {
       showError("peds-weight-error", true);
       markField($("peds-weight"), true);
     }
