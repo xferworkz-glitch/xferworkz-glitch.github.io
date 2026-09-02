@@ -407,9 +407,16 @@
 
           <div class="form-row">
             <div class="form-group">
-              <label for="peds-duration">Duration / number of doses</label>
+              <label for="peds-doses-per-day">Doses per day</label>
+              <input type="number" id="peds-doses-per-day" min="1" max="12" step="1" placeholder="e.g. 3">
+              <span class="hint">How many times per day the medicine is given. If left blank, inferred from the medicine's frequency (e.g. q8h → 3, q12h → 2).</span>
+              <span class="error-msg" id="peds-doses-per-day-error">Enter 1 to 12.</span>
+            </div>
+            <div class="form-group">
+              <label for="peds-duration">Duration (days)</label>
               <input type="number" id="peds-duration" min="1" max="365" step="1" placeholder="e.g. 5">
-              <span class="hint">Number of days or doses to calculate the total quantity needed. Defaults to 1 if blank.</span>
+              <span class="hint">Number of days the prescription lasts. Total quantity = per-dose amount × doses/day × days.</span>
+              <span class="error-msg" id="peds-duration-error">Enter 1 or more.</span>
             </div>
           </div>
 
@@ -545,9 +552,16 @@
 
           <div class="form-row">
             <div class="form-group">
+              <label for="adult-doses-per-day">Doses per day</label>
+              <input type="number" id="adult-doses-per-day" min="1" max="12" step="1" placeholder="e.g. 3">
+              <span class="hint">How many times per day the medicine is taken. If left blank, inferred from the medicine's frequency.</span>
+              <span class="error-msg" id="adult-doses-per-day-error">Enter 1 to 12.</span>
+            </div>
+            <div class="form-group">
               <label for="adult-duration">Duration (days)</label>
               <input type="number" id="adult-duration" min="1" max="365" step="1" placeholder="e.g. 7">
-              <span class="hint">Number of days to calculate total quantity. Defaults to 1 if blank.</span>
+              <span class="hint">Number of days the prescription lasts. Total quantity = per-dose amount × doses/day × days.</span>
+              <span class="error-msg" id="adult-duration-error">Enter 1 or more.</span>
             </div>
           </div>
 
@@ -1334,7 +1348,7 @@
   // PEDIATRIC CALCULATION ENGINE
   // ═══════════════════════════════════════════════════════
 
-  function computePeds(med, weightKg, ageYears, concValue, durationDays) {
+  function computePeds(med, weightKg, ageYears, concValue, dosesPerDayInput, durationDays) {
     // Returns { errors, dosePerAdminMg, freqStr, maxDailyMg, mLPerDose, totalMgDay, maxDailyMgAbs, warnings, notes }
     const errors = [];
     const warnings = [];
@@ -1360,6 +1374,13 @@
     }
     if (!concValue) {
       errors.push("Please select a formulation/concentration.");
+    }
+    // Validate doses-per-day if provided
+    if (dosesPerDayInput !== undefined && dosesPerDayInput !== null) {
+      const dpd = parseInt(dosesPerDayInput, 10);
+      if (isNaN(dpd) || dpd < 1 || dpd > 12) {
+        errors.push("Doses per day must be between 1 and 12.");
+      }
     }
 
     // --- determine the effective weight used for dosing ---
@@ -1468,13 +1489,13 @@
       if (!isNaN(mgPerMl) && mgPerMl > 0) {
         mLPerDose = roundTo(dosePerAdminMg / mgPerMl, 2);
         // Also total per day (number of doses per day from freq)
-        const dosesPerDay = inferDosesPerDay(freqStr);
+        const dosesPerDay = (dosesPerDayInput !== undefined && dosesPerDayInput !== null) ? dosesPerDayInput : inferDosesPerDay(freqStr);
         totalMgDay = dosePerAdminMg * dosesPerDay;
       }
     } else if (concValue === "solid" || concValue === "other") {
       // mg only
       mLPerDose = null;
-      const dosesPerDay = inferDosesPerDay(freqStr);
+      const dosesPerDay = (dosesPerDayInput !== undefined && dosesPerDayInput !== null) ? dosesPerDayInput : inferDosesPerDay(freqStr);
       totalMgDay = dosePerAdminMg * dosesPerDay;
     }
 
@@ -1540,7 +1561,9 @@
       notes,
       doseMinMgPerKg,
       doseMaxMgPerKg,
-      weightSource: weightSource || "actual"
+      weightSource: weightSource || "actual",
+      dosesPerDayUsed: dosesPerDay,
+      dosesPerDayInferred: dosesPerDayInput === undefined || dosesPerDayInput === null
     };
   }
 
@@ -1562,7 +1585,7 @@
   // ADULT CALCULATION ENGINE
   // ═══════════════════════════════════════════════════════
 
-  function computeAdult(med, ageYears, weightKg, concValue, durationDays) {
+  function computeAdult(med, ageYears, weightKg, concValue, dosesPerDayInput, durationDays) {
     const errors = [];
     const warnings = [];
     let dosePerAdminMg = null;
@@ -1609,11 +1632,11 @@
       const mgPerMl = parseFloat(concValue);
       if (!isNaN(mgPerMl) && mgPerMl > 0) {
         mLPerDose = roundTo(dosePerAdminMg / mgPerMl, 2);
-        const dosesPerDay = inferDosesPerDay(freqStr);
+        const dosesPerDay = (dosesPerDayInput !== undefined && dosesPerDayInput !== null) ? dosesPerDayInput : inferDosesPerDay(freqStr);
         totalMgDay = dosePerAdminMg * dosesPerDay;
       }
     } else {
-      const dosesPerDay = inferDosesPerDay(freqStr);
+      const dosesPerDay = (dosesPerDayInput !== undefined && dosesPerDayInput !== null) ? dosesPerDayInput : inferDosesPerDay(freqStr);
       totalMgDay = dosePerAdminMg * dosesPerDay;
     }
 
@@ -1680,7 +1703,9 @@
       totalMgDay: roundTo(totalMgDay, 0),
       notes,
       doseMinMg: med.doseMg.min,
-      doseMaxMg: med.doseMg.max
+      doseMaxMg: med.doseMg.max,
+      dosesPerDayUsed: dosesPerDay,
+      dosesPerDayInferred: dosesPerDayInput === undefined || dosesPerDayInput === null
     };
   }
 
@@ -1752,6 +1777,15 @@
       }
     }
 
+    // Doses per day
+    const dpdBox = $("peds-result-dpd-box");
+    const dpdVal = $("peds-result-dpd");
+    if (dpdBox && dpdVal) {
+      const dpdUsed = result.dosesPerDayUsed !== undefined && result.dosesPerDayUsed !== null ? result.dosesPerDayUsed : inferDosesPerDay(result.freqStr);
+      dpdBox.style.display = "block";
+      dpdVal.textContent = dpdUsed + " × / day" + (result.dosesPerDayInferred ? " (inferred)" : "");
+    }
+
     // mL per dose
     const mLBox = $("peds-result-mL-box");
     const mLVal = $("peds-result-mL");
@@ -1769,6 +1803,15 @@
     }
 
     // Total quantity
+    // Doses per day display
+    const dpdBox = $("peds-result-dpd-box");
+    const dpdVal = $("peds-result-dpd");
+    if (dpdBox && dpdVal) {
+      const dpdUsed = dosesPerDay !== undefined && dosesPerDay !== null ? dosesPerDay : inferDosesPerDay(freqStr);
+      dpdBox.style.display = "block";
+      dpdVal.textContent = dpdUsed + " × / day" + (dosesPerDay === undefined || dosesPerDay === null ? " (inferred)" : "");
+    }
+
     const totalBox = $("peds-result-total-box");
     const totalVal = $("peds-result-total");
     if (totalBox && totalVal) {
@@ -1778,14 +1821,14 @@
         totalVal.textContent = roundTo(totalQty, 0) + " mg total (" + (durationDays || 1) + " day" + ((durationDays||1)>1?"s":"") + ")";
         // Also show mL total if mL computed
         if (result.mLPerDose !== null) {
-          const totalMl = result.mLPerDose * inferDosesPerDay(result.freqStr) * (durationDays || 1);
+          const totalMl = result.mLPerDose * (result.dosesPerDayUsed || inferDosesPerDay(result.freqStr)) * (durationDays || 1);
           totalVal.textContent = roundTo(totalQty,0) + " mg total (" + roundTo(totalMl,1) + " mL total)";
         }
       } else {
         totalBox.style.display = "block";
         totalVal.textContent = result.totalMgDay + " mg/day";
         if (result.mLPerDose !== null) {
-          const totalMl = result.mLPerDose * inferDosesPerDay(result.freqStr);
+          const totalMl = result.mLPerDose * (result.dosesPerDayUsed || inferDosesPerDay(result.freqStr));
           totalVal.textContent = result.totalMgDay + " mg/day (" + roundTo(totalMl,1) + " mL/day)";
         }
       }
@@ -1805,7 +1848,7 @@
           html += "<strong>Liquid conversion:</strong> " + result.mLPerDose + " mL per dose using " + esc(conc) + " (use an oral syringe for accurate measurement).<br>";
         }
         if (result.totalMgDay > 0) {
-          html += "<strong>Total per day:</strong> " + result.totalMgDay + " mg (" + inferDosesPerDay(result.freqStr) + " doses/day).";
+          html += "<strong>Total per day:</strong> " + result.totalMgDay + " mg (" + (result.dosesPerDayUsed || inferDosesPerDay(result.freqStr)) + " doses/day" + (result.dosesPerDayInferred ? " — inferred from frequency" : "") + ").";
         }
       }
       if (result.notes) {
@@ -1877,6 +1920,15 @@
       }
     }
 
+    // Doses per day
+    const dpdBox = $("adult-result-dpd-box");
+    const dpdVal = $("adult-result-dpd");
+    if (dpdBox && dpdVal) {
+      const dpdUsed = result.dosesPerDayUsed !== undefined && result.dosesPerDayUsed !== null ? result.dosesPerDayUsed : inferDosesPerDay(result.freqStr);
+      dpdBox.style.display = "block";
+      dpdVal.textContent = dpdUsed + " × / day" + (result.dosesPerDayInferred ? " (inferred)" : "");
+    }
+
     const mLBox = $("adult-result-mL-box");
     const mLVal = $("adult-result-mL");
     if (mLBox && mLVal) {
@@ -1891,6 +1943,15 @@
       }
     }
 
+    // Doses per day display
+    const dpdBox = $("adult-result-dpd-box");
+    const dpdVal = $("adult-result-dpd");
+    if (dpdBox && dpdVal) {
+      const dpdUsed = dosesPerDay !== undefined && dosesPerDay !== null ? dosesPerDay : inferDosesPerDay(freqStr);
+      dpdBox.style.display = "block";
+      dpdVal.textContent = dpdUsed + " × / day" + (dosesPerDay === undefined || dosesPerDay === null ? " (inferred)" : "");
+    }
+
     const totalBox = $("adult-result-total-box");
     const totalVal = $("adult-result-total");
     if (totalBox && totalVal) {
@@ -1899,15 +1960,15 @@
         const totalQty = result.totalMgDay * (durationDays || 1);
         let text = roundTo(totalQty, 0) + " mg total (" + (durationDays || 1) + " day" + ((durationDays||1)>1?"s":"") + ")";
         if (result.mLPerDose !== null) {
-          const totalMl = result.mLPerDose * inferDosesPerDay(result.freqStr) * (durationDays || 1);
+          const totalMl = result.mLPerDose * (result.dosesPerDayUsed || inferDosesPerDay(result.freqStr)) * (durationDays || 1);
           text = roundTo(totalQty,0) + " mg total (" + roundTo(totalMl,1) + " mL total)";
         }
         totalVal.textContent = text;
       } else {
         totalBox.style.display = "block";
-        let text = result.totalMgDay + " mg/day (" + inferDosesPerDay(result.freqStr) + " doses/day)";
+        let text = result.totalMgDay + " mg/day (" + (result.dosesPerDayUsed || inferDosesPerDay(result.freqStr)) + " doses/day" + (result.dosesPerDayInferred ? " — inferred" : "") + ")";
         if (result.mLPerDose !== null) {
-          const totalMl = result.mLPerDose * inferDosesPerDay(result.freqStr);
+          const totalMl = result.mLPerDose * (result.dosesPerDayUsed || inferDosesPerDay(result.freqStr));
           text = result.totalMgDay + " mg/day (" + roundTo(totalMl,1) + " mL/day)";
         }
         totalVal.textContent = text;
@@ -1927,7 +1988,7 @@
           html += "<strong>Liquid conversion:</strong> " + result.mLPerDose + " mL per dose using " + esc(conc) + " (use an oral syringe for accurate measurement).<br>";
         }
         if (result.totalMgDay > 0) {
-          html += "<strong>Total per day:</strong> " + result.totalMgDay + " mg (" + inferDosesPerDay(result.freqStr) + " doses/day).";
+          html += "<strong>Total per day:</strong> " + result.totalMgDay + " mg (" + (result.dosesPerDayUsed || inferDosesPerDay(result.freqStr)) + " doses/day" + (result.dosesPerDayInferred ? " — inferred from frequency" : "") + ").";
         }
       }
       if (result.notes) {
@@ -1972,14 +2033,15 @@
     window._pedsUseIdealWeight = useIdeal;
 
     // Clear all errors
-    ["peds-weight-error","peds-age-error","peds-concentration-error"].forEach(id => {
+    ["peds-weight-error","peds-age-error","peds-concentration-error","peds-doses-per-day-error","peds-duration-error"].forEach(id => {
       showError(id, false);
       markField($(id.replace("-error","")), false);
     });
     $("peds-results").classList.remove("show");
 
     const med = PEDS_MEDICINES.find(m => m.id === medId);
-    const result = computePeds(med, weight, age, conc, duration);
+    const dosesPerDay = $("peds-doses-per-day").value.trim() === "" ? undefined : parseInt($("peds-doses-per-day").value, 10);
+    const result = computePeds(med, weight, age, conc, dosesPerDay, duration);
 
     // Map errors to fields
     // Don't flag the weight field as bad when user opted into ideal-weight
@@ -2007,6 +2069,7 @@
     $("peds-weight").value = "";
     $("peds-age").value = "";
     $("peds-concentration").value = "";
+    $("peds-doses-per-day").value = "";
     $("peds-duration").value = "";
     $("peds-results").classList.remove("show");
     document.querySelectorAll("#peds-results ~ .calc-card .field-error").forEach(el => el.classList.remove("field-error"));
@@ -2022,14 +2085,15 @@
     const conc = $("adult-formulation").value;
     const duration = parseInt($("adult-duration").value, 10) || 1;
 
-    ["adult-age-error","adult-weight-error"].forEach(id => {
+    ["adult-age-error","adult-weight-error","adult-doses-per-day-error","adult-duration-error"].forEach(id => {
       showError(id, false);
       markField($(id.replace("-error","")), false);
     });
     $("adult-results").classList.remove("show");
 
     const med = ADULT_MEDICINES.find(m => m.id === medId);
-    const result = computeAdult(med, age, weight || 0, conc, duration);
+    const dosesPerDay = $("adult-doses-per-day").value.trim() === "" ? undefined : parseInt($("adult-doses-per-day").value, 10);
+    const result = computeAdult(med, age, weight || 0, conc, dosesPerDay, duration);
 
     if (result.errors.some(e => e.includes("age"))) {
       showError("adult-age-error", true);
@@ -2050,6 +2114,7 @@
     $("adult-age").value = "";
     $("adult-weight").value = "";
     $("adult-formulation").value = "solid";
+    $("adult-doses-per-day").value = "";
     $("adult-duration").value = "";
     $("adult-results").classList.remove("show");
     ["adult-age-error","adult-weight-error"].forEach(id => showError(id, false));
