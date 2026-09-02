@@ -1,0 +1,1946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pediatric &amp; Adult Dose Calculator — xferworkz-glitch</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --panel: #12121a;
+      --border: #1e1e2a;
+      --text: #e4e4ed;
+      --muted: #8888a0;
+      --accent: #7c6ff7;
+      --accent-2: #5fc3e4;
+      --accent-warm: #f7a65c;
+      --danger: #f75c5c;
+      --radius: 12px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner { display: flex; justify-content: space-between; align-items: center; height: 56px; }
+    .logo { font-weight: 700; font-size: 1rem; letter-spacing: -0.02em; }
+    .logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 20px; list-style: none; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 0.88rem; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a.active { color: var(--accent); }
+
+    /* ── Hero ── */
+    .hero { padding: 80px 0 48px; text-align: center; }
+    .badge {
+      display: inline-block; padding: 4px 12px; border-radius: 999px;
+      background: rgba(124,111,247,0.12); color: var(--accent);
+      font-size: 0.78rem; border: 1px solid rgba(124,111,247,0.25);
+      margin-bottom: 20px;
+    }
+    h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800; letter-spacing: -0.03em;
+      line-height: 1.15; margin-bottom: 14px;
+    }
+    h1 .highlight { color: var(--accent); }
+    .hero p { color: var(--muted); font-size: 1.05rem; max-width: 520px; margin: 0 auto 8px; }
+
+    .disclaimer-banner {
+      margin: 24px auto 0;
+      max-width: 720px;
+      background: rgba(247,92,92,0.08);
+      border: 1px solid rgba(247,92,92,0.25);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      font-size: 0.85rem;
+      color: #f0c0c0;
+      text-align: left;
+      line-height: 1.5;
+    }
+    .disclaimer-banner strong { color: var(--danger); }
+
+    /* ── Tabs ── */
+    .tabs-bar {
+      display: flex; gap: 4px;
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 4px;
+      margin: 32px 0 0;
+    }
+    .tab-btn {
+      flex: 1; padding: 10px 16px; border: none; background: transparent;
+      color: var(--muted); font-size: 0.92rem; font-weight: 600;
+      border-radius: 8px; cursor: pointer; transition: all 0.2s;
+      font-family: inherit;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active {
+      background: var(--accent); color: #fff;
+    }
+
+    /* ── Panel ── */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    section { padding: 40px 0 60px; border-top: 1px solid var(--border); }
+    .section-label {
+      font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--accent); margin-bottom: 8px;
+    }
+    h2 { font-size: clamp(1.4rem, 2.5vw, 1.8rem); font-weight: 700; margin-bottom: 10px; letter-spacing: -0.02em; }
+    .section-desc { color: var(--muted); font-size: 0.95rem; margin-bottom: 28px; }
+
+    /* ── Calculator card ── */
+    .calc-card {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px;
+      box-shadow: var(--shadow);
+    }
+    .form-row {
+      display: grid; grid-template-columns: 1fr; gap: 18px;
+      margin-bottom: 20px;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label {
+      font-size: 0.85rem; font-weight: 600; color: var(--muted);
+      letter-spacing: 0.02em;
+    }
+    .form-group label .req { color: var(--danger); margin-left: 2px; }
+    .form-group .hint {
+      font-size: 0.78rem; color: var(--muted); opacity: 0.7;
+      font-weight: 400; margin-top: -2px;
+    }
+    select, input[type="number"], input[type="text"] {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border); color: var(--text);
+      padding: 10px 12px; border-radius: 8px;
+      font-size: 0.95rem; font-family: inherit;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+    select:focus, input:focus {
+      outline: none; border-color: var(--accent);
+    }
+    select option { background: var(--panel); }
+
+    .input-with-unit {
+      position: relative;
+    }
+    .input-with-unit input {
+      padding-right: 48px;
+    }
+    .input-unit {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      color: var(--muted); font-size: 0.82rem; pointer-events: none;
+    }
+
+    .inline-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+    @media (max-width: 600px) {
+      .inline-grid { grid-template-columns: 1fr; }
+    }
+
+    .btn-row {
+      display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 11px 20px; border-radius: 999px; font-size: 0.9rem;
+      font-weight: 600; text-decoration: none; cursor: pointer;
+      border: none; font-family: inherit; transition: all 0.2s;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #6a5ce0; transform: translateY(-1px); }
+    .btn-ghost {
+      background: transparent; color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-reset {
+      background: transparent; color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .btn-reset:hover { color: var(--danger); border-color: var(--danger); }
+
+    /* ── Results ── */
+    .results {
+      margin-top: 24px;
+      display: none;
+    }
+    .results.show { display: block; }
+
+    .result-headline {
+      background: rgba(124,111,247,0.08);
+      border: 1px solid rgba(124,111,247,0.2);
+      border-radius: var(--radius);
+      padding: 18px 22px;
+      margin-bottom: 18px;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .result-dose {
+      font-size: 1.7rem; font-weight: 800; color: var(--accent);
+      letter-spacing: -0.02em;
+    }
+    .result-dose .unit { font-size: 1rem; color: var(--muted); font-weight: 600; margin-left: 4px; }
+    .result-sub {
+      font-size: 0.88rem; color: var(--muted);
+    }
+
+    .results-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;
+    }
+    .result-item {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 8px; padding: 14px 16px;
+    }
+    .result-item .label {
+      font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--muted); margin-bottom: 4px;
+    }
+    .result-item .value {
+      font-size: 1.15rem; font-weight: 700; color: var(--text);
+    }
+    .result-item .value.warn { color: var(--accent-warm); }
+    .result-item .value.danger { color: var(--danger); }
+
+    .result-detail {
+      margin-top: 16px;
+      padding: 14px 16px;
+      background: rgba(95,195,228,0.05);
+      border: 1px solid rgba(95,195,228,0.15);
+      border-radius: 8px;
+      font-size: 0.88rem;
+      color: #a0c8d8;
+      line-height: 1.6;
+    }
+    .result-detail strong { color: var(--accent-2); }
+
+    .result-warning {
+      margin-top: 14px;
+      padding: 12px 16px;
+      background: rgba(247,92,92,0.06);
+      border: 1px solid rgba(247,92,92,0.2);
+      border-radius: 8px;
+      font-size: 0.84rem;
+      color: #f0a0a0;
+      line-height: 1.5;
+    }
+    .result-warning.empty {
+      background: rgba(255,255,255,0.02);
+      border-color: var(--border);
+      color: var(--muted);
+    }
+
+    /* ── Medicine reference table (peds) ── */
+    .ref-section { margin-top: 40px; }
+    .ref-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      background: var(--panel);
+    }
+    table {
+      width: 100%; border-collapse: collapse; font-size: 0.88rem;
+    }
+    thead { background: rgba(124,111,247,0.06); }
+    th {
+      text-align: left; padding: 10px 14px;
+      font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--muted); border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    td {
+      padding: 10px 14px; border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+    .muted-cell { color: var(--muted); }
+    .accent-cell { color: var(--accent); font-weight: 600; }
+
+    /* ── Footer ── */
+    footer {
+      padding: 32px 0; text-align: center;
+      color: var(--muted); font-size: 0.82rem;
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    /* ── Scroll margin ── */
+    #calculator { scroll-margin-top: 70px; }
+
+    /* ── Animations ── */
+    .fade-in { animation: fadeIn 0.25s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── Error states ── */
+    .field-error {
+      border-color: var(--danger) !important;
+      background: rgba(247,92,92,0.05) !important;
+    }
+    .error-msg {
+      color: var(--danger); font-size: 0.78rem; margin-top: 2px;
+      display: none;
+    }
+    .error-msg.show { display: block; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="container nav-inner">
+      <div class="logo"><span>&]</span>xferworkz-glitch</div>
+      <ul class="nav-links">
+        <li><a href="/index.html">Home</a></li>
+        <li><a href="/dose-calculator.html" class="active">Dose Calculator</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="container">
+      <span class="badge">Clinical reference tool</span>
+      <h1>Pediatric &amp; <span class="highlight">Adult Dose Calculator</span></h1>
+      <p>Common medicines prescribed in the Philippines — weight-based pediatric dosing and standard adult regimens.</p>
+      <div class="disclaimer-banner">
+        <strong>⚠ Medical disclaimer:</strong> This tool is a <em>reference aid only</em>. It does not replace a physician's or pharmacist's prescription. Doses must be verified against the patient's condition, renal/hepatic function, drug interactions, and the latest Philippine National Formulary or hospital protocol. Always confirm with a licensed healthcare professional before administering any medicine.
+      </div>
+    </div>
+  </header>
+
+  <section id="calculator">
+    <div class="container">
+      <p class="section-label">Calculator</p>
+      <h2>Select patient type and medicine</h2>
+      <p class="section-desc">Enter the patient's details and the calculator will show the recommended dose per administration, frequency, daily total, and the mL equivalent for liquid forms where applicable.</p>
+
+      <div class="tabs-bar">
+        <button class="tab-btn active" data-tab="peds">Pediatric</button>
+        <button class="tab-btn" data-tab="adult">Adult</button>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════
+           PEDIATRIC PANEL
+           ═══════════════════════════════════════════════════ -->
+      <div class="panel active" id="panel-peds">
+        <div class="calc-card fade-in">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="peds-medicine">Medicine <span class="req">*</span></label>
+              <select id="peds-medicine">
+                <option value="">— Select a medicine —</option>
+              </select>
+              <span class="hint">Choose the medicine to calculate the dose for.</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="peds-weight">Patient weight <span class="req">*</span></label>
+              <div class="input-with-unit">
+                <input type="number" id="peds-weight" min="0.5" max="150" step="0.1" placeholder="e.g. 12.5">
+                <span class="input-unit">kg</span>
+              </div>
+              <span class="hint">Enter weight in kilograms. For infants, use 0.5 kg increments.</span>
+              <span class="error-msg" id="peds-weight-error">Please enter a valid weight between 0.5 and 150 kg.</span>
+            </div>
+
+            <div class="form-group">
+              <label for="peds-age">Patient age (optional)</label>
+              <div class="input-with-unit">
+                <input type="number" id="peds-age" min="0" max="200" step="0.1" placeholder="e.g. 3">
+                <span class="input-unit">years</span>
+              </div>
+              <span class="hint">Used for age-based minimums and context. Leave blank if unknown.</span>
+              <span class="error-msg" id="peds-age-error">Age must be 0 or greater.</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="peds-concentration">Liquid concentration <span class="req">*</span></label>
+              <select id="peds-concentration">
+                <option value="">— Select formulation —</option>
+                <option value="120/5">Paracetamol 120 mg / 5 mL (common pediatric syrup)</option>
+                <option value="250/5">Paracetamol 250 mg / 5 mL</option>
+                <option value="240/5">Paracetamol 240 mg / 5 mL</option>
+                <option value="100/5">Ibuprofen 100 mg / 5 mL (pediatric drops/syrup)</option>
+                <option value="50/1">Cefuroxime 50 mg / mL (suspension)</option>
+                <option value="125/5">Cefuroxime 125 mg / 5 mL (suspension)</option>
+                <option value="250/5">Cefuroxime 250 mg / 5 mL (suspension)</option>
+                <option value="250/5-other">Amoxicillin 250 mg / 5 mL (suspension)</option>
+                <option value="400/5">Amoxicillin 400 mg / 5 mL (suspension)</option>
+                <option value="200/5">Ceftriaxone 200 mg / 5 mL (suspension, rare)</option>
+                <option value="100/1">Gentamicin 100 mg / mL (injectable — reference only)</option>
+                <option value="40/1">Gentamicin 40 mg / mL (injectable — reference only)</option>
+                <option value="solid">Solid form (tablet/capsule — mg only, no mL conversion)</option>
+                <option value="other">Other / unknown concentration (mg only)</option>
+              </select>
+              <span class="hint">Choose the formulation/concentration. For tablets or unknown concentration, mg-only results are shown.</span>
+              <span class="error-msg" id="peds-concentration-error">Please select a formulation.</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="peds-duration">Duration / number of doses</label>
+              <input type="number" id="peds-duration" min="1" max="365" step="1" placeholder="e.g. 5">
+              <span class="hint">Number of days or doses to calculate the total quantity needed. Defaults to 1 if blank.</span>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn btn-primary" id="peds-calculate">Calculate dose</button>
+            <button class="btn btn-reset" id="peds-reset">Reset</button>
+          </div>
+        </div>
+
+        <div class="results" id="peds-results">
+          <div class="result-headline">
+            <div>
+              <div class="result-dose"><span id="peds-result-dose">—</span><span class="unit" id="peds-result-dose-unit">mg</span></div>
+              <div class="result-sub" id="peds-result-sub"></div>
+            </div>
+            <div style="text-align:right;">
+              <div class="result-sub" style="color:var(--muted);">Medicine</div>
+              <div id="peds-result-medicine" style="font-weight:600;">—</div>
+            </div>
+          </div>
+
+          <div class="results-grid">
+            <div class="result-item">
+              <div class="label">Per dose</div>
+              <div class="value" id="peds-result-per-dose">—</div>
+            </div>
+            <div class="result-item">
+              <div class="label">Frequency</div>
+              <div class="value" id="peds-result-freq">—</div>
+            </div>
+            <div class="result-item">
+              <div class="label">Max per day</div>
+              <div class="value warn" id="peds-result-max-day">—</div>
+            </div>
+            <div class="result-item" id="peds-result-mL-box" style="display:none;">
+              <div class="label">Per dose (mL)</div>
+              <div class="value" id="peds-result-mL">—</div>
+            </div>
+            <div class="result-item" id="peds-result-total-box" style="display:none;">
+              <div class="label">Total quantity (day)</div>
+              <div class="value" id="peds-result-total">—</div>
+            </div>
+          </div>
+
+          <div class="result-detail" id="peds-result-detail"></div>
+          <div class="result-warning empty" id="peds-result-warning">
+            No warnings for this selection. Always verify with a pharmacist.
+          </div>
+        </div>
+
+        <!-- Pediatric reference table -->
+        <div class="ref-section">
+          <p class="section-label">Reference — Pediatric dosing summary</p>
+          <h3>Common pediatric medicines &amp; weight-based dosing</h3>
+          <p class="section-desc">Quick reference of dose ranges used in many Philippine settings. Always check the latest formulary and hospital protocol.</p>
+          <div class="ref-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Medicine</th>
+                  <th>Class</th>
+                  <th>Pediatric dose</th>
+                  <th>Max per dose</th>
+                  <th>Frequency</th>
+                  <th>Max daily</th>
+                  <th>Form / conc.</th>
+                </tr>
+              </thead>
+              <tbody id="peds-ref-body">
+                <!-- filled by JS -->
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size:0.78rem;color:var(--muted);margin-top:10px;">
+            * Dose ranges are typical references. Actual dosing depends on indication, severity, weight, age, renal/hepatic function, and local protocol.
+          </p>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════
+           ADULT PANEL
+           ═══════════════════════════════════════════════════ -->
+      <div class="panel" id="panel-adult">
+        <div class="calc-card fade-in">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="adult-medicine">Medicine <span class="req">*</span></label>
+              <select id="adult-medicine">
+                <option value="">— Select a medicine —</option>
+              </select>
+              <span class="hint">Choose the medicine to calculate the adult dose for.</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="adult-age">Age (optional, for context)</label>
+              <div class="input-with-unit">
+                <input type="number" id="adult-age" min="13" max="120" step="1" placeholder="e.g. 35">
+                <span class="input-unit">years</span>
+              </div>
+              <span class="hint">Some adult doses vary by age (elderly, hepatic impairment). Leave blank if unknown.</span>
+              <span class="error-msg" id="adult-age-error">Age must be 13 or greater for adult panel.</span>
+            </div>
+
+            <div class="form-group">
+              <label for="adult-weight">Weight (optional, for context)</label>
+              <div class="input-with-unit">
+                <input type="number" id="adult-weight" min="20" max="300" step="0.1" placeholder="e.g. 65">
+                <span class="input-unit">kg</span>
+              </div>
+              <span class="hint">Used for context and some weight-cap checks. Not required for fixed adult dosing.</span>
+              <span class="error-msg" id="adult-weight-error">Weight must be 20 kg or greater.</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="adult-formulation">Formulation (for mL conversion)</label>
+              <select id="adult-formulation">
+                <option value="solid">Solid (tablet / capsule) — mg only</option>
+                <option value="120/5">Paracetamol 120 mg / 5 mL</option>
+                <option value="250/5">Paracetamol 250 mg / 5 mL</option>
+                <option value="240/5">Paracetamol 240 mg / 5 mL (e.g. Tempra)</option>
+                <option value="500/5">Paracetamol 500 mg / 5 mL (rare syrup)</option>
+                <option value="200/5">Ibuprofen 200 mg / 5 mL (adult syrup)</option>
+                <option value="400/5">Ibuprofen 400 mg / 5 mL</option>
+                <option value="other">Other / unknown concentration (mg only)</option>
+              </select>
+              <span class="hint">If you need the mL equivalent for a liquid form, select the concentration. Otherwise mg-only.</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="adult-duration">Duration (days)</label>
+              <input type="number" id="adult-duration" min="1" max="365" step="1" placeholder="e.g. 7">
+              <span class="hint">Number of days to calculate total quantity. Defaults to 1 if blank.</span>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn btn-primary" id="adult-calculate">Calculate dose</button>
+            <button class="btn btn-reset" id="adult-reset">Reset</button>
+          </div>
+        </div>
+
+        <div class="results" id="adult-results">
+          <div class="result-headline">
+            <div>
+              <div class="result-dose"><span id="adult-result-dose">—</span><span class="unit" id="adult-result-dose-unit">mg</span></div>
+              <div class="result-sub" id="adult-result-sub"></div>
+            </div>
+            <div style="text-align:right;">
+              <div class="result-sub" style="color:var(--muted);">Medicine</div>
+              <div id="adult-result-medicine" style="font-weight:600;">—</div>
+            </div>
+          </div>
+
+          <div class="results-grid">
+            <div class="result-item">
+              <div class="label">Per dose</div>
+              <div class="value" id="adult-result-per-dose">—</div>
+            </div>
+            <div class="result-item">
+              <div class="label">Frequency</div>
+              <div class="value" id="adult-result-freq">—</div>
+            </div>
+            <div class="result-item">
+              <div class="label">Max per day</div>
+              <div class="value warn" id="adult-result-max-day">—</div>
+            </div>
+            <div class="result-item" id="adult-result-mL-box" style="display:none;">
+              <div class="label">Per dose (mL)</div>
+              <div class="value" id="adult-result-mL">—</div>
+            </div>
+            <div class="result-item" id="adult-result-total-box" style="display:none;">
+              <div class="label">Total quantity (day)</div>
+              <div class="value" id="adult-result-total">—</div>
+            </div>
+          </div>
+
+          <div class="result-detail" id="adult-result-detail"></div>
+          <div class="result-warning empty" id="adult-result-warning">
+            No warnings for this selection. Always verify with a pharmacist.
+          </div>
+        </div>
+
+        <!-- Adult reference table -->
+        <div class="ref-section">
+          <p class="section-label">Reference — Adult dosing summary</p>
+          <h3>Common adult medicines &amp; standard dosing</h3>
+          <p class="section-desc">Quick reference of typical adult doses used in the Philippines. Individual dosing may vary by indication, comorbidities, and local protocol.</p>
+          <div class="ref-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Medicine</th>
+                  <th>Class</th>
+                  <th>Adult dose</th>
+                  <th>Frequency</th>
+                  <th>Max daily</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody id="adult-ref-body">
+                <!-- filled by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 — <a href="https://github.com/xferworkz-glitch">xferworkz-glitch</a> · Built with plain HTML + JS · Hosted on GitHub Pages</p>
+      <p style="margin-top:6px;opacity:0.7;">This calculator is a clinical <em>reference aid</em>, not a substitute for professional medical advice. Verify all doses with a licensed physician or pharmacist.</p>
+    </div>
+  </footer>
+
+<script>
+(function () {
+  "use strict";
+
+  // ═══════════════════════════════════════════════════════
+  // MEDICINE DATABASES
+  // ═══════════════════════════════════════════════════════
+
+  // ---- Pediatric medicines ----
+  // Each entry:
+  //   id, name, class, indication (short),
+  //   dosePerKg: [min, max] mg/kg per dose  OR  a function (weightKg, ageYears) => { min, max }
+  //   maxPerDoseMg: absolute max mg per single dose (override)
+  //   freq: "X hours" / "X times a day" / custom
+  //   maxDailyMg: max mg per 24h
+  //   notes: string
+  //   forms: [{ label, concentrationMgPerMl }]  — if present, mL conversion available
+  //   pedsMinWeightKg: optional minimum weight to use this dose (otherwise use age-based alternative)
+
+  const PEDS_MEDICINES = [
+    {
+      id: "paracetamol-peds",
+      name: "Paracetamol (Acetaminophen) — pediatric",
+      class: "Antipyretic / analgesic",
+      indication: "Fever, mild–moderate pain",
+      dosePerKg: { min: 10, max: 15 },          // 10–15 mg/kg/dose
+      maxPerDoseMg: 1000,                        // 1 g absolute cap
+      maxDailyMg: 60,                             // 60 mg/kg/day max (some sources 75; conservative)
+      freq: "Every 4–6 hours as needed",
+      freqShort: "q4–6h PRN",
+      notes: "Do not exceed 5 doses in 24 hours. Use lowest effective dose. For fever ≥ 38.5°C or pain. Avoid in hepatic impairment without medical advice.",
+      forms: [
+        { label: "120 mg / 5 mL (common pediatric syrup)", mgPerMl: 24 },
+        { label: "250 mg / 5 mL", mgPerMl: 50 },
+        { label: "240 mg / 5 mL (e.g. Tempra)", mgPerMl: 48 }
+      ],
+      pedsMinWeightKg: 0
+    },
+    {
+      id: "ibuprofen-peds",
+      name: "Ibuprofen — pediatric",
+      class: "NSAID / antipyretic / analgesic",
+      indication: "Fever, mild–moderate pain, inflammatory conditions",
+      dosePerKg: { min: 5, max: 10 },            // 5–10 mg/kg/dose
+      maxPerDoseMg: 400,
+      maxDailyMg: 40,                             // 40 mg/kg/day max
+      freq: "Every 6–8 hours as needed",
+      freqShort: "q6–8h PRN",
+      notes: "Give with food to reduce GI upset. Contraindicated in dehydration, renal impairment, asthma with NSAID sensitivity, and chickenpox (varicella) without medical advice. Avoid in children < 6 months without physician advice.",
+      forms: [
+        { label: "100 mg / 5 mL (pediatric drops/syrup)", mgPerMl: 20 }
+      ]
+    },
+    {
+      id: "amoxicillin-peds",
+      name: "Amoxicillin — pediatric",
+      class: "Penicillin antibiotic",
+      indication: "Bacterial infections (otitis media, pharyngitis, pneumonia, UTI, etc.)",
+      // Typical 25–50 mg/kg/day divided q8h (3×) or q12h (2×); severe infections up to 90 mg/kg/day
+      dosePerKg: {
+        get: function (weightKg, ageYears, indication) {
+          // Default: moderate infection 45 mg/kg/day divided q12h (2× daily) — common PH use
+          // For simplicity, return per-dose for q12h regimen: (45 mg/kg/day) / 2 = 22.5 mg/kg/dose
+          // We'll show a range; user picks. Let's give per-dose for 2× daily as default.
+          const perDay = 45; // mg/kg/day (moderate)
+          const perDose = perDay / 2; // q12h
+          return { min: perDose, max: perDose * 1.2 };
+        }
+      },
+      maxPerDoseMg: 1000,
+      maxDailyMg: 90,                             // up to 90 mg/kg/day for severe
+      freq: "Every 12 hours (2× daily) — typical",
+      freqShort: "q12h",
+      notes: "Complete the full course as prescribed (usually 5–10 days). Dose varies by infection severity. Higher doses (up to 90 mg/kg/day) used for resistant otitis media, sinusitis, or severe infections. Confirm with physician. Formulation strength varies — check suspension concentration.",
+      forms: [
+        { label: "250 mg / 5 mL suspension", mgPerMl: 50 },
+        { label: "400 mg / 5 mL suspension", mgPerMl: 80 }
+      ]
+    },
+    {
+      id: "cefalexin-peds",
+      name: "Cefalexin — pediatric",
+      class: "1st-generation cephalosporin antibiotic",
+      indication: "Skin/soft tissue, ear, throat, UTI (susceptible organisms)",
+      dosePerKg: { min: 20, max: 40 },            // 20–40 mg/kg/day divided q6–8h
+      maxPerDoseMg: 1000,
+      maxDailyMg: 40,
+      freq: "Every 6–8 hours (3–4× daily)",
+      freqShort: "q6–8h",
+      notes: "For mild–moderate infections. Higher doses may be used for more severe infections under medical supervision. Check for penicillin/cephalosporin allergy before use.",
+      forms: [
+        { label: "Solid (tablet/capsule) — mg only", mgPerMl: null }
+      ]
+    },
+    {
+      id: "cefuroxime-peds",
+      name: "Cefuroxime Axetil — pediatric",
+      class: "2nd-generation cephalosporin antibiotic",
+      indication: "Respiratory tract, otitis media, UTI, skin infections",
+      dosePerKg: { min: 20, max: 30 },            // 20–30 mg/kg/day divided q12h
+      maxPerDoseMg: 500,
+      maxDailyMg: 30,
+      freq: "Every 12 hours (2× daily)",
+      freqShort: "q12h",
+      notes: "Give with food to improve absorption. Available as 125 mg/5 mL or 250 mg/5 mL suspension. Confirm indication and susceptibility.",
+      forms: [
+        { label: "125 mg / 5 mL suspension", mgPerMl: 25 },
+        { label: "250 mg / 5 mL suspension", mgPerMl: 50 }
+      ]
+    },
+    {
+      id: "ceftriaxone-peds",
+      name: "Ceftriaxone — pediatric (injectable)",
+      class: "3rd-generation cephalosporin antibiotic (injectable)",
+      indication: "Severe infections: pneumonia, sepsis, meningitis, severe OTITIS, etc.",
+      dosePerKg: { min: 50, max: 80 },            // 50–80 mg/kg/day (some 100 mg/kg/day for severe)
+      maxPerDoseMg: 2000,
+      maxDailyMg: 100,
+      freq: "Once daily (IV/IM) — typical",
+      freqShort: "q24h",
+      notes: "Injectable only — dose calculation for reference. Must be administered by a healthcare professional. Severe infections may require up to 100 mg/kg/day. Check for biliary sludging with prolonged high doses. Do NOT use with calcium-containing IV fluids in neonates.",
+      forms: [
+        { label: "Injectable (reference only) — mg per dose", mgPerMl: null }
+      ]
+    },
+    {
+      id: "gentamicin-peds",
+      name: "Gentamicin — pediatric (injectable)",
+      class: "Aminoglycoside antibiotic (injectable)",
+      indication: "Serious gram-negative infections, sepsis, complicated UTI",
+      dosePerKg: {
+        get: function (weightKg, ageYears, indication) {
+          // Conventional dosing: 1–2 mg/kg q8h
+          // Once-daily dosing: 4–6 mg/kg q24h (preferred in many settings)
+          // We present once-daily as the main reference
+          return { min: 4, max: 6 }; // mg/kg once daily
+        }
+      },
+      maxPerDoseMg: 500,                          // conservative cap for once-daily
+      maxDailyMg: 6,
+      freq: "Once daily (IV/IM) — typical once-daily dosing",
+      freqShort: "q24h (once-daily)",
+      notes: "Injectable only — dose calculation for reference. Must be administered by a healthcare professional. Requires therapeutic drug monitoring (peak/trough) to avoid nephrotoxicity and ototoxicity. Once-daily dosing is preferred in many protocols. Dose adjustment needed for renal impairment.",
+      forms: [
+        { label: "Injectable (reference only) — mg per dose", mgPerMl: null }
+      ],
+      pedsMinWeightKg: 1
+    },
+    {
+      id: "salbutamol-peds",
+      name: "Salbutamol (Albuterol) — pediatric",
+      class: "Short-acting beta-2 agonist (bronchodilator)",
+      indication: "Asthma exacerbation, wheeze, bronchospasm",
+      dosePerKg: {
+        get: function (weightKg, ageYears, indication) {
+          // Nebulized: 0.1–0.15 mg/kg (max 5 mg) q4–6h
+          // Or 0.01 mg/kg (max 0.2 mg) via MDI with spacer q4–6h
+          // We present nebulizer dose as reference
+          return { min: 0.1, max: 0.15 }; // mg/kg per dose
+        }
+      },
+      maxPerDoseMg: 5,                             // 5 mg max per nebulizer dose
+      maxDailyMg: 8,                                // up to ~8 mg/kg/day in divided doses (severe)
+      freq: "Every 4–6 hours as needed (nebulized)",
+      freqShort: "q4–6h PRN",
+      notes: "For nebulization: dilute in 2–3 mL normal saline. For MDI: 2–10 puffs (100 mcg/puff) with spacer q4–6h. Seek emergency care if severe distress, cyanosis, or not responding. Shake MDI before use. Rinse mouth after.",
+      forms: [
+        { label: "Solid/MDI (100 mcg/puff) — puff count shown", mgPerMl: null }
+      ]
+    },
+    {
+      id: "co-trimoxazole-peds",
+      name: "Co-trimoxazole (Trimethoprim + Sulfamethoxazole) — pediatric",
+      class: "Sulfonamide antibiotic combination",
+      indication: "UTI, otitis media, shigellosis, pneumocystis prophylaxis/treatment",
+      dosePerKg: {
+        get: function (weightKg, ageYears, indication) {
+          // TMP component 4–6 mg/kg/day divided q12h (typical)
+          // Using the trimethoprim component basis
+          return { min: 4, max: 6 }; // mg TMP/kg/day
+        }
+      },
+      maxPerDoseMg: 320,                            // TMP component mg per dose cap
+      maxDailyMg: 6,                                 // TMP mg/kg/day
+      freq: "Every 12 hours (2× daily)",
+      freqShort: "q12h",
+      notes: "Dose expressed as trimethoprim component. Available as 40 mg TMP + 200 mg SMX per 5 mL (common PH suspension). Contraindicated in sulfa allergy, G6PD deficiency, folate deficiency, and infants < 2 months (mandibular risk). Monitor for rash, bone marrow suppression.",
+      forms: [
+        { label: "40 mg TMP + 200 mg SMX per 5 mL", mgPerMl: 8 }  // 40mg TMP / 5mL = 8 mg/mL TMP
+      ]
+    },
+    {
+      id: "metronidazole-peds",
+      name: "Metronidazole — pediatric",
+      class: "Nitroimidazole antibiotic / antiprotozoal",
+      indication: "Amoebiasis, giardiasis, bacterial infections, anaerobic coverage",
+      dosePerKg: { min: 30, max: 40 },              // 30–40 mg/kg/day divided q8h
+      maxPerDoseMg: 500,
+      maxDailyMg: 40,
+      freq: "Every 8 hours (3× daily) — typical",
+      freqShort: "q8h",
+      notes: "Avoid alcohol during and for 48 hours after treatment. May cause metallic taste, dark urine. Contraindicated in hypersensitivity. Use with caution in hepatic impairment.",
+      forms: [
+        { label: "Solid (tablet) — mg only", mgPerMl: null },
+        { label: "Suspension (common: 100 mg / 5 mL)", mgPerMl: 20 }
+      ]
+    },
+    {
+      id: "guaifenesin-peds",
+      name: "Guaifenesin — pediatric",
+      class: "Expectorant",
+      indication: "Chest congestion, productive cough",
+      dosePerKg: {
+        get: function (weightKg, ageYears, indication) {
+          // Typical 100–200 mg q4–6h for adults; children: 5 mg/kg/day divided q4–6h (some refs 10–20 mg/kg/day)
+          // Conservative: 5 mg/kg/day divided q4–6h = per dose ~1.25 mg/kg q6h
+          const perDay = 5; // mg/kg/day (conservative)
+          const perDose = perDay / 4; // q6h
+          return { min: perDose, max: perDose * 2 };
+        }
+      },
+      maxPerDoseMg: 200,
+      maxDailyMg: 20,
+      freq: "Every 4–6 hours as needed",
+      freqShort: "q4–6h PRN",
+      notes: "Expectorant to loosen mucus. Give with plenty of fluids. Not a cure — symptomatic relief only. Avoid in persistent cough > 1 week or with fever/raspy — see physician.",
+      forms: [
+        { label: "Suspension (common: 100 mg / 5 mL)", mgPerMl: 20 },
+        { label: "Solid (tablet) — mg only", mgPerMl: null }
+      ]
+    }
+  ];
+
+  // ---- Adult medicines ----
+  const ADULT_MEDICINES = [
+    {
+      id: "paracetamol-adult",
+      name: "Paracetamol (Acetaminophen) — adult",
+      class: "Antipyretic / analgesic",
+      indication: "Fever, mild–moderate pain",
+      // Fixed adult dose: 500–1000 mg per dose q4–6h
+      dosePerKg: null,
+      doseMg: { min: 500, max: 1000 },            // 500 mg (1 tab) to 1000 mg (2 tabs)
+      maxPerDoseMg: 1000,
+      maxDailyMg: 4000,                            // 4 g/day max (3 g/day in some protocols, hepatic caution)
+      freq: "Every 4–6 hours as needed",
+      freqShort: "q4–6h PRN",
+      notes: "Do not exceed 4 g (4000 mg) in 24 hours. Use lowest effective dose. For fever ≥ 38.5°C or pain. Lower max (3 g/day) in hepatic impairment, chronic alcohol use, malnutrition, or elderly — consult physician.",
+      forms: [
+        { label: "500 mg tablet (common)", mgPerMl: null },
+        { label: "120 mg / 5 mL syrup", mgPerMl: 24 },
+        { label: "250 mg / 5 mL syrup", mgPerMl: 50 },
+        { label: "240 mg / 5 mL (Tempra)", mgPerMl: 48 }
+      ]
+    },
+    {
+      id: "ibuprofen-adult",
+      name: "Ibuprofen — adult",
+      class: "NSAID / antipyretic / analgesic",
+      indication: "Fever, mild–moderate pain, dysmenorrhea, inflammatory conditions",
+      doseMg: { min: 200, max: 400 },              // OTC: 200–400 mg per dose
+      maxPerDoseMg: 400,                            // OTC single dose
+      maxDailyMg: 1200,                             // OTC max 1200 mg/day (prescription up to 2400–3200 mg/day)
+      freq: "Every 6–8 hours as needed",
+      freqShort: "q6–8h PRN",
+      notes: "OTC: max 1200 mg/day. Prescription: up to 2400–3200 mg/day in divided doses under medical supervision. Take with food. Avoid in NSAID allergy, aspirin-induced asthma, active peptic ulcer, severe renal/hepatic impairment, and late pregnancy.",
+      forms: [
+        { label: "200 mg tablet (OTC)", mgPerMl: null },
+        { label: "400 mg tablet (prescription)", mgPerMl: null },
+        { label: "200 mg / 5 mL syrup", mgPerMl: 40 },
+        { label: "400 mg / 5 mL syrup", mgPerMl: 80 }
+      ]
+    },
+    {
+      id: "amoxicillin-adult",
+      name: "Amoxicillin — adult",
+      class: "Penicillin antibiotic",
+      indication: "Bacterial infections (respiratory, ear, UTI, dental, etc.)",
+      doseMg: { min: 500, max: 875 },              // 500 mg q8h or 875 mg q12h typical
+      maxPerDoseMg: 875,
+      maxDailyMg: 500 * 3,                          // 500 mg q8h = 1500 mg/day typical; 875 mg q12h = 1750 mg/day
+      freq: "Every 8 hours (500 mg) OR every 12 hours (875 mg)",
+      freqShort: "q8h (500 mg) or q12h (875 mg)",
+      notes: "Typical adult: 500 mg q8h or 875 mg q12h. Complete full course (usually 5–10 days). Check for penicillin allergy. Higher doses (e.g. 1 g q8h) used for severe infections under medical advice. Take with or without food.",
+      forms: [
+        { label: "500 mg capsule/tablet", mgPerMl: null },
+        { label: "875 mg tablet", mgPerMl: null },
+        { label: "250 mg / 5 mL suspension", mgPerMl: 50 },
+        { label: "400 mg / 5 mL suspension", mgPerMl: 80 }
+      ]
+    },
+    {
+      id: "cefalexin-adult",
+      name: "Cefalexin — adult",
+      class: "1st-generation cephalosporin antibiotic",
+      indication: "Skin/soft tissue, ear, throat, UTI (susceptible organisms)",
+      doseMg: { min: 500, max: 500 },               // 500 mg per dose typical
+      maxPerDoseMg: 500,
+      maxDailyMg: 4000,                             // up to 4 g/day in severe infections (divided)
+      freq: "Every 6–8 hours (500 mg) — typical",
+      freqShort: "q6–8h",
+      notes: "Typical: 500 mg q6–8h. Severe: up to 1–4 g/day in divided doses. Check for penicillin/cephalosporin allergy. Take with or without food.",
+      forms: [
+        { label: "500 mg capsule/tablet", mgPerMl: null }
+      ]
+    },
+    {
+      id: "cefuroxime-adult",
+      name: "Cefuroxime Axetil — adult",
+      class: "2nd-generation cephalosporin antibiotic",
+      indication: "Respiratory tract, UTI, skin, gonorrhea (uncomplicated)",
+      doseMg: { min: 250, max: 500 },              // 250–500 mg q12h
+      maxPerDoseMg: 500,
+      maxDailyMg: 1000,
+      freq: "Every 12 hours (250–500 mg)",
+      freqShort: "q12h",
+      notes: "Take with food to improve absorption. Typical: 250–500 mg q12h. Gonorrhea: single 1 g dose (with probenecid in some protocols). Check for penicillin/cephalosporin allergy.",
+      forms: [
+        { label: "250 mg tablet", mgPerMl: null },
+        { label: "500 mg tablet", mgPerMl: null },
+        { label: "125 mg / 5 mL suspension", mgPerMl: 25 },
+        { label: "250 mg / 5 mL suspension", mgPerMl: 50 }
+      ]
+    },
+    {
+      id: "azithromycin-adult",
+      name: "Azithromycin — adult",
+      class: "Macrolide antibiotic",
+      indication: "Respiratory tract, skin, STI (chlamydia), traveler's diarrhea",
+      doseMg: { min: 250, max: 500 },
+      maxPerDoseMg: 500,
+      maxDailyMg: 500,                              // depends on regimen
+      freq: "Regimen-dependent: 500 mg day 1 then 250 mg days 2–5 (common respiratory), OR single 1 g dose (chlamydia)",
+      freqShort: "regimen-specific",
+      notes: "Common respiratory: 500 mg day 1, then 250 mg daily days 2–5. Chlamydia: single 1 g dose. Take 1 hour before or 2 hours after food (tablets; suspension with food). Avoid in macrolide/erythromycin QT prolongation risk. Check for drug interactions (e.g. warfarin, digoxin, theophylline).",
+      forms: [
+        { label: "250 mg tablet", mgPerMl: null },
+        { label: "500 mg tablet", mgPerMl: null },
+        { label: "1 g oral suspension (single dose)", mgPerMl: null }
+      ]
+    },
+    {
+      id: "co-trimoxazole-adult",
+      name: "Co-trimoxazole (TMP+SMX) — adult",
+      class: "Sulfonamide antibiotic combination",
+      indication: "UTI, otitis, shigellosis, PCP prophylaxis/treatment, MRSA skin",
+      doseMg: { min: 160, max: 320 },               // TMP component: 160 mg (1 DS tab) q12h typical
+      maxPerDoseMg: 320,
+      maxDailyMg: 320,                               // 320 mg TMP/day (2 DS tabs)
+      freq: "Every 12 hours (1 double-strength tab = 160/800 mg)",
+      freqShort: "q12h (DS tab)",
+      notes: "Typical: 1 double-strength (DS) tablet (160 mg TMP + 800 mg SMX) q12h. UTI: 2 DS tabs q12h. PCP treatment: higher doses (15–20 mg/kg/day TMP) — medical supervision. Contraindicated in sulfa allergy, G6PD deficiency, severe renal/hepatic impairment, and pregnancy near term. Monitor for rash, cytopenias, hyperkalemia.",
+      forms: [
+        { label: "800 mg SMX + 160 mg TMP (double-strength tablet)", mgPerMl: null },
+        { label: "400 mg SMX + 80 mg TMP (single-strength tablet)", mgPerMl: null }
+      ]
+    },
+    {
+      id: "metronidazole-adult",
+      name: "Metronidazole — adult",
+      class: "Nitroimidazole antibiotic / antiprotozoal",
+      indication: "Amoebiasis, giardiasis, bacterial vaginosis, anaerobic infections, dental infections, H. pylori",
+      doseMg: { min: 250, max: 500 },
+      maxPerDoseMg: 500,
+      maxDailyMg: 2000,
+      freq: "Every 8 hours (250–500 mg) — typical",
+      freqShort: "q8h",
+      notes: "Typical: 250–500 mg q8h. For severe infections: up to 2 g/day in divided doses. Avoid alcohol during and 48h after. Metronidazole 250 mg/5 mL suspension also available. May cause metallic taste, dark urine. Caution in hepatic impairment.",
+      forms: [
+        { label: "250 mg tablet", mgPerMl: null },
+        { label: "500 mg tablet", mgPerMl: null },
+        { label: "250 mg / 5 mL suspension", mgPerMl: 50 }
+      ]
+    },
+    {
+      id: "salbutamol-adult",
+      name: "Salbutamol (Albuterol) — adult",
+      class: "Short-acting beta-2 agonist (bronchodilator)",
+      indication: "Asthma, bronchospasm, COPD exacerbation",
+      doseMg: { min: 2, max: 4 },                   // 2–4 mg oral or 2–10 puffs via MDI
+      maxPerDoseMg: 8,                              // oral max 8 mg per dose
+      maxDailyMg: 24,                                // oral max 24 mg/day in divided doses
+      freq: "Every 6–8 hours (oral 2–4 mg) OR as needed via MDI (2–10 puffs)",
+      freqShort: "q6–8h (oral) or PRN (MDI)",
+      notes: "MDI: 2–10 puffs (100 mcg/puff) with spacer q4–6h PRN. Nebulized: 2.5 mg in 3 mL saline q4–6h. Oral tablets 2–4 mg q6–8h (less common). Seek emergency care if severe distress or not responding. Shake MDI before use. Rinse mouth after MDI.",
+      forms: [
+        { label: "MDI (100 mcg/puff) — puff count shown", mgPerMl: null },
+        { label: "2 mg tablet", mgPerMl: null },
+        { label: "4 mg tablet", mgPerMl: null }
+      ]
+    },
+    {
+      id: "guaifenesin-adult",
+      name: "Guaifenesin — adult",
+      class: "Expectorant",
+      indication: "Chest congestion, productive cough",
+      doseMg: { min: 200, max: 400 },
+      maxPerDoseMg: 400,
+      maxDailyMg: 2400,                              // up to 2400 mg/day (some refs 1200 mg/day OTC)
+      freq: "Every 4 hours (200–400 mg) — typical",
+      freqShort: "q4h PRN",
+      notes: "Typical OTC: 200–400 mg q4h, max 2400 mg/day. Give with plenty of fluids. Not a cure — symptomatic relief only. Avoid persistent cough > 1 week or with fever/raspy.",
+      forms: [
+        { label: "200 mg tablet (OTC)", mgPerMl: null },
+        { label: "400 mg tablet", mgPerMl: null },
+        { label: "100 mg / 5 mL syrup", mgPerMl: 20 },
+        { label: "200 mg / 5 mL syrup", mgPerMl: 40 }
+      ]
+    },
+    {
+      id: "lovastatin-adult",
+      name: "Lovastatin — adult",
+      class: "Statin (HMG-CoA reductase inhibitor)",
+      indication: "Hyperlipidemia, hypercholesterolemia",
+      doseMg: { min: 10, max: 40 },
+      maxPerDoseMg: 40,
+      maxDailyMg: 40,
+      freq: "Once daily (10–40 mg), usually in the evening",
+      freqShort: "q24h (evening)",
+      notes: "Typical: 10–40 mg once daily in the evening (with the largest meal). Avoid grapefruit juice in large quantities. Caution with CYP3A4 inhibitors (e.g. macrolides, azoles, protease inhibitors). Monitor LFTs and CK if symptomatic. Not for use in pregnancy.",
+      forms: [
+        { label: "10 mg tablet", mgPerMl: null },
+        { label: "20 mg tablet", mgPerMl: null },
+        { label: "40 mg tablet", mgPerMl: null }
+      ]
+    },
+    {
+      id: "amlodipine-adult",
+      name: "Amlodipine — adult",
+      class: "Calcium channel blocker (dihydropyridine)",
+      indication: "Hypertension, angina",
+      doseMg: { min: 5, max: 10 },
+      maxPerDoseMg: 10,
+      maxDailyMg: 10,
+      freq: "Once daily (5–10 mg)",
+      freqShort: "q24h",
+      notes: "Typical: 5 mg once daily, may increase to 10 mg. In elderly or hepatic impairment, start 2.5 mg. Once-daily dosing. Monitor for peripheral edema, dizziness. Avoid in cardiogenic shock, severe aortic stenosis, hypotension.",
+      forms: [
+        { label: "5 mg tablet", mgPerMl: null },
+        { label: "10 mg tablet", mgPerMl: null },
+        { label: "2.5 mg tablet (elderly/hepatic start)", mgPerMl: null }
+      ]
+    },
+    {
+      id: "losartan-adult",
+      name: "Losartan — adult",
+      class: "ARB (Angiotensin II receptor blocker)",
+      indication: "Hypertension, diabetic nephropathy (type 2 DM with proteinuria)",
+      doseMg: { min: 25, max: 100 },
+      maxPerDoseMg: 100,
+      maxDailyMg: 100,
+      freq: "Once daily (25–100 mg)",
+      freqShort: "q24h",
+      notes: "Typical: 25–50 mg once daily for hypertension; may increase to 100 mg. Diabetic nephropathy: 50 mg once daily, may increase to 100 mg. Avoid in pregnancy (Category D). Monitor potassium and renal function. Caution with potassium-sparing diuretics, potassium supplements, or salt substitutes.",
+      forms: [
+        { label: "25 mg tablet", mgPerMl: null },
+        { label: "50 mg tablet", mgPerMl: null },
+        { label: "100 mg tablet", mgPerMl: null }
+      ]
+    }
+  ];
+
+  // ═══════════════════════════════════════════════════════
+  // HELPERS
+  // ═══════════════════════════════════════════════════════
+
+  function $(id) { return document.getElementById(id); }
+
+  function roundTo(v, decimals) {
+    const f = Math.pow(10, decimals);
+    return Math.round(v * f) / f;
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  function showError(id, show) {
+    const el = $(id);
+    if (!el) return;
+    el.classList.toggle("show", show);
+  }
+
+  function markField(el, bad) {
+    if (!el) return;
+    el.classList.toggle("field-error", bad);
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // TAB SWITCHING
+  // ═══════════════════════════════════════════════════════
+
+  document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+      this.classList.add("active");
+      const tab = this.dataset.tab;
+      const panel = $("panel-" + tab);
+      if (panel) panel.classList.add("active");
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════
+  // POPULATE SELECTS & REFERENCE TABLES
+  // ═══════════════════════════════════════════════════════
+
+  function populatePedsSelect() {
+    const sel = $("peds-medicine");
+    sel.innerHTML = '<option value="">— Select a medicine —</option>';
+    PEDS_MEDICINES.forEach(m => {
+      const opt = document.createElement("option");
+      opt.value = m.id;
+      opt.textContent = m.name;
+      sel.appendChild(opt);
+    });
+  }
+
+  function populateAdultSelect() {
+    const sel = $("adult-medicine");
+    sel.innerHTML = '<option value="">— Select a medicine —</option>';
+    ADULT_MEDICINES.forEach(m => {
+      const opt = document.createElement("option");
+      opt.value = m.id;
+      opt.textContent = m.name;
+      sel.appendChild(opt);
+    });
+  }
+
+  function renderPedsRefTable() {
+    const tbody = $("peds-ref-body");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+    PEDS_MEDICINES.forEach(m => {
+      const tr = document.createElement("tr");
+      const doseStr = m.dosePerKg && typeof m.dosePerKg === "object" && m.dosePerKg.min !== undefined
+        ? m.dosePerKg.min + "–" + m.dosePerKg.max + " mg/kg/dose"
+        : "see note";
+      const tr2 = document.createElement("tr");
+      tr2.innerHTML =
+        "<td><strong>" + esc(m.name) + "</strong><br><span class='muted-cell'>" + esc(m.indication) + "</span></td>" +
+        "<td class='muted-cell'>" + esc(m.class) + "</td>" +
+        "<td class='accent-cell'>" + esc(doseStr) + "</td>" +
+        "<td class='muted-cell'>" + (m.maxPerDoseMg ? m.maxPerDoseMg + " mg" : "—") + "</td>" +
+        "<td>" + esc(m.freq) + "</td>" +
+        "<td class='muted-cell'>" + (m.maxDailyMg ? m.maxDailyMg + " mg/kg/day" : "—") + "</td>" +
+        "<td class='muted-cell'>" + (m.forms && m.forms.length ? m.forms.map(f => f.label).join("<br>") : "—") + "</td>";
+      tbody.appendChild(tr2);
+    });
+  }
+
+  function renderAdultRefTable() {
+    const tbody = $("adult-ref-body");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+    ADULT_MEDICINES.forEach(m => {
+      const tr = document.createElement("tr");
+      tr.innerHTML =
+        "<td><strong>" + esc(m.name) + "</strong><br><span class='muted-cell'>" + esc(m.indication) + "</span></td>" +
+        "<td class='muted-cell'>" + esc(m.class) + "</td>" +
+        "<td class='accent-cell'>" + m.doseMg.min + "–" + m.doseMg.max + " mg/dose</td>" +
+        "<td>" + esc(m.freq) + "</td>" +
+        "<td class='muted-cell'>" + (m.maxDailyMg ? m.maxDailyMg + " mg/day" : "—") + "</td>" +
+        "<td class='muted-cell'>" + esc(m.notes) + "</td>";
+      tbody.appendChild(tr);
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // CONCENTRATION SELECT LOGIC
+  // ═══════════════════════════════════════════════════════
+
+  function onPedsMedicineChange() {
+    const medId = $("peds-medicine").value;
+    const concSel = $("peds-concentration");
+    const med = PEDS_MEDICINES.find(m => m.id === medId);
+
+    // Reset
+    concSel.innerHTML = '<option value="">— Select formulation —</option>';
+    concSel.classList.remove("field-error");
+
+    if (!med) {
+      concSel.disabled = true;
+      return;
+    }
+    concSel.disabled = false;
+
+    // Add concentration options from medicine's forms
+    if (med.forms && med.forms.length) {
+      med.forms.forEach(f => {
+        const opt = document.createElement("option");
+        const val = f.mgPerMl === null ? "solid" : (f.mgPerMl === undefined ? "other" : f.mgPerMl + "/5" + (f.mgPerMl >= 20 ? "" : ""));
+        // Build a proper value
+        let value = "";
+        if (f.mgPerMl === null) {
+          value = "solid";
+        } else if (f.mgPerMl > 0) {
+          // Encode as "mgPerMl" numeric
+          value = String(f.mgPerMl);
+        } else {
+          value = "other";
+        }
+        opt.value = value;
+        opt.textContent = f.label;
+        concSel.appendChild(opt);
+      });
+    }
+    // Add fallback
+    const otherOpt = document.createElement("option");
+    otherOpt.value = "other";
+    otherOpt.textContent = "Other / unknown concentration (mg only)";
+    concSel.appendChild(otherOpt);
+
+    // Pre-select the first concentration option (smart default: common pediatric formulation)
+    if (med.forms && med.forms.length) {
+      // Prefer the first form with a numeric mgPerMl
+      const firstNumeric = med.forms.find(f => f.mgPerMl !== null && f.mgPerMl !== undefined);
+      if (firstNumeric) {
+        const firstOpt = concSel.querySelector('option[value="' + String(firstNumeric.mgPerMl) + '"]');
+        if (firstOpt) firstOpt.selected = true;
+      }
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // PEDIATRIC CALCULATION ENGINE
+  // ═══════════════════════════════════════════════════════
+
+  function computePeds(med, weightKg, ageYears, concValue, durationDays) {
+    // Returns { errors, dosePerAdminMg, freqStr, maxDailyMg, mLPerDose, totalMgDay, maxDailyMgAbs, warnings, notes }
+    const errors = [];
+    const warnings = [];
+    let dosePerAdminMg = null;
+    let freqStr = "";
+    let maxDailyMg = 0;
+    let mLPerDose = null;
+    let totalMgDay = 0;
+    let notes = "";
+
+    // --- validation ---
+    if (!med) {
+      errors.push("Please select a medicine.");
+    }
+    if (!weightKg || weightKg < 0.5 || weightKg > 150) {
+      errors.push("Weight must be between 0.5 and 150 kg.");
+    }
+    if (ageYears !== undefined && ageYears < 0) {
+      errors.push("Age must be 0 or greater.");
+    }
+    if (!concValue) {
+      errors.push("Please select a formulation/concentration.");
+    }
+
+    if (errors.length) return { errors, warnings, dosePerAdminMg: null, freqStr: "", maxDailyMg: 0, mLPerDose: null, totalMgDay: 0, notes: "" };
+
+    // --- age checks ---
+    if (ageYears !== undefined && ageYears < 0) {
+      errors.push("Age must be 0 or greater.");
+      return { errors, warnings, dosePerAdminMg: null, freqStr: "", maxDailyMg: 0, mLPerDose: null, totalMgDay: 0, notes: "" };
+    }
+
+    // --- medicine-specific minimum age/weight ---
+    if (med.pedsMinWeightKg && weightKg < med.pedsMinWeightKg) {
+      warnings.push("Patient weight (" + roundTo(weightKg,1) + " kg) is below the typical minimum for this medicine (" + med.pedsMinWeightKg + " kg). Use only under medical supervision.");
+    }
+
+    // --- dose calculation ---
+    // Get dose range (mg/kg/dose)
+    let doseMinMgPerKg = null;
+    let doseMaxMgPerKg = null;
+
+    if (typeof med.dosePerKg === "number" || (typeof med.dosePerKg === "object" && med.dosePerKg.min !== undefined && med.dosePerKg.min !== null)) {
+      // Simple object with min/max
+      if (med.dosePerKg.min !== undefined && med.dosePerKg.max !== undefined) {
+        doseMinMgPerKg = med.dosePerKg.min;
+        doseMaxMgPerKg = med.dosePerKg.max;
+      }
+    } else if (typeof med.dosePerKg === "object" && med.dosePerKg.get) {
+      // Function-based
+      const result = med.dosePerKg.get(weightKg, ageYears || 0, "");
+      if (result && result.min !== undefined && result.max !== undefined) {
+        doseMinMgPerKg = result.min;
+        doseMaxMgPerKg = result.max;
+      }
+    }
+
+    if (doseMinMgPerKg === null || doseMaxMgPerKg === null) {
+      errors.push("This medicine's dosing rules are not fully available. Please consult a pharmacist for the dose.");
+      return { errors, warnings, dosePerAdminMg: null, freqStr: med.freq || "", maxDailyMg: 0, mLPerDose: null, totalMgDay: 0, notes: med.notes || "" };
+    }
+
+    // Compute per-dose mg: use mid-range as the recommended dose, show range
+    const recMgPerKg = (doseMinMgPerKg + doseMaxMgPerKg) / 2;
+    let perDoseMg = recMgPerKg * weightKg;
+
+    // Cap by absolute max per dose
+    if (med.maxPerDoseMg && perDoseMg > med.maxPerDoseMg) {
+      warnings.push("Calculated dose (" + roundTo(perDoseMg,1) + " mg) exceeds the recommended maximum per dose (" + med.maxPerDoseMg + " mg). Capping to " + med.maxPerDoseMg + " mg. Verify with a physician.");
+      perDoseMg = med.maxPerDoseMg;
+    }
+
+    // Floor: minimum dose
+    const minDoseMg = doseMinMgPerKg * weightKg;
+    if (perDoseMg < minDoseMg && minDoseMg > 0) {
+      // not likely, but surface if capping reduced below min
+      warnings.push("Dose is at the lower end of the recommended range.");
+    }
+
+    dosePerAdminMg = roundTo(perDoseMg, 1);
+
+    // Round to practical dose (0.5 mg or 1 mg granularity depending on range)
+    if (dosePerAdminMg >= 10) {
+      dosePerAdminMg = roundTo(dosePerAdminMg, 0); // whole mg
+    } else if (dosePerAdminMg >= 1) {
+      dosePerAdminMg = roundTo(dosePerAdminMg, 1);
+    } else {
+      dosePerAdminMg = roundTo(dosePerAdminMg, 2);
+    }
+
+    freqStr = med.freqShort || med.freq || "";
+    maxDailyMg = med.maxDailyMg ? med.maxDailyMg * weightKg : 0;
+    if (med.maxDailyMg && maxDailyMg > med.maxPerDoseMg * 4) {
+      // sanity: max daily shouldn't exceed 4× max per dose for q6h (4 doses/day)
+      // but leave as computed if explicit
+    }
+
+    // --- mL conversion ---
+    if (concValue && concValue !== "solid" && concValue !== "other" && concValue !== "") {
+      const mgPerMl = parseFloat(concValue);
+      if (!isNaN(mgPerMl) && mgPerMl > 0) {
+        mLPerDose = roundTo(dosePerAdminMg / mgPerMl, 2);
+        // Also total per day (number of doses per day from freq)
+        const dosesPerDay = inferDosesPerDay(freqStr);
+        totalMgDay = dosePerAdminMg * dosesPerDay;
+      }
+    } else if (concValue === "solid" || concValue === "other") {
+      // mg only
+      mLPerDose = null;
+      const dosesPerDay = inferDosesPerDay(freqStr);
+      totalMgDay = dosePerAdminMg * dosesPerDay;
+    }
+
+    // If mL per dose computed but no mL box needed (solid), hide it
+    if (concValue === "solid") {
+      mLPerDose = null;
+    }
+
+    // --- warnings ---
+    if (med.maxDailyMg && maxDailyMg > 0) {
+      // Flag if recommended daily exceeds typical max for weight
+      const recDailyMg = dosePerAdminMg * inferDosesPerDay(freqStr);
+      if (recDailyMg > maxDailyMg) {
+        warnings.push("Recommended total daily dose (" + roundTo(recDailyMg,1) + " mg) exceeds the typical max for this weight (" + roundTo(maxDailyMg,1) + " mg). Reduce dose or frequency. Consult a physician.");
+      }
+    }
+
+    // Specific medicine warnings
+    if (med.id === "ibuprofen-peds" && weightKg < 5) {
+      warnings.push("Ibuprofen is generally not recommended in children under 6 months or under 5 kg without medical advice.");
+    }
+    if (med.id === "paracetamol-peds" && weightKg < 3) {
+      warnings.push("In infants under 3 months or under 3 kg, consult a physician before giving paracetamol. Dose may need adjustment.");
+    }
+    if (med.id === "co-trimoxazole-peds") {
+      warnings.push("Co-trimoxazole is contraindicated in infants < 2 months, G6PD deficiency, sulfa allergy, and folate deficiency. Confirm indication and patient history.");
+    }
+    if (med.id === "gentamicin-peds") {
+      warnings.push("Gentamicin requires therapeutic drug monitoring (peak/trough levels). Dosing must be managed by a physician. Do NOT adjust dose without medical supervision.");
+    }
+    if (med.id === "ceftriaxone-peds") {
+      warnings.push("Ceftriaxone is injectable only. Do not administer without proper training and sterile technique. Do not mix with calcium-containing IV fluids in neonates.");
+    }
+    if (med.id === "salbutamol-peds") {
+      warnings.push("If the patient is in severe respiratory distress, cyanotic, or not responding to salbutamol, seek emergency medical care immediately.");
+    }
+    if (med.id === "metronidazole-peds" || med.id === "metronidazole-adult") {
+      warnings.push("Avoid alcohol during treatment and for 48 hours after. May cause metallic taste and dark urine.");
+    }
+
+    // --- notes ---
+    notes = med.notes || "";
+
+    return {
+      errors,
+      warnings,
+      dosePerAdminMg,
+      freqStr,
+      maxDailyMg: roundTo(maxDailyMg, 0),
+      mLPerDose,
+      totalMgDay: roundTo(totalMgDay, 0),
+      notes,
+      doseMinMgPerKg,
+      doseMaxMgPerKg
+    };
+  }
+
+  function inferDosesPerDay(freqStr) {
+    if (!freqStr) return 1;
+    const s = freqStr.toLowerCase();
+    if (s.includes("q4") || s.includes("every 4")) return 6;
+    if (s.includes("q6") || s.includes("every 6")) return 4;
+    if (s.includes("q8") || s.includes("every 8")) return 3;
+    if (s.includes("q12") || s.includes("every 12")) return 2;
+    if (s.includes("q24") || s.includes("once")) return 1;
+    if (s.includes("twice") || s.includes("2×")) return 2;
+    if (s.includes("three") || s.includes("3×")) return 3;
+    if (s.includes("four") || s.includes("4×")) return 4;
+    return 3; // fallback
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // ADULT CALCULATION ENGINE
+  // ═══════════════════════════════════════════════════════
+
+  function computeAdult(med, ageYears, weightKg, concValue, durationDays) {
+    const errors = [];
+    const warnings = [];
+    let dosePerAdminMg = null;
+    let freqStr = "";
+    let maxDailyMg = 0;
+    let mLPerDose = null;
+    let totalMgDay = 0;
+    let notes = "";
+
+    if (!med) {
+      errors.push("Please select a medicine.");
+    }
+    if (ageYears !== undefined && ageYears < 13) {
+      errors.push("For the adult panel, age should be 13 or older. For children, use the pediatric panel.");
+    }
+    if (weightKg !== undefined && weightKg < 20) {
+      errors.push("Weight must be 20 kg or greater for adult panel.");
+    }
+
+    if (errors.length) return { errors, warnings, dosePerAdminMg: null, freqStr: "", maxDailyMg: 0, mLPerDose: null, totalMgDay: 0, notes: "" };
+
+    if (!med.doseMg || !med.doseMg.min || !med.doseMg.max) {
+      errors.push("This medicine's adult dosing is not fully available. Please consult a pharmacist.");
+      return { errors, warnings, dosePerAdminMg: null, freqStr: med.freq || "", maxDailyMg: 0, mLPerDose: null, totalMgDay: 0, notes: med.notes || "" };
+    }
+
+    // Use mid-range as recommended per dose
+    const recMg = (med.doseMg.min + med.doseMg.max) / 2;
+    let perDoseMg = recMg;
+
+    // Cap by absolute max per dose
+    if (med.maxPerDoseMg && perDoseMg > med.maxPerDoseMg) {
+      warnings.push("Calculated dose (" + roundTo(perDoseMg,1) + " mg) exceeds the recommended maximum per dose (" + med.maxPerDoseMg + " mg). Capping to " + med.maxPerDoseMg + " mg.");
+      perDoseMg = med.maxPerDoseMg;
+    }
+
+    dosePerAdminMg = roundTo(perDoseMg, 0);
+
+    freqStr = med.freqShort || med.freq || "";
+    maxDailyMg = med.maxDailyMg || 0;
+
+    // mL conversion
+    if (concValue && concValue !== "solid" && concValue !== "other" && concValue !== "") {
+      const mgPerMl = parseFloat(concValue);
+      if (!isNaN(mgPerMl) && mgPerMl > 0) {
+        mLPerDose = roundTo(dosePerAdminMg / mgPerMl, 2);
+        const dosesPerDay = inferDosesPerDay(freqStr);
+        totalMgDay = dosePerAdminMg * dosesPerDay;
+      }
+    } else {
+      const dosesPerDay = inferDosesPerDay(freqStr);
+      totalMgDay = dosePerAdminMg * dosesPerDay;
+    }
+
+    if (concValue === "solid") {
+      mLPerDose = null;
+    }
+
+    // --- weight-based checks ---
+    if (weightKg !== undefined && weightKg > 0) {
+      // For some medicines, check if weight-based dosing would differ significantly
+      if (med.id === "ibuprofen-adult" && weightKg < 40) {
+        warnings.push("In adults weighing under 40 kg, ibuprofen doses may need to be lower. Consider 200 mg doses. Consult a physician if unsure.");
+      }
+      if (med.id === "paracetamol-adult" && weightKg < 40) {
+        warnings.push("In adults weighing under 40 kg, consider lower paracetamol doses (e.g. 500 mg per dose) and do not exceed 3 g/day without medical advice.");
+      }
+    }
+
+    // --- age-based checks ---
+    if (ageYears !== undefined && ageYears >= 65) {
+      if (med.id === "ibuprofen-adult") {
+        warnings.push("Elderly patients (≥65 years) are at higher risk of GI bleeding and renal effects with ibuprofen. Use the lowest effective dose, shortest duration. Consider alternative. Consult a physician.");
+      }
+      if (med.id === "paracetamol-adult") {
+        warnings.push("Elderly patients (≥65 years): consider a lower maximum daily dose (e.g. 3 g/day) if hepatic function is reduced or there is chronic alcohol use. Consult a physician.");
+      }
+      if (med.id === "metronidazole-adult") {
+        warnings.push("Elderly patients: metronidazole clearance may be reduced. Monitor for neurotoxicity with prolonged courses. Shorter duration preferred when possible.");
+      }
+    }
+
+    // --- specific warnings ---
+    if (med.id === "co-trimoxazole-adult") {
+      warnings.push("Co-trimoxazole can cause severe skin reactions (SJS/TEN), bone marrow suppression, hyperkalemia, and renal impairment. Contraindicated in sulfa allergy, G6PD deficiency, and pregnancy near term. Monitor blood counts and renal function.");
+    }
+    if (med.id === "azithromycin-adult") {
+      warnings.push("Azithromycin may prolong QT interval. Use with caution in patients with known QT prolongation, hypokalemia, hypomagnesemia, or on other QT-prolonging drugs. Avoid in macrolide hypersensitivity.");
+    }
+    if (med.id === "lovastatin-adult") {
+      warnings.push("Lovastatin is a CYP3A4 substrate — avoid strong CYP3A4 inhibitors (e.g. clarithromycin, itraconazole, protease inhibitors). Do not use in pregnancy or breastfeeding. Avoid grapefruit juice in large amounts.");
+    }
+    if (med.id === "amlodipine-adult") {
+      warnings.push("Amlodipine can cause peripheral edema. Start low in elderly or hepatic impairment (2.5 mg). Avoid in cardiogenic shock, severe hypotension, or unstable angina.");
+    }
+    if (med.id === "losartan-adult") {
+      warnings.push("Losartan is contraindicated in pregnancy (Category D). Monitor potassium and renal function. Avoid potassium-sparing diuretics, potassium supplements, or salt substitutes without medical supervision.");
+    }
+    if (med.id === "salbutamol-adult") {
+      warnings.push("If the patient is in severe respiratory distress, cyanotic, or not responding to salbutamol, seek emergency medical care immediately.");
+    }
+    if (med.id === "metronidazole-adult") {
+      warnings.push("Avoid alcohol during treatment and for 48 hours after. May cause metallic taste and dark urine.");
+    }
+
+    notes = med.notes || "";
+
+    return {
+      errors,
+      warnings,
+      dosePerAdminMg,
+      freqStr,
+      maxDailyMg,
+      mLPerDose,
+      totalMgDay: roundTo(totalMgDay, 0),
+      notes,
+      doseMinMg: med.doseMg.min,
+      doseMaxMg: med.doseMg.max
+    };
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // RENDER RESULTS
+  // ═══════════════════════════════════════════════════════
+
+  function renderPedsResults(result, med, durationDays) {
+    const res = $("peds-results");
+    if (!res) return;
+
+    // Clear previous error states
+    document.querySelectorAll("#peds-results ~ .calc-card .field-error").forEach(el => el.classList.remove("field-error"));
+
+    if (result.errors && result.errors.length) {
+      res.classList.remove("show");
+      result.errors.forEach(err => {
+        // We'll surface errors near the relevant field
+        console.warn("PEDS ERROR:", err);
+      });
+      // Show first error in the warning box
+      const w = $("peds-result-warning");
+      if (w) {
+        w.textContent = "⚠ " + result.errors[0];
+        w.classList.remove("empty");
+      }
+      return;
+    }
+
+    res.classList.add("show");
+
+    // Dose headline
+    const doseVal = $("peds-result-dose");
+    const doseUnit = $("peds-result-dose-unit");
+    const sub = $("peds-result-sub");
+    const medName = $("peds-result-medicine");
+    if (doseVal) doseVal.textContent = result.dosePerAdminMg !== null ? result.dosePerAdminMg : "—";
+    if (doseUnit) doseUnit.textContent = "mg";
+    if (sub) {
+      if (result.doseMinMgPerKg !== null && result.doseMaxMgPerKg !== null) {
+        sub.textContent = roundTo(result.doseMinMgPerKg,0) + "–" + roundTo(result.doseMaxMgPerKg,0) + " mg/kg/dose × " + roundTo(parseFloat($("peds-weight").value)||0,1) + " kg";
+      } else {
+        sub.textContent = "";
+      }
+    }
+    if (medName) medName.textContent = med ? med.name : "—";
+
+    // Per dose
+    const perDose = $("peds-result-per-dose");
+    if (perDose) perDose.textContent = result.dosePerAdminMg !== null ? result.dosePerAdminMg + " mg" : "—";
+
+    // Frequency
+    const freq = $("peds-result-freq");
+    if (freq) freq.textContent = result.freqStr || "—";
+
+    // Max per day
+    const maxDay = $("peds-result-max-day");
+    if (maxDay) {
+      if (result.maxDailyMg > 0) {
+        maxDay.textContent = result.maxDailyMg + " mg/day";
+        // If weight-based max
+        if (med && med.maxDailyMg) {
+          maxDay.textContent = result.maxDailyMg + " mg/day (" + med.maxDailyMg + " mg/kg/day)";
+        }
+      } else {
+        maxDay.textContent = "—";
+      }
+    }
+
+    // mL per dose
+    const mLBox = $("peds-result-mL-box");
+    const mLVal = $("peds-result-mL");
+    if (mLBox && mLVal) {
+      if (result.mLPerDose !== null && result.mLPerDose !== undefined) {
+        mLBox.style.display = "block";
+        mLVal.textContent = result.mLPerDose + " mL";
+        // Add a note about measuring
+        if (result.mLPerDose < 1 && result.mLPerDose > 0) {
+          mLVal.textContent = result.mLPerDose + " mL (use oral syringe for accuracy)";
+        }
+      } else {
+        mLBox.style.display = "none";
+      }
+    }
+
+    // Total quantity
+    const totalBox = $("peds-result-total-box");
+    const totalVal = $("peds-result-total");
+    if (totalBox && totalVal) {
+      if (durationDays && durationDays > 0 && totalMgDay > 0) {
+        totalBox.style.display = "block";
+        const totalQty = result.totalMgDay * (durationDays || 1);
+        totalVal.textContent = roundTo(totalQty, 0) + " mg total (" + (durationDays || 1) + " day" + ((durationDays||1)>1?"s":"") + ")";
+        // Also show mL total if mL computed
+        if (result.mLPerDose !== null) {
+          const totalMl = result.mLPerDose * inferDosesPerDay(result.freqStr) * (durationDays || 1);
+          totalVal.textContent = roundTo(totalQty,0) + " mg total (" + roundTo(totalMl,1) + " mL total)";
+        }
+      } else {
+        totalBox.style.display = "block";
+        totalVal.textContent = result.totalMgDay + " mg/day";
+        if (result.mLPerDose !== null) {
+          const totalMl = result.mLPerDose * inferDosesPerDay(result.freqStr);
+          totalVal.textContent = result.totalMgDay + " mg/day (" + roundTo(totalMl,1) + " mL/day)";
+        }
+      }
+    }
+
+    // Detail
+    const detail = $("peds-result-detail");
+    if (detail) {
+      let html = "";
+      if (med) {
+        html += "<strong>Regimen:</strong> " + esc(result.freqStr) + "<br>";
+        if (result.doseMinMgPerKg !== null) {
+          html += "<strong>Dose range:</strong> " + roundTo(result.doseMinMgPerKg,0) + "–" + roundTo(result.doseMaxMgPerKg,0) + " mg/kg/dose; this patient: " + roundTo(parseFloat($("peds-weight").value)||0,1) + " kg → " + result.dosePerAdminMg + " mg/dose (rounded to practical dose).<br>";
+        }
+        if (result.mLPerDose !== null) {
+          const conc = $("peds-concentration").selectedOptions[0]?.textContent || "";
+          html += "<strong>Liquid conversion:</strong> " + result.mLPerDose + " mL per dose using " + esc(conc) + " (use an oral syringe for accurate measurement).<br>";
+        }
+        if (result.totalMgDay > 0) {
+          html += "<strong>Total per day:</strong> " + result.totalMgDay + " mg (" + inferDosesPerDay(result.freqStr) + " doses/day).";
+        }
+      }
+      if (result.notes) {
+        html += "<br><strong>Notes:</strong> " + esc(result.notes);
+      }
+      detail.innerHTML = html;
+    }
+
+    // Warnings
+    const warn = $("peds-result-warning");
+    if (warn) {
+      if (result.warnings && result.warnings.length) {
+        warn.classList.remove("empty");
+        warn.innerHTML = result.warnings.map(w => "⚠ " + esc(w)).join("<br>");
+      } else {
+        warn.classList.add("empty");
+        warn.textContent = "No specific warnings for this selection. Always verify with a pharmacist before administering.";
+      }
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // ADULT RESULTS RENDER
+  // ═══════════════════════════════════════════════════════
+
+  function renderAdultResults(result, med, durationDays) {
+    const res = $("adult-results");
+    if (!res) return;
+
+    if (result.errors && result.errors.length) {
+      res.classList.remove("show");
+      const w = $("adult-result-warning");
+      if (w) {
+        w.textContent = "⚠ " + result.errors[0];
+        w.classList.remove("empty");
+      }
+      return;
+    }
+
+    res.classList.add("show");
+
+    const doseVal = $("adult-result-dose");
+    const doseUnit = $("adult-result-dose-unit");
+    const sub = $("adult-result-sub");
+    const medName = $("adult-result-medicine");
+    if (doseVal) doseVal.textContent = result.dosePerAdminMg !== null ? result.dosePerAdminMg : "—";
+    if (doseUnit) doseUnit.textContent = "mg";
+    if (sub) {
+      if (result.doseMinMg && result.doseMaxMg) {
+        sub.textContent = result.doseMinMg + "–" + result.doseMaxMg + " mg/dose (recommended: " + result.dosePerAdminMg + " mg)";
+      } else {
+        sub.textContent = "";
+      }
+    }
+    if (medName) medName.textContent = med ? med.name : "—";
+
+    const perDose = $("adult-result-per-dose");
+    if (perDose) perDose.textContent = result.dosePerAdminMg !== null ? result.dosePerAdminMg + " mg" : "—";
+
+    const freq = $("adult-result-freq");
+    if (freq) freq.textContent = result.freqStr || "—";
+
+    const maxDay = $("adult-result-max-day");
+    if (maxDay) {
+      if (result.maxDailyMg > 0) {
+        maxDay.textContent = result.maxDailyMg + " mg/day";
+      } else {
+        maxDay.textContent = "—";
+      }
+    }
+
+    const mLBox = $("adult-result-mL-box");
+    const mLVal = $("adult-result-mL");
+    if (mLBox && mLVal) {
+      if (result.mLPerDose !== null && result.mLPerDose !== undefined) {
+        mLBox.style.display = "block";
+        mLVal.textContent = result.mLPerDose + " mL";
+        if (result.mLPerDose < 1 && result.mLPerDose > 0) {
+          mLVal.textContent = result.mLPerDose + " mL (use oral syringe for accuracy)";
+        }
+      } else {
+        mLBox.style.display = "none";
+      }
+    }
+
+    const totalBox = $("adult-result-total-box");
+    const totalVal = $("adult-result-total");
+    if (totalBox && totalVal) {
+      if (durationDays && durationDays > 0) {
+        totalBox.style.display = "block";
+        const totalQty = result.totalMgDay * (durationDays || 1);
+        let text = roundTo(totalQty, 0) + " mg total (" + (durationDays || 1) + " day" + ((durationDays||1)>1?"s":"") + ")";
+        if (result.mLPerDose !== null) {
+          const totalMl = result.mLPerDose * inferDosesPerDay(result.freqStr) * (durationDays || 1);
+          text = roundTo(totalQty,0) + " mg total (" + roundTo(totalMl,1) + " mL total)";
+        }
+        totalVal.textContent = text;
+      } else {
+        totalBox.style.display = "block";
+        let text = result.totalMgDay + " mg/day (" + inferDosesPerDay(result.freqStr) + " doses/day)";
+        if (result.mLPerDose !== null) {
+          const totalMl = result.mLPerDose * inferDosesPerDay(result.freqStr);
+          text = result.totalMgDay + " mg/day (" + roundTo(totalMl,1) + " mL/day)";
+        }
+        totalVal.textContent = text;
+      }
+    }
+
+    const detail = $("adult-result-detail");
+    if (detail) {
+      let html = "";
+      if (med) {
+        html += "<strong>Regimen:</strong> " + esc(result.freqStr) + "<br>";
+        if (result.doseMinMg && result.doseMaxMg) {
+          html += "<strong>Dose range:</strong> " + result.doseMinMg + "–" + result.doseMaxMg + " mg/dose; this calculation uses " + result.dosePerAdminMg + " mg per dose (recommended mid-range).<br>";
+        }
+        if (result.mLPerDose !== null) {
+          const conc = $("adult-formulation").selectedOptions[0]?.textContent || "";
+          html += "<strong>Liquid conversion:</strong> " + result.mLPerDose + " mL per dose using " + esc(conc) + " (use an oral syringe for accurate measurement).<br>";
+        }
+        if (result.totalMgDay > 0) {
+          html += "<strong>Total per day:</strong> " + result.totalMgDay + " mg (" + inferDosesPerDay(result.freqStr) + " doses/day).";
+        }
+      }
+      if (result.notes) {
+        html += "<br><strong>Notes:</strong> " + esc(result.notes);
+      }
+      detail.innerHTML = html;
+    }
+
+    const warn = $("adult-result-warning");
+    if (warn) {
+      if (result.warnings && result.warnings.length) {
+        warn.classList.remove("empty");
+        warn.innerHTML = result.warnings.map(w => "⚠ " + esc(w)).join("<br>");
+      } else {
+        warn.classList.add("empty");
+        warn.textContent = "No specific warnings for this selection. Always verify with a pharmacist before administering.";
+      }
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // EVENT HANDLERS
+  // ═══════════════════════════════════════════════════════
+
+  let totalMgDay = 0;
+
+  // --- PEDIATRIC ---
+
+  $("peds-medicine").addEventListener("change", onPedsMedicineChange);
+
+  $("peds-calculate").addEventListener("click", function () {
+    const medId = $("peds-medicine").value;
+    const weight = parseFloat($("peds-weight").value);
+    const age = parseFloat($("peds-age").value);
+    const conc = $("peds-concentration").value;
+    const duration = parseInt($("peds-duration").value, 10) || 1;
+
+    // Clear all errors
+    ["peds-weight-error","peds-age-error","peds-concentration-error"].forEach(id => {
+      showError(id, false);
+      markField($(id.replace("-error","")), false);
+    });
+    $("peds-results").classList.remove("show");
+
+    const med = PEDS_MEDICINES.find(m => m.id === medId);
+    const result = computePeds(med, weight || 0, age, conc, duration);
+
+    // Map errors to fields
+    if (result.errors.some(e => e.includes("weight"))) {
+      showError("peds-weight-error", true);
+      markField($("peds-weight"), true);
+    }
+    if (result.errors.some(e => e.includes("age"))) {
+      showError("peds-age-error", true);
+      markField($("peds-age"), true);
+    }
+    if (result.errors.some(e => e.includes("formulation") || e.includes("concentration"))) {
+      showError("peds-concentration-error", true);
+      markField($("peds-concentration"), true);
+    }
+
+    if (result.errors.length === 0 && med) {
+      renderPedsResults(result, med, duration);
+    }
+  });
+
+  $("peds-reset").addEventListener("click", function () {
+    $("peds-medicine").value = "";
+    $("peds-weight").value = "";
+    $("peds-age").value = "";
+    $("peds-concentration").value = "";
+    $("peds-duration").value = "";
+    $("peds-results").classList.remove("show");
+    document.querySelectorAll("#peds-results ~ .calc-card .field-error").forEach(el => el.classList.remove("field-error"));
+    ["peds-weight-error","peds-age-error","peds-concentration-error"].forEach(id => showError(id, false));
+  });
+
+  // --- ADULT ---
+
+  $("adult-calculate").addEventListener("click", function () {
+    const medId = $("adult-medicine").value;
+    const age = parseFloat($("adult-age").value);
+    const weight = parseFloat($("adult-weight").value);
+    const conc = $("adult-formulation").value;
+    const duration = parseInt($("adult-duration").value, 10) || 1;
+
+    ["adult-age-error","adult-weight-error"].forEach(id => {
+      showError(id, false);
+      markField($(id.replace("-error","")), false);
+    });
+    $("adult-results").classList.remove("show");
+
+    const med = ADULT_MEDICINES.find(m => m.id === medId);
+    const result = computeAdult(med, age, weight || 0, conc, duration);
+
+    if (result.errors.some(e => e.includes("age"))) {
+      showError("adult-age-error", true);
+      markField($("adult-age"), true);
+    }
+    if (result.errors.some(e => e.includes("weight"))) {
+      showError("adult-weight-error", true);
+      markField($("adult-weight"), true);
+    }
+
+    if (result.errors.length === 0 && med) {
+      renderAdultResults(result, med, duration);
+    }
+  });
+
+  $("adult-reset").addEventListener("click", function () {
+    $("adult-medicine").value = "";
+    $("adult-age").value = "";
+    $("adult-weight").value = "";
+    $("adult-formulation").value = "solid";
+    $("adult-duration").value = "";
+    $("adult-results").classList.remove("show");
+    ["adult-age-error","adult-weight-error"].forEach(id => showError(id, false));
+  });
+
+  // ═══════════════════════════════════════════════════════
+  // INIT
+  // ═══════════════════════════════════════════════════════
+
+  populatePedsSelect();
+  populateAdultSelect();
+  renderPedsRefTable();
+  renderAdultRefTable();
+
+  // Set default concentration for pediatric select (first medicine's first form)
+  // The onPedsMedicineChange handler fires on change; we pre-select the first form
+  // of the first medicine by default (so the UI is not empty)
+  if (PEDS_MEDICINES.length) {
+    const firstMed = PEDS_MEDICINES[0];
+    $("peds-medicine").value = firstMed.id;
+    onPedsMedicineChange();
+  }
+
+})();
+</script>
+</body>
+</html>
