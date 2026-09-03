@@ -180,9 +180,8 @@
     /* ── Results ── */
     .results {
       margin-top: 24px;
-      display: none;
+      display: block;
     }
-    .results.show { display: block; }
 
     .result-headline {
       background: rgba(124,111,247,0.08);
@@ -1725,9 +1724,6 @@
     document.querySelectorAll("#peds-results ~ .calc-card .field-error").forEach(el => el.classList.remove("field-error"));
 
     if (result.errors && result.errors.length) {
-      // Always show the panel so the user sees feedback
-      res.classList.add("show");
-
       // Clear all result fields
       const doseVal = $("peds-result-dose");
       if (doseVal) doseVal.textContent = "";
@@ -1760,8 +1756,6 @@
       }
       return;
     }
-
-    res.classList.add("show");
 
     // Dose headline
     const doseVal = $("peds-result-dose");
@@ -1906,9 +1900,6 @@
     if (!res) return;
 
     if (result.errors && result.errors.length) {
-      // Always show the panel so the user sees feedback
-      res.classList.add("show");
-
       // Clear all result fields
       const doseVal = $("adult-result-dose");
       if (doseVal) doseVal.textContent = "";
@@ -1941,8 +1932,6 @@
       }
       return;
     }
-
-    res.classList.add("show");
 
     const doseVal = $("adult-result-dose");
     const doseUnit = $("adult-result-dose-unit");
