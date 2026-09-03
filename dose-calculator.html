@@ -1722,16 +1722,38 @@
     document.querySelectorAll("#peds-results ~ .calc-card .field-error").forEach(el => el.classList.remove("field-error"));
 
     if (result.errors && result.errors.length) {
-      res.classList.remove("show");
-      result.errors.forEach(err => {
-        // We'll surface errors near the relevant field
-        console.warn("PEDS ERROR:", err);
-      });
-      // Show first error in the warning box
+      // Always show the panel so the user sees feedback
+      res.classList.add("show");
+
+      // Clear all result fields
+      const doseVal = $("peds-result-dose");
+      if (doseVal) doseVal.textContent = "";
+      const doseUnit = $("peds-result-dose-unit");
+      if (doseUnit) doseUnit.textContent = "";
+      const sub = $("peds-result-sub");
+      if (sub) sub.textContent = "";
+      const medName = $("peds-result-medicine");
+      if (medName) medName.textContent = "—";
+      const perDose = $("peds-result-per-dose");
+      if (perDose) perDose.textContent = "—";
+      const freq = $("peds-result-freq");
+      if (freq) freq.textContent = "—";
+      const maxDay = $("peds-result-max-day");
+      if (maxDay) maxDay.textContent = "—";
+      const mLBox = $("peds-result-mL-box");
+      if (mLBox) mLBox.style.display = "none";
+      const tspBox = $("peds-result-tsp");
+      if (tspBox) tspBox.textContent = "";
+      const totalBox = $("peds-result-total-box");
+      if (totalBox) totalBox.style.display = "none";
+      const detail = $("peds-result-detail");
+      if (detail) detail.innerHTML = "";
+
+      // Show all errors in the warning box
       const w = $("peds-result-warning");
       if (w) {
-        w.textContent = "⚠ " + result.errors[0];
         w.classList.remove("empty");
+        w.innerHTML = result.errors.map(e => "⚠ " + esc(e)).join("<br>");
       }
       return;
     }
@@ -1878,11 +1900,38 @@
     if (!res) return;
 
     if (result.errors && result.errors.length) {
-      res.classList.remove("show");
+      // Always show the panel so the user sees feedback
+      res.classList.add("show");
+
+      // Clear all result fields
+      const doseVal = $("adult-result-dose");
+      if (doseVal) doseVal.textContent = "";
+      const doseUnit = $("adult-result-dose-unit");
+      if (doseUnit) doseUnit.textContent = "";
+      const sub = $("adult-result-sub");
+      if (sub) sub.textContent = "";
+      const medName = $("adult-result-medicine");
+      if (medName) medName.textContent = "—";
+      const perDose = $("adult-result-per-dose");
+      if (perDose) perDose.textContent = "—";
+      const freq = $("adult-result-freq");
+      if (freq) freq.textContent = "—";
+      const maxDay = $("adult-result-max-day");
+      if (maxDay) maxDay.textContent = "—";
+      const mLBox = $("adult-result-mL-box");
+      if (mLBox) mLBox.style.display = "none";
+      const totalBox = $("adult-result-total-box");
+      if (totalBox) totalBox.style.display = "none";
+      const tspBox = $("adult-result-tsp");
+      if (tspBox) tspBox.textContent = "";
+      const detail = $("adult-result-detail");
+      if (detail) detail.innerHTML = "";
+
+      // Show all errors in the warning box
       const w = $("adult-result-warning");
       if (w) {
-        w.textContent = "⚠ " + result.errors[0];
         w.classList.remove("empty");
+        w.innerHTML = result.errors.map(e => "⚠ " + esc(e)).join("<br>");
       }
       return;
     }
@@ -2012,12 +2061,22 @@
   $("peds-calculate").addEventListener("click", function () {
     const medId = $("peds-medicine").value;
     const weightRaw = $("peds-weight").value.trim();
-    const weight = weightRaw === "" ? undefined : parseFloat(weightRaw);
+    let weight = weightRaw === "" ? undefined : parseFloat(weightRaw);
     const ageRaw = $("peds-age").value.trim();
     const age = ageRaw === "" ? undefined : parseFloat(ageRaw);
     const conc = $("peds-concentration").value;
     const duration = parseInt($("peds-duration").value, 10) || 1;
     const useIdeal = $("peds-use-ideal-weight").checked;
+
+    // Auto-populate weight field with ideal weight estimate when age is given
+    // but weight is missing and user hasn't explicitly unchecked the ideal-weight option
+    if (age !== undefined && age >= 0 && weight === undefined && useIdeal) {
+      const ibw = idealBodyWeightKg(age);
+      if (ibw !== null) {
+        weight = ibw;
+        $("peds-weight").value = ibw.toFixed(1);
+      }
+    }
 
     // Expose ideal-weight flag to computePeds via window
     window._pedsUseIdealWeight = useIdeal;
