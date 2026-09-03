@@ -424,47 +424,48 @@
             <button class="btn btn-primary" id="peds-calculate">Calculate dose</button>
             <button class="btn btn-reset" id="peds-reset">Reset</button>
           </div>
-        </div>
 
-        <div class="results" id="peds-results">
-          <div class="result-headline">
-            <div>
-              <div class="result-dose"><span id="peds-result-dose">—</span><span class="unit" id="peds-result-dose-unit">mg</span></div>
-              <div class="result-sub" id="peds-result-sub"></div>
+          <!-- Results appear directly below the Calculate button -->
+          <div class="results" id="peds-results">
+            <div class="result-headline">
+              <div>
+                <div class="result-dose"><span id="peds-result-dose">—</span><span class="unit" id="peds-result-dose-unit">mg</span></div>
+                <div class="result-sub" id="peds-result-sub"></div>
+              </div>
+              <div style="text-align:right;">
+                <div class="result-sub" style="color:var(--muted);">Medicine</div>
+                <div id="peds-result-medicine" style="font-weight:600;">—</div>
+              </div>
             </div>
-            <div style="text-align:right;">
-              <div class="result-sub" style="color:var(--muted);">Medicine</div>
-              <div id="peds-result-medicine" style="font-weight:600;">—</div>
-            </div>
-          </div>
 
-          <div class="results-grid">
-            <div class="result-item">
-              <div class="label">Per dose</div>
-              <div class="value" id="peds-result-per-dose">—</div>
+            <div class="results-grid">
+              <div class="result-item">
+                <div class="label">Per dose</div>
+                <div class="value" id="peds-result-per-dose">—</div>
+              </div>
+              <div class="result-item">
+                <div class="label">Frequency</div>
+                <div class="value" id="peds-result-freq">—</div>
+              </div>
+              <div class="result-item">
+                <div class="label">Max per day</div>
+                <div class="value warn" id="peds-result-max-day">—</div>
+              </div>
+              <div class="result-item" id="peds-result-mL-box" style="display:none;">
+                <div class="label">Per dose (liquid)</div>
+                <div class="value" id="peds-result-mL">—</div>
+                <div class="value muted" id="peds-result-tsp" style="font-size:0.82rem;margin-top:2px;"></div>
+              </div>
+              <div class="result-item" id="peds-result-total-box" style="display:none;">
+                <div class="label">Total quantity (day)</div>
+                <div class="value" id="peds-result-total">—</div>
+              </div>
             </div>
-            <div class="result-item">
-              <div class="label">Frequency</div>
-              <div class="value" id="peds-result-freq">—</div>
-            </div>
-            <div class="result-item">
-              <div class="label">Max per day</div>
-              <div class="value warn" id="peds-result-max-day">—</div>
-            </div>
-            <div class="result-item" id="peds-result-mL-box" style="display:none;">
-              <div class="label">Per dose (liquid)</div>
-              <div class="value" id="peds-result-mL">—</div>
-              <div class="value muted" id="peds-result-tsp" style="font-size:0.82rem;margin-top:2px;"></div>
-            </div>
-            <div class="result-item" id="peds-result-total-box" style="display:none;">
-              <div class="label">Total quantity (day)</div>
-              <div class="value" id="peds-result-total">—</div>
-            </div>
-          </div>
 
-          <div class="result-detail" id="peds-result-detail"></div>
-          <div class="result-warning empty" id="peds-result-warning">
-            No warnings for this selection. Always verify with a pharmacist.
+            <div class="result-detail" id="peds-result-detail"></div>
+            <div class="result-warning empty" id="peds-result-warning">
+              No warnings for this selection. Always verify with a pharmacist.
+            </div>
           </div>
         </div>
 
@@ -570,46 +571,47 @@
             <button class="btn btn-primary" id="adult-calculate">Calculate dose</button>
             <button class="btn btn-reset" id="adult-reset">Reset</button>
           </div>
-        </div>
 
-        <div class="results" id="adult-results">
-          <div class="result-headline">
-            <div>
-              <div class="result-dose"><span id="adult-result-dose">—</span><span class="unit" id="adult-result-dose-unit">mg</span></div>
-              <div class="result-sub" id="adult-result-sub"></div>
+          <!-- Results appear directly below the Calculate button -->
+          <div class="results" id="adult-results">
+            <div class="result-headline">
+              <div>
+                <div class="result-dose"><span id="adult-result-dose">—</span><span class="unit" id="adult-result-dose-unit">mg</span></div>
+                <div class="result-sub" id="adult-result-sub"></div>
+              </div>
+              <div style="text-align:right;">
+                <div class="result-sub" style="color:var(--muted);">Medicine</div>
+                <div id="adult-result-medicine" style="font-weight:600;">—</div>
+              </div>
             </div>
-            <div style="text-align:right;">
-              <div class="result-sub" style="color:var(--muted);">Medicine</div>
-              <div id="adult-result-medicine" style="font-weight:600;">—</div>
-            </div>
-          </div>
 
-          <div class="results-grid">
-            <div class="result-item">
-              <div class="label">Per dose</div>
-              <div class="value" id="adult-result-per-dose">—</div>
+            <div class="results-grid">
+              <div class="result-item">
+                <div class="label">Per dose</div>
+                <div class="value" id="adult-result-per-dose">—</div>
+              </div>
+              <div class="result-item">
+                <div class="label">Frequency</div>
+                <div class="value" id="adult-result-freq">—</div>
+              </div>
+              <div class="result-item">
+                <div class="label">Max per day</div>
+                <div class="value warn" id="adult-result-max-day">—</div>
+              </div>
+              <div class="result-item" id="adult-result-mL-box" style="display:none;">
+                <div class="label">Per dose (mL)</div>
+                <div class="value" id="adult-result-mL">—</div>
+              </div>
+              <div class="result-item" id="adult-result-total-box" style="display:none;">
+                <div class="label">Total quantity (day)</div>
+                <div class="value" id="adult-result-total">—</div>
+              </div>
             </div>
-            <div class="result-item">
-              <div class="label">Frequency</div>
-              <div class="value" id="adult-result-freq">—</div>
-            </div>
-            <div class="result-item">
-              <div class="label">Max per day</div>
-              <div class="value warn" id="adult-result-max-day">—</div>
-            </div>
-            <div class="result-item" id="adult-result-mL-box" style="display:none;">
-              <div class="label">Per dose (mL)</div>
-              <div class="value" id="adult-result-mL">—</div>
-            </div>
-            <div class="result-item" id="adult-result-total-box" style="display:none;">
-              <div class="label">Total quantity (day)</div>
-              <div class="value" id="adult-result-total">—</div>
-            </div>
-          </div>
 
-          <div class="result-detail" id="adult-result-detail"></div>
-          <div class="result-warning empty" id="adult-result-warning">
-            No warnings for this selection. Always verify with a pharmacist.
+            <div class="result-detail" id="adult-result-detail"></div>
+            <div class="result-warning empty" id="adult-result-warning">
+              No warnings for this selection. Always verify with a pharmacist.
+            </div>
           </div>
         </div>
 
