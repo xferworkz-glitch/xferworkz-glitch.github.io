@@ -1836,9 +1836,10 @@
     const totalBox = $("peds-result-total-box");
     const totalVal = $("peds-result-total");
     if (totalBox && totalVal) {
-      if (durationDays && durationDays > 0 && totalMgDay > 0) {
+      const dailyMg = result.totalMgDay || 0;
+      if (durationDays && durationDays > 0 && dailyMg > 0) {
         totalBox.style.display = "block";
-        const totalQty = result.totalMgDay * (durationDays || 1);
+        const totalQty = dailyMg * (durationDays || 1);
         totalVal.textContent = roundTo(totalQty, 0) + " mg total (" + (durationDays || 1) + " day" + ((durationDays||1)>1?"s":"") + ")";
         // Also show mL total if mL computed
         if (result.mLPerDose !== null) {
@@ -1847,10 +1848,10 @@
         }
       } else {
         totalBox.style.display = "block";
-        totalVal.textContent = result.totalMgDay + " mg/day";
+        totalVal.textContent = dailyMg + " mg/day";
         if (result.mLPerDose !== null) {
           const totalMl = result.mLPerDose * (result.dosesPerDayUsed || inferDosesPerDay(result.freqStr));
-          totalVal.textContent = result.totalMgDay + " mg/day (" + roundTo(totalMl,1) + " mL/day)";
+          totalVal.textContent = dailyMg + " mg/day (" + roundTo(totalMl,1) + " mL/day)";
         }
       }
     }
@@ -1858,6 +1859,7 @@
     // Detail
     const detail = $("peds-result-detail");
     if (detail) {
+      const dailyMg = result.totalMgDay || 0;
       let html = "";
       if (med) {
         html += "<strong>Regimen:</strong> " + esc(result.freqStr) + "<br>";
@@ -1870,8 +1872,8 @@
           const tsp = result.mLPerDose / 4.92892;
           html += "<strong>Liquid conversion:</strong> " + result.mLPerDose + " mL (" + roundTo(tsp, 2) + " tsp) per dose using " + esc(conc) + (tsp < 1 && tsp > 0 ? "; use oral syringe — tsp not accurate under 1 tsp" : "") + ".<br>";
         }
-        if (result.totalMgDay > 0) {
-          html += "<strong>Total per day:</strong> " + result.totalMgDay + " mg (" + (result.dosesPerDayUsed || inferDosesPerDay(result.freqStr)) + " doses/day" + (result.dosesPerDayInferred ? " — inferred from frequency" : "") + ").";
+        if (dailyMg > 0) {
+          html += "<strong>Total per day:</strong> " + dailyMg + " mg (" + (result.dosesPerDayUsed || inferDosesPerDay(result.freqStr)) + " doses/day" + (result.dosesPerDayInferred ? " — inferred from frequency" : "") + ").";
         }
       }
       if (result.notes) {
