@@ -1460,7 +1460,7 @@
     }
 
     // Floor: minimum dose
-    const minDoseMg = doseMinMgPerKg * weightKg;
+    const minDoseMg = doseMinMgPerKg * effectiveWeightKg;
     if (perDoseMg < minDoseMg && minDoseMg > 0) {
       // not likely, but surface if capping reduced below min
       warnings.push("Dose is at the lower end of the recommended range.");
@@ -1563,6 +1563,7 @@
       doseMinMgPerKg,
       doseMaxMgPerKg,
       weightSource: weightSource || "actual",
+      effectiveWeightKg,
       dosesPerDayUsed: dosesPerDay,
       dosesPerDayInferred: dosesPerDayInput === undefined || dosesPerDayInput === null
     };
@@ -1768,8 +1769,8 @@
     if (doseVal) doseVal.textContent = result.dosePerAdminMg !== null ? result.dosePerAdminMg : "—";
     if (doseUnit) doseUnit.textContent = "mg";
     if (sub) {
-      if (result.doseMinMgPerKg !== null && result.doseMaxMgPerKg !== null) {
-        const displayedWt = result.weightSource === "ideal" ? roundTo(idealBodyWeightKg(ageYears || 0), 1) : roundTo(parseFloat($("peds-weight").value)||0, 1);
+      if (result.doseMinMgPerKg !== null && result.doseMaxMgPerKg !== null && result.effectiveWeightKg != null) {
+        const displayedWt = result.weightSource === "ideal" ? roundTo(idealBodyWeightKg(parseFloat($("peds-age").value)||0), 1) : roundTo(result.effectiveWeightKg, 1);
         const wtLabel = result.weightSource === "ideal" ? "ideal wt (est.)" : "actual wt";
         sub.textContent = roundTo(result.doseMinMgPerKg,0) + "–" + roundTo(result.doseMaxMgPerKg,0) + " mg/kg/dose × " + wtLabel + " " + displayedWt + " kg";
       } else {
@@ -1860,8 +1861,9 @@
       let html = "";
       if (med) {
         html += "<strong>Regimen:</strong> " + esc(result.freqStr) + "<br>";
-        if (result.doseMinMgPerKg !== null) {
-          html += "<strong>Dose range:</strong> " + roundTo(result.doseMinMgPerKg,0) + "–" + roundTo(result.doseMaxMgPerKg,0) + " mg/kg/dose; " + (result.weightSource === "ideal" ? "ideal wt est. " : "actual wt ") + roundTo(parseFloat($("peds-weight").value)||0,1) + " kg → " + result.dosePerAdminMg + " mg/dose (rounded to practical dose).<br>";
+        if (result.doseMinMgPerKg !== null && result.effectiveWeightKg != null) {
+          const wtDisplay = result.weightSource === "ideal" ? "ideal wt est. " + roundTo(result.effectiveWeightKg,1) : "actual wt " + roundTo(result.effectiveWeightKg,1);
+          html += "<strong>Dose range:</strong> " + roundTo(result.doseMinMgPerKg,0) + "–" + roundTo(result.doseMaxMgPerKg,0) + " mg/kg/dose; " + wtDisplay + " kg → " + result.dosePerAdminMg + " mg/dose (rounded to practical dose).<br>";
         }
         if (result.mLPerDose !== null) {
           const conc = $("peds-concentration").selectedOptions[0]?.textContent || "";
